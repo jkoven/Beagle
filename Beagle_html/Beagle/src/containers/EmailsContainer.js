@@ -17,12 +17,12 @@ class EmailsContainer extends Component {
 	}
 
   componentWillMount() {
-    this.loadData();
-  }
+		this.loadData(this.props.state);
+	}
 
-  componentWillReceiveProps(nextProps) {
-    this.loadData();
-  }
+	componentWillReceiveProps(nextProps) {
+		this.loadData(nextProps.state);
+	}
 
   translateStateToFilter(state) {
     console.log(state);
@@ -53,7 +53,7 @@ class EmailsContainer extends Component {
     return jsonQuery;
   }
 
-  loadData() {
+  loadData(newState) {
     let query = `query getData($filters:[Rule]){
 				Select(filters:$filters){
 					Documents {
@@ -67,7 +67,7 @@ class EmailsContainer extends Component {
 		}`
 
     dataSource.query(
-        query, this.translateStateToFilter(this.props.state)
+        query, this.translateStateToFilter(newState)
     ).then(r => this.setState({emails: r.data.Select.Documents})).catch(console.error)
   }
 

@@ -20,11 +20,11 @@ class WordCloudContainer extends Component {
 	}
 
 	componentWillMount() {
-		this.loadData();
+		this.loadData(this.props.state);
 	}
 
 	componentWillReceiveProps(nextProps) {
-		this.loadData();
+		this.loadData(nextProps.state);
 	}
 
 	translateStateToFilter(state) {
@@ -56,7 +56,7 @@ class WordCloudContainer extends Component {
     return jsonQuery;
   }
 
-	loadData() {
+	loadData(newState) {
 		let {field} = this.props;
 		this.state.field = field;
 		let query = `query getData($filters:[Rule]){
@@ -71,7 +71,7 @@ class WordCloudContainer extends Component {
 		}`
 
 		dataSource.query(
-			query, this.translateStateToFilter(this.props.state)
+			query, this.translateStateToFilter(newState)
 		).then(
 			r => this.setState({words: r.data.Select.Summaries[field]})).catch(console.error);
 

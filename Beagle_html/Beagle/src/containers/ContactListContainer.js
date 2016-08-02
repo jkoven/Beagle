@@ -16,11 +16,11 @@ class ContactListContainer extends Component {
 	}
 
 	componentWillMount() {
-		this.loadData();
+		this.loadData(this.props.state);
 	}
 
 	componentWillReceiveProps(nextProps) {
-		this.loadData();
+		this.loadData(nextProps.state);
 	}
 
 	translateSelection(select) {
@@ -64,7 +64,7 @@ class ContactListContainer extends Component {
 		return jsonQuery;
 	}
 
-	loadData() {
+	loadData(newState) {
 		let query = `query getData($filters:[Rule]){
 				Select(filters:$filters){
 					Summaries {
@@ -88,7 +88,7 @@ class ContactListContainer extends Component {
 			/*{'filters':  [{'field':'ToAddress', 'operation': 'in',
 			      'value':['sue.nord@enron.com', 'susan.mara@enron.com']}]}*/
 		dataSource.query(
-			query, this.translateStateToFilter(this.props.state)
+			query, this.translateStateToFilter(newState)
 		).then(r => this.setState({contacts: r.data.Select.Summaries.To})).catch(console.error)
 	}
 

@@ -32,7 +32,7 @@ class FilterPanel extends React.Component {
     };
 
     let styleItem = {
-     marginTop:27
+     marginTop:35
    }
     let size = filters.length;
 
