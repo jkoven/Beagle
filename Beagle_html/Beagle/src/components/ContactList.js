@@ -38,6 +38,7 @@ class ContactList extends React.Component {
 		return (
 			<div className="contactlist-component">
 				<div>
+					<div className = "searchLength">{this.state.searchArr.length}</div>
 					<TextField
 						style={{ transform: 'scale(1.0) translate(-10%,-30px)', width: '100%', marginLeft:31, marginTop:20}}
 						fullWidth={true}
@@ -50,9 +51,8 @@ class ContactList extends React.Component {
 					}
 					}
 						floatingLabelText={(<div>
-							<SearchIcon color="#ccc" style={{ verticalAlign: 'middle', transform: 'scale(1.0) translate(0px,-2px)' }}   />
-							<span style={{ display: 'inline-block' }}>Search (</span>
-							<span style={{ display: 'inline-block' }}>{this.state.searchArr.length})</span>
+							<SearchIcon color="#D0E7F0" style={{ verticalAlign: 'middle', transform: 'scale(1.0) translate(0px,-2px)' }}   />
+							<span className = "total" style={{ display: 'inline-block' }}>Search</span>
 						</div>) }
 						/>
 				</div>
@@ -69,6 +69,19 @@ class ContactList extends React.Component {
 				<text x="	0%" y="70%" className = "textCSS">{c.Count}</text>
 				</g>
 				</svg>
+				</div>
+					<div className = "count2">
+				<svg className="goodCSS" width="85">
+				<g>
+				<rect width = "85"  height = "11" x="0" y="-5" fill={"white"} className="borderCSS">
+			</rect>
+				<rect  width = {"85"*((c.Count)/(this.state.maxCount))}   height = "11" x="0" y="-5" fill={"#ff9393"} className="goodCSS">
+			</rect>
+			<text x="	0%" y="70%" className = "textCSS">{c.Count}</text>
+			</g>
+			</svg>
+
+
 						</div>
 					</div>)}
 				</div>

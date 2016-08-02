@@ -77,10 +77,6 @@ var DropDown = React.createClass({
     }
 
 
-    let dropStyle1 ={
-
-    }
-
     return (
       <span style={dropStyle} >
       {options[active]}

@@ -52,7 +52,6 @@ class Emails extends React.Component {
 	 this.setState({
 		 visible:false
 	 })
-	 console.log(this.state.visible)
  }
 
 	render() {
@@ -88,7 +87,6 @@ class Emails extends React.Component {
           mousePosition={this.state.mousePosition}
           title={<div  className = "popup">{this.state.subject}</div>}
         >
-
 				<div className = "popup"><span className = "props">From</span>:{this.state.from}</div>
 				<div className = "popup"><span className = "props">To</span>:{this.state.to}</div>
 				<div  className = "popup"><span className = "tmp"><span className = "props2">Content</span>:</span>{this.state.contents}</div>

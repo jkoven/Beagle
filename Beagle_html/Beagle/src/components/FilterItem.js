@@ -53,7 +53,7 @@ module.exports = React.createClass({
             <span style={unorderedList}>
               <tr>
                 <td>
-                  <div className = "filterNum">41067
+                  <div className = "filterNum"><div className = "emailNumber">41067</div>
                   </div>
                     <DropDown
                       options={['IS FROM/TO:', 'MENTION:', 'SUBJECT CONTAINS:']}

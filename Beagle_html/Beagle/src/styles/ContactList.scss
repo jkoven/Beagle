@@ -3,26 +3,57 @@
     flex-direction: column;
     width: 330px;
 
-
     .contactlist-component-list {
       	flex: 1;
 		  overflow: auto;
       text-align:left;
       	.contactlist-component-contact {
 			  font-size: 12.5px;
-			  padding: 2px;
+			  padding: 5px;
 			  overflow: hidden;
 			  text-overflow: ellipsis;
-
 			  white-space: nowrap;
+        border-bottom: 1px solid;
+        width:95%;
      	}
     }
 }
+.total{
+  color:#D0E7F0;
+}
 
+.searchLength{
+  font-size:16px;
+  margin-top: -22px;
+  margin-left: 220px;
+  font-family: 'Roboto', sans-serif;
+  color: #000000;
+  width:65px;
+  text-align: center;
+    background:#ff9393;
+}
+
+.red{
+  margin-top:-22px;
+  margin-left: 210px;
+  background:#ff9393;
+  width:100px;
+  color:#000000;
+  text-align: center;
+}
 .count{
   display:inline;
   float:right;
   text-align: center;
+  height:15px;
+}
+
+.count2{
+  display:inline;
+  float:right;
+  text-align: center;
+  margin-left:250px;
+  height:15px;
 }
 
 .goodCSS{
@@ -32,15 +63,12 @@
          font-size: 9px;
          background-color: rgba(255, 255, 255, 0.7);
          text-align: center;
+         display: inline;
 }
 
 .trCSS{
   margin-left:20px;
 }
-
-
-
-
 
 
 .borderCSS{
@@ -51,13 +79,12 @@
          min-width: 95px;
          background-color: white;
          text-align: left;
-
-
 }
 
 .hidden{
   overflow: hidden;
 }
+
 .textCSS{
   font-size:11px;
   text-align: center;
