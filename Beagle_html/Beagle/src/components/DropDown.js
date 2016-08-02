@@ -50,8 +50,6 @@ var DropDown = React.createClass({
       overflow: "hidden"
     }
 
-
-
     var buttonStyle
 
     var {addData,filterIdx, options, active, className} = this.props

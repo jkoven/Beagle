@@ -35,6 +35,10 @@ class ContactList extends React.Component {
 		if(this.state.searchArr != contacts){
 			this.search(this.state.input);
 		}
+
+
+
+
 		return (
 			<div className="contactlist-component">
 				<div>
@@ -57,7 +61,7 @@ class ContactList extends React.Component {
 						/>
 				</div>
 				<div className="contactlist-component-list" style={{ marginTop: -30 }}>
-					{	this.state.searchArr.map(c => <div className = "hidden" key={c.Key} className="contactlist-component-contact">{c.Key}
+					{	this.state.searchArr.map(c => <div  className = "hidden" key={c.Key} className="contactlist-component-contact"><div className = "hi" >{c.Key}</div>
 					<div className = "count">
 
 					<svg className="goodCSS" width="85">
