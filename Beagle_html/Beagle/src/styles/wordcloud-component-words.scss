@@ -1,4 +1,7 @@
 .wordcloud-component{
   display: flex;
   flex-flow: row wrap;
+  height:113px;
+  max-width: 100%;
+  overflow-x: hidden;
 }

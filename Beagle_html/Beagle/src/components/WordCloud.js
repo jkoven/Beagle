@@ -84,11 +84,14 @@ class WordCloud extends React.Component {
       )
     }
   }
+
   this.state.PersonArr = this.state.PersonArr.slice(0,20);
   this.state.ContentsArr = this.state.ContentsArr.slice(0,20);
   this.state.SubjectArr = this.state.SubjectArr.slice(0,20);
   this.state.OrganizationArr = this.state.OrganizationArr.slice(0,20);
-//              <div idx={idx}  className="goodCSS" >{this.state.PersonArr[idx]}</div>
+
+
+
 if(field =="Person"){
     return (
       <table>{field}
@@ -110,13 +113,10 @@ if(field =="Person"){
       </td>
       </tr>
       </table>
-      );
-
+    );
   }
   if(field =="Contents"){
-
-
-      return (
+      return(
         <table>{field}
         <tr >
         <td className="wordcloud-component">
