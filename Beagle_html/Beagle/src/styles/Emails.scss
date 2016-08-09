@@ -1,0 +1,44 @@
+.Emails-component {
+    display: flex;
+    flex-direction: column;
+    width: "100%";
+    margin-top: 35px;
+  }
+    .Emails-component-list {
+      	flex: 1;
+		    overflow: auto;
+      }
+      	.Emails-component-info {
+			  font:12;
+			  margin-top:-4px;
+			  overflow: hidden;
+        border-bottom: 1px solid;
+        height:31px;
+        width: 100%;
+        text-align: left;
+     	}
+
+
+
+.popup{
+  word-wrap: break-word;
+  font-size: 15px;
+}
+
+.props{
+  color: black;
+  text-decoration: underline;
+}
+
+.props2{
+  color: black;
+  text-decoration: underline;
+  display:inline;
+}
+.tmp{
+  display:block;
+}
+.text2{
+  font-size:13px;
+  text-align: left !important;
+}

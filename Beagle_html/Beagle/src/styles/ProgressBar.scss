@@ -1,0 +1,9 @@
+@import './Variables.scss';
+.progressbar-component {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  height: 5px;
+  background-color: $primaryTextColor; 
+}

@@ -1,0 +1,21 @@
+@import './Variables.scss';
+.panel-component {
+		position: relative;
+		height: 100%;
+    display: flex;
+    flex-direction: column;
+	h1 {
+		color: $primaryTextColor;
+		font-size: 16pt;
+		padding: 0px;
+		margin: 0px;
+		border-bottom: solid 1px $secondaryColor;
+		font-weight: 300;
+  	}
+	.panel-component-content {
+		display: flex;
+		flex: 1;
+		position: relative;
+		flex-direction: column;
+	}
+}
