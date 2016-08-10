@@ -34,8 +34,6 @@ var TextBox = React.createClass({
 
   onBlur: function(e) {
     let {addData,filterIdx,textIdx} = this.props;
-    console.log("FK")
-    console.log(e.target.value)
     if(e.target.value != ""){
     addData(filterIdx,textIdx,e.target.value);
   }
@@ -80,7 +78,7 @@ var TextBox = React.createClass({
     return(
         <span>
         <span>
-        <input style={textStyle} onMouseEnter={this.toggleHover} onBlur={this.onBlur} onKeyPress={this.onEnter} type="text"
+        <input style={textStyle} onMouseEnter={this.toggleHover} onKeyPress={this.onEnter} type="text"
         onClick={this.textClick} />
         </span>
         <span>

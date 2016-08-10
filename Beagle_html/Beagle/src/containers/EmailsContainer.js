@@ -25,8 +25,6 @@ class EmailsContainer extends Component {
 	}
 
   translateStateToFilter(state) {
-    console.log(state);
-    console.log(state.filters);
     var jsonQuery = {
       filters: []
     }
@@ -49,7 +47,6 @@ class EmailsContainer extends Component {
       jsonData['value'] = element.values;
       jsonQuery.filters.push(jsonData);
     });
-    console.log(jsonQuery);
     return jsonQuery;
   }
 
@@ -79,7 +76,6 @@ class EmailsContainer extends Component {
 
 function mapStateToProps(state) {
 	const props = {state};
-  console.log(props);
 	return props;
 }
 

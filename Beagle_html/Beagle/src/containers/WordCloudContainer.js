@@ -28,15 +28,12 @@ class WordCloudContainer extends Component {
 	}
 
 	translateStateToFilter(state) {
-    console.log(state);
-    console.log(state.filters);
     var jsonQuery = {
       filters: []
     }
     state.filters.forEach(function(element,index,array) {
       var jsonData ={};
       var selection;
-      console.log(element.selection);
 
       //var selection = this.translateSelection(element.selection);
       if (element.selection == 'SUBJECT CONTAINS:') {
@@ -52,7 +49,6 @@ class WordCloudContainer extends Component {
       jsonData['value'] = element.values;
       jsonQuery.filters.push(jsonData);
     });
-    console.log(jsonQuery);
     return jsonQuery;
   }
 

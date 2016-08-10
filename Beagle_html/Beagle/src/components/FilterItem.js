@@ -3,7 +3,7 @@ var DropDown = require('./DropDown.js');
 require('styles//FilterList.scss');
 module.exports = React.createClass({
     render: function() {
-      let {addData,filterIdx, changeFilter, size} = this.props;
+      let {numEmails, addData,filterIdx, changeFilter, size} = this.props;
       let lineStyle;
 
       let svgStyle = {
@@ -38,6 +38,15 @@ module.exports = React.createClass({
             position: "relative"
       }
 
+      let numberEmails;
+
+      numEmails.forEach(function(element,index,array){
+        if (numEmails[index].hasOwnProperty(filterIdx)) {
+          numberEmails = numEmails[index][filterIdx];
+        }
+      })
+
+
       return(
 
         <div style={ballLine} >
@@ -53,7 +62,7 @@ module.exports = React.createClass({
             <span style={unorderedList}>
               <tr>
                 <td>
-                  <div className = "filterNum"><div className = "emailNumber">41067</div>
+                  <div className = "filterNum"><div className = "emailNumber">{numberEmails}</div>
                   </div>
                     <DropDown
                       options={['IS FROM/TO:', 'MENTION:', 'SUBJECT CONTAINS:']}

@@ -3,7 +3,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ContactList from '../components/ContactList';
 import dataSource from '../sources/dataSource';
-import ContactProcessingContainer from './ContactProcessingContainer'
 class ContactListContainer extends Component {
 	constructor() {
 		super();

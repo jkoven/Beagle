@@ -6,7 +6,6 @@ import SearchIcon from 'material-ui/svg-icons/action/search';
 import _ from 'lodash';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import Tabs from 'react-draggable-tab';
 class CenterEmail extends React.Component {
 	constructor() {
 		super();

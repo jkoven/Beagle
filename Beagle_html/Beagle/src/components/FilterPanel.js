@@ -24,7 +24,7 @@ class FilterPanel extends React.Component {
 
 
   render() {
-    let {addFilter,addData,changeFilter, filters} = this.props;
+    let {numEmails,addFilter,addData,changeFilter, filters} = this.props;
     let style ={
       position:"absolute",
       marginLeft: 220,
@@ -44,7 +44,7 @@ class FilterPanel extends React.Component {
             <ContentAdd />
           </FloatingActionButton>
           <div style={styleItem}>
-          {filters.map((s, idx) => <FilterItem addData={addData} changeFilter={changeFilter} filterIdx={idx} size={size}/>)}
+          {filters.map((s, idx) => <FilterItem numEmails={numEmails} addData={addData} changeFilter={changeFilter} filterIdx={idx} size={size}/>)}
           </div>
 
 
