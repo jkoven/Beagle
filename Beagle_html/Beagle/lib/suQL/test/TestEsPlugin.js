@@ -1,5 +1,4 @@
 var expect = require('chai').expect;
-require('dotenv').config({path: process.cwd()+ '/test/test.env'});
 const mlog = require('mocha-logger');
 const {printSchema} = require('graphql')
 mlog.json = function(obj) {
@@ -8,7 +7,6 @@ mlog.json = function(obj) {
 
 let TextTileLanguage = require('../src/')
 let ESPlugin = require('../src/plugins/elasticsearch/') 
-
 const dataInfo = require('../src/examples/enron.json')
 
 const TextTileExecutor = () => {
@@ -47,5 +45,11 @@ describe('ES-Plugin',  function() {
                 }
             }).catch((error) => {throw error})
         })
+    })
+
+	it('Return a schema', () => {
+        return ESPlugin.extractSchema(dataInfo.config).then(r => {
+			console.log(r);
+		})
     })
 });

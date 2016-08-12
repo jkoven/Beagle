@@ -9,13 +9,13 @@ class RightPanel extends React.Component {
   render() {
     return (
       <div className="rightpanel-component">
-        <Panel title="Mentions" height="63%">
+        <Panel title="Mentions" height="65%">
           <WordCloudContainer field="PERSON" />
           <WordCloudContainer field="Contents" />
           <WordCloudContainer field="Subject" />
           <WordCloudContainer field="ORGANIZATION" />
         </Panel>
-        <Panel title="Emails" height="37%">
+        <Panel title="Emails" height="35%">
             <EmailsContainer />
         </Panel>
       </div>
