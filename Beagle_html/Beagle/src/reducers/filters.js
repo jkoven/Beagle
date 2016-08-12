@@ -17,7 +17,7 @@ module.exports = function(state = initialState, action) {
     } break;
     */
     case 'ADD_FILTER' : {
-        return [...state, {selection: "FROM/TO"}]
+        return [...state, {selection: 'FROM/TO'}]
     }
 
     case 'ADD_DATA' : {

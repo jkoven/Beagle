@@ -15,9 +15,6 @@ class WordCloudContainer extends Component {
 			field: ""
 		}
 	}
-	shouldLoadData(props, state) {
-
-	}
 
 	componentWillMount() {
 		this.loadData(this.props.state);
@@ -31,7 +28,7 @@ class WordCloudContainer extends Component {
     var jsonQuery = {
       filters: []
     }
-    state.filters.forEach(function(element,index,array) {
+    state.filters.forEach(function(element,index) {
       var jsonData ={};
       var selection;
 
@@ -52,7 +49,7 @@ class WordCloudContainer extends Component {
     return jsonQuery;
   }
 
-	loadData(newState) {
+	loadData(newState) {							//loadData sends the query to the suQl server and retrieves the data
 		let {field} = this.props;
 		this.state.field = field;
 		let query = `query getData($filters:[Rule]){

@@ -2,11 +2,8 @@
 
 import React from 'react';
 import Panel from './Panel'
-import TextField from 'material-ui/TextField';
-import SearchIcon from 'material-ui/svg-icons/action/search';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import {addFilter} from '../actions/const';
 import FilterItem from '../components/FilterItem'
 
 require('styles//FilterPanel.scss');
@@ -28,7 +25,7 @@ class FilterPanel extends React.Component {
     let style ={
       position:"absolute",
       marginLeft: 220,
-      marginTop: -22,
+      marginTop: -22
     };
 
     let styleItem = {

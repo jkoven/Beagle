@@ -34,7 +34,7 @@ var TextBox = React.createClass({
 
   onBlur: function(e) {
     let {addData,filterIdx,textIdx} = this.props;
-    if(e.target.value != ""){
+    if(e.target.value != ''){
     addData(filterIdx,textIdx,e.target.value);
   }
   },
@@ -57,7 +57,7 @@ var TextBox = React.createClass({
         marginTop: 5,
         border: 0,
         outline: 0,
-        backgroundColor: "white",
+        backgroundColor: 'white'
       }
     }
 
@@ -66,7 +66,7 @@ var TextBox = React.createClass({
         marginTop: 1,
         border: 0,
         outline: 0,
-        visibility:"hidden"
+        visibility:'hidden'
       }
     } else {
       buttonStyle = {

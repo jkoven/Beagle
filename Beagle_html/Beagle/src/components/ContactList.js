@@ -3,9 +3,8 @@
 import React from 'react';
 import TextField from 'material-ui/TextField';
 import SearchIcon from 'material-ui/svg-icons/action/search';
-import dataSource from '../sources/dataSource';
 require('styles//ContactList.scss');
-import {PRIMARY, PRIMARY_VERY_LIGHT} from './style';
+import {PRIMARY_VERY_LIGHT} from './style';
 class ContactList extends React.Component {
 	constructor() {
 		super();

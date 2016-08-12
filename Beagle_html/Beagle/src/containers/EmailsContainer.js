@@ -28,7 +28,7 @@ class EmailsContainer extends Component {
     var jsonQuery = {
       filters: []
     }
-    state.filters.forEach(function(element,index,array) {
+    state.filters.forEach(function(element,index) {
       var jsonData ={};
       var selection;
       //console.log(element.selection);
@@ -50,7 +50,7 @@ class EmailsContainer extends Component {
     return jsonQuery;
   }
 
-  loadData(newState) {
+  loadData(newState) {            	//loadData sends the query to the suQl server and retrieves the data
     let query = `query getData($filters:[Rule]){
 				Select(filters:$filters){
 					Documents {

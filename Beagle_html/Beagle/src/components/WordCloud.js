@@ -1,24 +1,23 @@
 'use strict';
 
 import React from 'react';
-import {PRIMARY, PRIMARY_VERY_LIGHT} from './style';
+import {PRIMARY_VERY_LIGHT} from './style';
 import _ from 'lodash';
-
 require('styles//WordCloud.scss');
 require('styles//wordcloud-component-words.scss');
 class WordCloud extends React.Component {
   constructor() {
     super();
     this.state = {
-      PersonArr: [],
+      PersonArr: [],  //an array containing a key(word) and count for the Person section
       ContentsArr: [],
       SubjectArr: [],
       OrganizationArr: [],
-      PersonMaxCount: 0,
+      PersonMaxCount: 0,    //highest count number for the Person Section
       ContentMaxCount: 0,
       SubjectMaxCount: 0,
       OrganizationMaxCount: 0,
-      PersonCount:[],
+      PersonCount:[],   //array for the count number of each word in the Person section
       ContentCount:[],
       SubjectCount:[],
       OrganizationCount:[]
@@ -86,7 +85,7 @@ class WordCloud extends React.Component {
     }
   }
 
-  this.state.PersonArr = this.state.PersonArr.slice(0,20);        //gets the first 20 words only
+  this.state.PersonArr = this.state.PersonArr.slice(0,20);        //gets the first 20 words, change this number to alter the number of words to display
   this.state.ContentsArr = this.state.ContentsArr.slice(0,20);
   this.state.SubjectArr = this.state.SubjectArr.slice(0,20);
   this.state.OrganizationArr = this.state.OrganizationArr.slice(0,20);

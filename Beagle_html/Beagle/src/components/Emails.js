@@ -1,10 +1,7 @@
 'use strict';
 
 import React from 'react';
-import TextField from 'material-ui/TextField';
-import SearchIcon from 'material-ui/svg-icons/action/search';
 import _ from 'lodash';
-import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'rc-dialog';
 import 'rc-dialog/assets/index.css';
