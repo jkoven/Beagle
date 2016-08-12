@@ -1,5 +1,5 @@
 # Beagle - Communications Investigative tool
-To run Beagle:
+To Run Beagle:
 -----------------
 **Install the latest version of Node: Run the following command inside the command prompt to install node.**
 - For Windows: npm install -g node-windows
