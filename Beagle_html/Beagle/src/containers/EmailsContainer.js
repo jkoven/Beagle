@@ -65,7 +65,11 @@ class EmailsContainer extends Component {
 
     dataSource.query(
         query, this.translateStateToFilter(newState)
-    ).then(r => this.setState({emails: r.data.Select.Documents})).catch(console.error)
+    ).then(r => {
+      if (typeof r.data !== 'undefined'){
+        this.setState({emails: r.data.Select.Documents})
+      }
+    }).catch(console.error)
   }
 
   render() {

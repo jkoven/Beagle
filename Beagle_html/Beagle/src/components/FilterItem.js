@@ -2,8 +2,22 @@ import React from 'react';
 var DropDown = require('./DropDown.js');
 require('styles//FilterList.scss');
 module.exports = React.createClass({
+    getInitialState: function() {
+      return {
+        active: 0
+      };
+  },
+    updateActive: function(a){
+      this.setState({active: a});
+    },
+
+    remove: function(){
+      let {filterIdx, removeFilter} = this.props;
+//      console.log(this.props, removeFilter);
+      removeFilter(filterIdx);
+    },
     render: function() {
-      let {numEmails, addData,filterIdx, changeFilter, size} = this.props;
+      let {numEmails, addData,filterIdx, changeFilter, removeFilterLine, size, filter} = this.props;
       let lineStyle;
 
       let svgStyle = {
@@ -46,13 +60,16 @@ module.exports = React.createClass({
         }
       })
 
+//      console.log('props:', this.props);
+//      console.log('state:', this.state);
 
       return(
 
         <div style={ballLine} >
               <span style = {svgStyle} width={30}>
               <svg width = {30} height = {20}>
-                <circle cx={10} cy={10} r={6} stroke="blue" strokeWidth={1} fill="blue" />
+                <circle cx={10} cy={10} r={6} stroke="LightSkyBlue" strokeWidth={1} fill="LightSkyBlue" onClick={this.remove.bind(this)}/>
+                <line x1={7} y1={10} x2={13} y2={10} stroke="white" strokeWidth={3} fill="white" onClick={this.remove.bind(this)}/>
                 </svg>
                 <div style = {lineStyle}></div>
                 </span>
@@ -65,13 +82,16 @@ module.exports = React.createClass({
                   <div className = "filterNum"><div className = "emailNumber">{numberEmails}</div>
                   </div>
                     <DropDown
-                      options={['IS FROM/TO:', 'MENTION:', 'SUBJECT CONTAINS:']}
-                      active={null}
-                      onChange={null}
+                      options= {['IS FROM/TO:', 'MENTION:', 'SUBJECT CONTAINS:']}
+                      active= {this.state.active}
+                      onChange={this.updateActive}
                       size={size}
                       addData={addData}
                       filterIdx={filterIdx}
                       changeFilter={changeFilter}
+                      removeFilterLine={removeFilterLine}
+                      key = {this.props.filterkey+'drop'}
+                      dropKey={this.props.filterkey+'drop'}
                       />
                 </td>
               </tr>

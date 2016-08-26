@@ -1,13 +1,14 @@
 'use strict';
 
 import React from 'react';
+import Infinite from 'react-infinite';
 import TextField from 'material-ui/TextField';
 import SearchIcon from 'material-ui/svg-icons/action/search';
 require('styles//ContactList.scss');
 import {PRIMARY_VERY_LIGHT} from './style';
 class ContactList extends React.Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
 			maxCount: 0,
 			input : "",
@@ -19,7 +20,7 @@ class ContactList extends React.Component {
 	}
 
 	 search(input){
-		 this.state.test = 0;
+		this.state.test = 0;
 		this.state.searchArr = [];
 		let {contacts} = this.props;
 			for(var i = 0; i < contacts.length; i++){
@@ -45,6 +46,9 @@ class ContactList extends React.Component {
 			this.search(this.state.input);
 		}
 
+		let contactListHeight = window.innerHeight - 111;
+		let contactElementHeight = 38;
+
 
 		return (
 			<div className="contactlist-component">
@@ -68,8 +72,9 @@ class ContactList extends React.Component {
 						/>
 				</div>
 				<div className="contactlist-component-list" style={{ marginTop: -30 }}>
-					{	this.state.searchArr.map(c => <div  className = "hidden" key={c.Key} className="contactlist-component-contact"><div className = "hi" >{c.Key}</div>
-
+				<Infinite containerHeight={contactListHeight} elementHeight={contactElementHeight}>
+					{	this.state.searchArr.map(c => <div  className = "hidden" key={c.Key} className="contactlist-component-contact">
+						<div className = "hi" >{c.Key}</div>
 						<div className = "count">
 							<svg className="goodCSS" width="85">
 							<g>
@@ -95,6 +100,7 @@ class ContactList extends React.Component {
 						</div>
 
 					</div>)}
+					</Infinite>
 				</div>
 			</div>
 		);

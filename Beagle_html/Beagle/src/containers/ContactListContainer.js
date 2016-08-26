@@ -71,7 +71,11 @@ class ContactListContainer extends Component {
 			      'value':['sue.nord@enron.com', 'susan.mara@enron.com']}]}*/
 		dataSource.query(
 			query, this.translateStateToFilter(newState)
-		).then(r => this.setState({contacts: r.data.Select.Summaries.To})).catch(console.error)
+		).then(r => {
+			if (typeof r.data !== 'undefined'){
+				this.setState({contacts: r.data.Select.Summaries.To})
+			}
+		}).catch(console.error)
 	}
 
 

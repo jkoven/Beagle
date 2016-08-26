@@ -21,9 +21,9 @@ let config = Object.assign({}, baseConfig, {
     new BowerWebpackPlugin({
       searchResolveModulesDirectories: false
     }),
-    new webpack.optimize.UglifyJsPlugin(),
-    new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.optimize.AggressiveMergingPlugin(),
+    //new webpack.optimize.UglifyJsPlugin(),
+    //new webpack.optimize.OccurenceOrderPlugin(),
+    //new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.NoErrorsPlugin()
   ],
   module: defaultSettings.getDefaultModules()

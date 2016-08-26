@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 //import FilterItem from '../components/FilterItem';
 import FilterPanel from '../components/FilterPanel';
 import dataSource from '../sources/dataSource';
-import { addFilter , addData , changeFilter} from '../actions/const';
+import { addFilter , addData , changeFilter, removeFilter, removeFilterLine} from '../actions/const';
 
 class FilterContainer extends Component {
   constructor() {
@@ -70,8 +70,10 @@ class FilterContainer extends Component {
           query, this.translateStateToFilter(newState,index)
       ).then(r => {
         var d = {};
-        d[index] = r.data.Select.Count;
-        this.setState({emails: this.state.emails.concat(d)});
+        if(typeof r.data !== 'undefined'){
+          d[index] = r.data.Select.Count;
+          this.setState({emails: this.state.emails.concat(d)});
+        }
       }).catch(console.error)
     },this)
   }
@@ -80,7 +82,7 @@ class FilterContainer extends Component {
 
   render() {
     let {actions,filters} = this.props;
-    return (<FilterPanel  numEmails={this.state.emails} addFilter={actions.addFilter} addData={actions.addData} changeFilter={actions.changeFilter} filters={filters}/>)
+    return (<FilterPanel  numEmails={this.state.emails} {...actions} filters={filters}/>)
   }
 }
 
@@ -94,7 +96,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  const actions = {addFilter,addData,changeFilter};
+  const actions = {addFilter,addData,changeFilter, removeFilter, removeFilterLine};
   const actionMap = {actions: bindActionCreators(actions, dispatch) };
   return actionMap;
 }

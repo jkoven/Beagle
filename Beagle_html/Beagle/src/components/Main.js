@@ -6,7 +6,9 @@ import FilterContainer from '../containers/FilterContainer';
 import CenterPanel from './CenterPanel';
 import RightPanel from './RightPanel';
 import ProgressBar from './ProgressBar'
-class AppComponent extends React.Component {
+
+export class AppComponent extends React.Component {
+
 	render() {
 		return (
 			<div className="index">
@@ -18,7 +20,6 @@ class AppComponent extends React.Component {
 		);
 	}
 }
-
 AppComponent.defaultProps = {
 };
 

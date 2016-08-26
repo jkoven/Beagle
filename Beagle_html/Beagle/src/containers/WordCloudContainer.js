@@ -66,7 +66,11 @@ class WordCloudContainer extends Component {
 		dataSource.query(
 			query, this.translateStateToFilter(newState)
 		).then(
-			r => this.setState({words: r.data.Select.Summaries[field]})).catch(console.error);
+			r => {
+				if (typeof r.data !== 'undefined'){
+					this.setState({words: r.data.Select.Summaries[field]})
+				}
+			}).catch(console.error);
 
 	}
 
