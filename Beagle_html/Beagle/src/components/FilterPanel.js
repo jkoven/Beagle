@@ -13,18 +13,18 @@ class FilterPanel extends React.Component {
 
   onEnter(e) {
     let {addData} = this.props
-//    console.log("Key Entered");
+//    console.log('Key Entered');
     if(e.key == 'Enter') {
-//      console.log("Key Entered");
-      addData("Data");
+//      console.log('Key Entered');
+      addData('Data');
     }
-  };
+  }
 
 
   render() {
     let {numEmails,addFilter,addData,changeFilter, removeFilter, removeFilterLine, filters} = this.props;
     let style ={
-      position:"absolute",
+      position:'absolute',
       marginLeft: 220,
       marginTop: -22
     };
@@ -36,8 +36,8 @@ class FilterPanel extends React.Component {
 
 //    console.log('filters',filters);
     return (
-      <div className="filterpanel-component" style={{width:285}}>
-        <Panel title="Filters">
+      <div className='filterpanel-component' style={{width:285}}>
+        <Panel title='Filters'>
           <FloatingActionButton style={style} mini={true} onClick={()=>addFilter()}>
             <ContentAdd />
           </FloatingActionButton>

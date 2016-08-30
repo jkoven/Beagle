@@ -12,7 +12,7 @@ class WordCloudContainer extends Component {
 		super();
 		this.state = {
 			words: [],
-			field: ""
+			field: ''
 		}
 	}
 
@@ -28,7 +28,7 @@ class WordCloudContainer extends Component {
     var jsonQuery = {
       filters: []
     }
-    state.filters.forEach(function(element,index) {
+    state.filters.forEach(function(element) {
       var jsonData ={};
       var selection;
 
@@ -70,7 +70,7 @@ class WordCloudContainer extends Component {
 				if (typeof r.data !== 'undefined'){
 					this.setState({words: r.data.Select.Summaries[field]})
 				}
-			}).catch(console.error);
+			}).catch((err) => console.log('In ContactListContainer: ', err.message));
 
 	}
 
