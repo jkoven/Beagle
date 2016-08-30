@@ -23,7 +23,7 @@ class ContactListContainer extends Component {
 		var jsonQuery = {
 			filters: []
 		}
-		state.filters.forEach(function(element,index,array) {
+		state.filters.forEach(function(element) {
 			var jsonData ={};
 			var selection;
 
@@ -59,9 +59,9 @@ class ContactListContainer extends Component {
 			}`
 			/*{
 			  Select(filters:[
-			    {field:Contents, operation: in, value:"california"},
+			    {field:Contents, operation: in, value:'california'},
 			    {field:To, operation: in,
-			      value:["sue.nord@enron.com", "susan.mara@enron.com"]}]) {
+			      value:['sue.nord@enron.com', 'susan.mara@enron.com']}]) {
 			    Documents {
 			      From
 			    }
@@ -75,12 +75,12 @@ class ContactListContainer extends Component {
 			if (typeof r.data !== 'undefined'){
 				this.setState({contacts: r.data.Select.Summaries.To})
 			}
-		}).catch(console.error)
+		}).catch((err) => console.log('In ContactListContainer: ', err.message))
 	}
 
 
 	render() {
-		const {actions} = this.props;
+//		const {actions} = this.props;
 		return <ContactList contacts={this.state.contacts}/>;
 	}
 }

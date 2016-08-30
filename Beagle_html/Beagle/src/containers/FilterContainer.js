@@ -74,7 +74,7 @@ class FilterContainer extends Component {
           d[index] = r.data.Select.Count;
           this.setState({emails: this.state.emails.concat(d)});
         }
-      }).catch(console.error)
+      }).catch((err) => console.log('In ContactListContainer: ', err.message))
     },this)
   }
 

@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Emails from '../components/Emails';
@@ -28,7 +28,7 @@ class EmailsContainer extends Component {
     var jsonQuery = {
       filters: []
     }
-    state.filters.forEach(function(element,index) {
+    state.filters.forEach(function(element) {
       var jsonData ={};
       var selection;
       //console.log(element.selection);
@@ -69,7 +69,7 @@ class EmailsContainer extends Component {
       if (typeof r.data !== 'undefined'){
         this.setState({emails: r.data.Select.Documents})
       }
-    }).catch(console.error)
+    }).catch((err) => console.log('In ContactListContainer: ', err.message))
   }
 
   render() {

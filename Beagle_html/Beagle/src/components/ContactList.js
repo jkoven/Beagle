@@ -11,7 +11,7 @@ class ContactList extends React.Component {
 		super(props);
 		this.state = {
 			maxCount: 0,
-			input : "",
+			input : '',
 			searchArr : [],
 			fromCount: [],
 			contacts : [],
@@ -24,23 +24,23 @@ class ContactList extends React.Component {
 		this.state.searchArr = [];
 		let {contacts} = this.props;
 			for(var i = 0; i < contacts.length; i++){
-				if((_.get(contacts,i+".Key")).includes(input)==true){
-					if((_.get(contacts,i+".Counts")).From > this.state.test){
-						this.state.test = (_.get(contacts,i+".Counts")).From;
+				if((_.get(contacts,i+'.Key')).includes(input)==true){
+					if((_.get(contacts,i+'.Counts')).From > this.state.test){
+						this.state.test = (_.get(contacts,i+'.Counts')).From;
 					}
 					this.state.searchArr.push({
-					Key:	(_.get(contacts,i+".Key")),
-					Count: (_.get(contacts,i+".Count")),
-					Counts: (_.get(contacts,i+".Counts")).From
+					Key:	(_.get(contacts,i+'.Key')),
+					Count: (_.get(contacts,i+'.Count')),
+					Counts: (_.get(contacts,i+'.Counts')).From
 				})
 				}
 			}
-			this.state.maxCount = _.get(this.state.searchArr,"0.Count");
+			this.state.maxCount = _.get(this.state.searchArr,'0.Count');
 		}
 
 	render() {
 		let {contacts} = this.props;
-		    this.state.maxCount = _.get(contacts,"0.Count");
+		    this.state.maxCount = _.get(contacts,'0.Count');
 
 		if(this.state.searchArr != contacts){
 			this.search(this.state.input);
@@ -51,14 +51,14 @@ class ContactList extends React.Component {
 
 
 		return (
-			<div className="contactlist-component">
+			<div className='contactlist-component'>
 				<div>
-					<div className = "searchLength">{this.state.searchArr.length}</div>
+					<div className = 'searchLength'>{this.state.searchArr.length}</div>
 					<TextField
 						style={{ transform: 'scale(1.0) translate(-10%,-30px)', width: '100%', marginLeft:31, marginTop:20}}
 						fullWidth={true}
-						id="Search"
-						type="search"
+						id='Search'
+						type='search'
 						value={this.state.input}
 						onChange={e => {
 						this.setState({input: e.target.value })
@@ -66,35 +66,35 @@ class ContactList extends React.Component {
 					}
 					}
 						floatingLabelText={(<div>
-							<SearchIcon color="#D0E7F0" style={{ verticalAlign: 'middle', transform: 'scale(1.0) translate(0px,-2px)' }}   />
-							<span className = "total" style={{ display: 'inline-block' }}>Search</span>
+							<SearchIcon color='#D0E7F0' style={{ verticalAlign: 'middle', transform: 'scale(1.0) translate(0px,-2px)' }}   />
+							<span className = 'total' style={{ display: 'inline-block' }}>Search</span>
 						</div>) }
 						/>
 				</div>
-				<div className="contactlist-component-list" style={{ marginTop: -30 }}>
+				<div className='contactlist-component-list' style={{ marginTop: -30 }}>
 				<Infinite containerHeight={contactListHeight} elementHeight={contactElementHeight}>
-					{	this.state.searchArr.map(c => <div  className = "hidden" key={c.Key} className="contactlist-component-contact">
-						<div className = "hi" >{c.Key}</div>
-						<div className = "count">
-							<svg className="goodCSS" width="85">
+					{	this.state.searchArr.map(c => <div  className = 'hidden' key={c.Key} className='contactlist-component-contact'>
+						<div className = 'hi' >{c.Key}</div>
+						<div className = 'count'>
+							<svg className='goodCSS' width='85'>
 							<g>
-							<rect width = "85"  height = "11" x="0" y="-5" fill={"white"} className="borderCSS">
+							<rect width = '85'  height = '11' x='0' y='-5' fill={'white'} className='borderCSS'>
 							</rect>
-							<rect  width = {"85"*((c.Count)/(this.state.maxCount))}   height = "11" x="0" y="-5" fill={PRIMARY_VERY_LIGHT} className="goodCSS">
+							<rect  width = {'85'*((c.Count)/(this.state.maxCount))}   height = '11' x='0' y='-5' fill={PRIMARY_VERY_LIGHT} className='goodCSS'>
 							</rect>
-							<text x="	0%" y="70%" className = "textCSS">{c.Count}</text>
+							<text x='	0%' y='70%' className = 'textCSS'>{c.Count}</text>
 							</g>
 							</svg>
 						</div>
 
-						<div className = "count2">
-							<svg className="goodCSS" width="85">
+						<div className = 'count2'>
+							<svg className='goodCSS' width='85'>
 							<g>
-							<rect width = "85"  height = "11" x="0" y="-5" fill={"white"} className="borderCSS">
+							<rect width = '85'  height = '11' x='0' y='-5' fill={'white'} className='borderCSS'>
 							</rect>
-							<rect  width = {"85"*((c.Counts)/(this.state.test))}   height = "11" x="0" y="-5" fill={"#BCBCBC"} className="goodCSS">
+							<rect  width = {'85'*((c.Counts)/(this.state.test))}   height = '11' x='0' y='-5' fill={'#BCBCBC'} className='goodCSS'>
 							</rect>
-							<text x="	0%" y="70%" className = "textCSS">{c.Counts}</text>
+							<text x='	0%' y='70%' className = 'textCSS'>{c.Counts}</text>
 							</g>
 							</svg>
 						</div>

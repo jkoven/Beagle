@@ -71,34 +71,34 @@ var DropDown = React.createClass({
     let dropStyle = {
       border: 0,
       outline: 0,
-      backgroundColor: "white",
-      display: "inline-block",
-      overflow: "hidden"
+      backgroundColor: 'white',
+      display: 'inline-block',
+      overflow: 'hidden'
     }
 
-    var buttonStyle
+//    var buttonStyle
 
-    var {addData,filterIdx, options, active, className} = this.props
+    var {filterIdx, options} = this.props
 
-    if (!this.state.hover) {
-      buttonStyle =  {
-        marginTop: 1,
-        border: 1,
-        outline: 0,
-        backgroundColor: "white",
-        color: "white"
-      }
-    } else {
-      buttonStyle = {
-        marginTop: 1,
-      }
-    }
+    // if (!this.state.hover) {
+    //   buttonStyle =  {
+    //     marginTop: 1,
+    //     border: 1,
+    //     outline: 0,
+    //     backgroundColor: 'white',
+    //     color: 'white'
+    //   }
+    // } else {
+    //   buttonStyle = {
+    //     marginTop: 1,
+    //   }
+    // }
 
-    if(this.state.focus) {
-      buttonStyle = {
-        marginTop: 1
-      }
-    }
+    // if(this.state.focus) {
+    //   buttonStyle = {
+    //     marginTop: 1
+    //   }
+    // }
 //    console.log('props:', this.props);
 //    console.log('state:', this.state);
 
