@@ -106,7 +106,7 @@
         }
     },
     "config": {
-        "server": "http://vgc.poly.edu/projects/es-gateway",
+        "server": "https://vgc.poly.edu:443/projects/es-gateway",
         "index": "enron",
         "type": "email"
     }
