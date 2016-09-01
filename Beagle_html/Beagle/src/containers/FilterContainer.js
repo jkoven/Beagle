@@ -43,7 +43,7 @@ class FilterContainer extends Component {
       }
 
       jsonData['field'] = selection;
-      jsonData['operation'] = 'in';
+      jsonData['operation'] = 'contains';
       jsonData['value'] = state[i].values;
       jsonQuery.filters.push(jsonData);
     }

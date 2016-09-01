@@ -193,7 +193,7 @@ function getFilterRule(rule) {
 
 
             case "contains":
-                return { "query_string": { "default_field": field, "query": value } };
+                return { "query_string": { "default_field": field, "query": value.join(" ") } };
 
 
             case "between":
