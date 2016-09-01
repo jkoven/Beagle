@@ -36,7 +36,7 @@ class ContactListContainer extends Component {
 			}
 
 			jsonData['field'] = selection;
-			jsonData['operation'] = 'in';
+			jsonData['operation'] = 'contains';
 			jsonData['value'] = element.values;
 			jsonQuery.filters.push(jsonData);
 		});

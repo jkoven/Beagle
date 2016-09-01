@@ -29,7 +29,11 @@ module.exports = function(state = initialState, action) {
       if (typeof filter.values === 'undefined') {
         filter.values = [];
       }
-      filter.values[action.textIdx] = action.value;
+      if (action.textIdx === 0 && action.value === '') {
+        filter.values[action.textIdx] = '*';
+      } else {
+        filter.values[action.textIdx] = action.value;
+      }
       return [...state.slice(0,action.filterIdx), filter, ...state.slice(action.filterIdx+1)]
     }
 
