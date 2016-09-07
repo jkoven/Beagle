@@ -22,7 +22,7 @@ class FilterPanel extends React.Component {
 
 
   render() {
-    let {numEmails,addFilter,addData,changeFilter, removeFilter, removeFilterLine, filters} = this.props;
+    let {numEmails, addFilter, addData, changeFilter, removeFilter, removeFilterLine, filters} = this.props;
     let style ={
       position:'absolute',
       marginLeft: 220,

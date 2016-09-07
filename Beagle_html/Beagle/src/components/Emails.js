@@ -55,6 +55,29 @@ class Emails extends React.Component {
 		 let dialog;
 		let {emails} = this.props;
 		let fullDates = [];
+		let wrapClassName = '';
+		if (this.state.center) {
+			wrapClassName = 'center';
+		}
+		const style = {
+			width: this.state.width
+		};
+		dialog = (
+			<Dialog
+				visible={this.state.visible}
+				wrapClassName={wrapClassName}
+				animation='zoom'
+				maskAnimation='fade'
+				onClose={()=>(this.onClose())}
+				style={style}
+				mousePosition={this.state.mousePosition}
+				title={<div  className = 'popup'>{this.state.subject}</div>}
+			>
+			<div className = 'popup'><span className = 'props'>From</span>:{this.state.from}</div>
+			<div className = 'popup'><span className = 'props'>To</span>:{this.state.to}</div>
+			<div  className = 'popup'><span className = 'tmp'><span className = 'props2'>Content</span>:</span>{this.state.contents}</div>
+			</Dialog>
+		);
 		for (var i = 0; i < emails.length; i++) {
 			let str = i + '.Timestamp'
 			let time = new Date(parseInt(_.get(emails, str)));
@@ -63,30 +86,7 @@ class Emails extends React.Component {
 			let year = time.getFullYear().toString();
 			let date = monthEnum[month] + ' ' + day + ', ' +  year + ' ';
 			fullDates.push(date);
-			let wrapClassName = '';
-      if (this.state.center) {
-        wrapClassName = 'center';
-      }
-			const style = {
-				width: this.state.width
-			};
 
-      dialog = (
-        <Dialog
-          visible={this.state.visible}
-          wrapClassName={wrapClassName}
-          animation='zoom'
-          maskAnimation='fade'
-          onClose={()=>(this.onClose())}
-          style={style}
-          mousePosition={this.state.mousePosition}
-          title={<div  className = 'popup'>{this.state.subject}</div>}
-        >
-				<div className = 'popup'><span className = 'props'>From</span>:{this.state.from}</div>
-				<div className = 'popup'><span className = 'props'>To</span>:{this.state.to}</div>
-				<div  className = 'popup'><span className = 'tmp'><span className = 'props2'>Content</span>:</span>{this.state.contents}</div>
-        </Dialog>
-      );
 		}
 
 		return (
