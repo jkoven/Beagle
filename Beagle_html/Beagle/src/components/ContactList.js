@@ -4,6 +4,7 @@ import React from 'react';
 import Infinite from 'react-infinite';
 import TextField from 'material-ui/TextField';
 import SearchIcon from 'material-ui/svg-icons/action/search';
+import _ from 'lodash'
 require('styles//ContactList.scss');
 import {PRIMARY_VERY_LIGHT} from './style';
 class ContactList extends React.Component {

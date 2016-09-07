@@ -1,0 +1,14 @@
+{
+  "helpLines":
+  [
+    {"Overview": "Beagle is a tool for the investigation of communication datasets."},
+    {"Filters Panel": "New Filters are created by clicking on the + button.  Each filter consists of a field and a list of terms used to filter the communications.  Multiple filters can be used and result in the intersection of all of the filters used.  Wildcards such as * or ? can be used for matching partial strings."},
+    {"Contacts Panel": "List the Contacts in the current filter set in frequency order.  The top number to the right of the contact is the frequency, the bottom number is the number of other contacts in the filter set that the contact has in common."},
+    {"Mentions Panel": "The mentions panel conatains four fields: Person, Contents, Subject and Organization.  Mousing over terms in these fields will show the frequency in the current filter set."},
+    {"Person": "Lists the highest ranked persons extracted from the communication contents"},
+    {"Contents": "Lists the highest ranked keywords from the communication contents"},
+    {"Subject": "Lists the highest ranked keywords extracted from the communication subject field"},
+    {"Organization": "Lists the highest ranked Organizations extracted from the communication contents"},
+    {"Coomunications Panel": "List of communications in the current filter set with date and subject line.  Click on the subject line to explore the communication's contents."}
+  ]
+}
