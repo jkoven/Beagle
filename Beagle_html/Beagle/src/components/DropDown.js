@@ -116,7 +116,7 @@ var DropDown = React.createClass({
 
         {this.state.textVals.map((s, idx) => {
             return (
-            <div>
+            <div key={'div'+ this.props.dropKey+this.state.textUids[idx]}>
             <TextBox
               addData={this.handleTextUpdate}
               removeFilterLine={this.handleFilterLineRemove}
@@ -124,8 +124,8 @@ var DropDown = React.createClass({
               ftext={s}
               textIdx={idx}
               maxIdx={this.state.textVals.length - 1}
-              key={this.props.dropKey+this.state.textUids[idx]}
-              boxKey={this.props.dropKey+this.state.textUids[idx]}
+              key={'textbox' + this.props.dropKey+this.state.textUids[idx]}
+              boxKey={'textbox' + this.props.dropKey+this.state.textUids[idx]}
               func={this.handleNewFilterLine}
               />
             </div>)

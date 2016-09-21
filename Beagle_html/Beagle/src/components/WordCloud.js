@@ -92,24 +92,26 @@ class WordCloud extends React.Component {
 
 if(field =='Person'){
     return (
-      <table>{field}
+      <table><thead>{field}</thead>
+      <tbody>
       <tr >
       <td className='wordcloud-component'>
         {this.state.PersonArr.map((s, idx) =>
-          <svg id = 'svg' className='goodCSS' >
-          <g>
+          <svg className='wordsvg' key={'person' + s + idx}>
+          <g key={'persongroup' + s + idx}>
           <rect width = '110'  height = '15' x='0' fill={'white'} className='borderCSS' >
         </rect>
           <rect  width = {'110'*((this.state.PersonCount[idx])/(this.state.PersonMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
         </rect>
-        <text id = 'key' x='0' y='11.25' className = 'tCSS'>{this.state.PersonArr[idx]}</text>
-        <text id = 'num' x='0' y='11.25'>{this.state.PersonCount[idx]}</text>
+        <text className='term'  x='0' y='11.25'>{this.state.PersonArr[idx]}</text>
+        <text className='num'  x='0' y='11.25'>{this.state.PersonCount[idx]}</text>
         </g>
         </svg>
             )
           }
       </td>
       </tr>
+      </tbody>
       </table>
     );
   }
@@ -117,24 +119,26 @@ if(field =='Person'){
 
   if(field =='Contents'){
       return(
-        <table>{field}
+        <table><thead>{field}</thead>
+        <tbody>
         <tr >
         <td className='wordcloud-component'>
           {this.state.ContentsArr.map((s, idx) =>
-            <svg id = 'svg' className='goodCSS'>
-            <g>
+            <svg  className='wordsvg' key={'contents' + s + idx}>
+            <g key={'contentsgroup' + s + idx}>
             <rect width = '110'  height = '15' x='0' fill={'white'} className='borderCSS' >
           </rect>
             <rect  width = {'110'*((this.state.ContentCount[idx])/(this.state.ContentMaxCount))}   height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
           </rect>
-              <text id = 'key' x='0' y='11.25' className = 'tCSS'>{this.state.ContentsArr[idx]}</text>
-              <text id = 'num' x='0' y='11.25'>{this.state.ContentCount[idx]}</text>
+              <text className='term' x='0' y='11.25' >{this.state.ContentsArr[idx]}</text>
+              <text className='num'  x='0' y='11.25' >{this.state.ContentCount[idx]}</text>
           </g>
           </svg>
               )
             }
         </td>
         </tr>
+        </tbody>
         </table>
       );
     }
@@ -142,24 +146,26 @@ if(field =='Person'){
 
     if(field =='Subject'){
         return (
-          <table>{field}
+          <table><thead>{field}</thead>
+          <tbody>
           <tr>
           <td className='wordcloud-component'>
             {this.state.SubjectArr.map((s, idx) =>
-              <svg id = 'svg' className='goodCSS'>
-              <g>
+              <svg className='wordsvg' key={'subject' + s + idx}>
+              <g key={'subjectgroup' + s + idx}>
               <rect width = '110'  height = '15' x='0' fill={'white'} className='borderCSS' >
             </rect>
               <rect width = {'110'*((this.state.SubjectCount[idx])/(this.state.SubjectMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
             </rect>
-                <text id = 'key' x='0' y='11.25' className = 'tCSS'>{this.state.SubjectArr[idx]}</text>
-                <text id = 'num' x='0' y='11.25'>{this.state.SubjectCount[idx]}</text>
+                <text className='term' x='0' y='11.25'>{this.state.SubjectArr[idx]}</text>
+                <text className='num' x='0' y='11.25'>{this.state.SubjectCount[idx]}</text>
             </g>
             </svg>
                 )
               }
           </td>
           </tr>
+          </tbody>
           </table>
         );
       }
@@ -167,24 +173,26 @@ if(field =='Person'){
 
       if(field =='Organization'){
           return (
-            <table>{field}
+            <table><thead>{field}</thead>
+            <tbody>
             <tr>
             <td className='wordcloud-component'>
               {this.state.OrganizationArr.map((s, idx) =>
-                <svg id = 'svg' className='goodCSS'>
-                <g>
+                <svg className='wordsvg' key={'org' + s + idx}>
+                <g key={'orggroup' + s + idx}>
                 <rect width = '110'  height = '15' x='0' fill={'white'} className='borderCSS' >
               </rect>
                 <rect width = {'110'*((this.state.OrganizationCount[idx])/(this.state.OrganizationMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
               </rect>
-                  <text id = 'key' x='0' y='11.25' className = 'tCSS'>{this.state.OrganizationArr[idx]}</text>
-                  <text id = 'num' x='0' y='11.25'>{this.state.OrganizationCount[idx]}</text>
+                  <text className='term' x='0' y='11.25'>{this.state.OrganizationArr[idx]}</text>
+                  <text className='num' x='0' y='11.25'>{this.state.OrganizationCount[idx]}</text>
               </g>
               </svg>
                   )
                 }
             </td>
             </tr>
+            </tbody>
             </table>
           );
         }else{

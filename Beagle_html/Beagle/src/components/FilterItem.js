@@ -1,6 +1,7 @@
 import React from 'react';
 var DropDown = require('./DropDown.js');
 require('styles//FilterList.scss');
+
 module.exports = React.createClass({
     getInitialState: function() {
       return {
@@ -23,24 +24,24 @@ module.exports = React.createClass({
       let svgStyle = {
         display: 'inline-block',
         verticalAlign: 'top',
-        paddingBottom: 0,
+        paddingBottom: '0px',
         position: 'absolute',
         height:'100%'
       }
 
       let unorderedList = {
         display: 'inline-block',
-        width: 280,
-        marginLeft: 20
+        width: '280px',
+        marginLeft: '20px'
       }
 
       if (size != filterIdx+1) {
          lineStyle = {
           borderLeft: 'solid 3px #ccc',
-          width: 30,
+          width: '30px',
           height:'100%',
-          marginTop:-8,
-          marginLeft:8.4
+          marginTop:'-8px',
+          marginLeft:'8.4px'
 
         }
       } else {
@@ -66,10 +67,10 @@ module.exports = React.createClass({
       return(
 
         <div style={ballLine} >
-              <span style = {svgStyle} width={30}>
-              <svg width = {30} height = {20}>
-                <circle cx={10} cy={10} r={6} stroke='LightSkyBlue' strokeWidth={1} fill='LightSkyBlue' onClick={this.remove.bind(this)}/>
-                <line x1={7} y1={10} x2={13} y2={10} stroke='white' strokeWidth={3} fill='white' onClick={this.remove.bind(this)}/>
+              <span style = {svgStyle} width={'30px'}>
+              <svg width = {'30px'} height = {'20px'}>
+                <circle cx={'10px'} cy={'10px'} r={'6px'} stroke='LightSkyBlue' strokeWidth={'1px'} fill='LightSkyBlue' onClick={this.remove}/>
+                <line x1={'7px'} y1={'10px'} x2={'13px'} y2={'10px'} stroke='white' strokeWidth={'3px'} fill='white' onClick={this.remove}/>
                 </svg>
                 <div style = {lineStyle}></div>
                 </span>
@@ -77,8 +78,6 @@ module.exports = React.createClass({
 
 
             <span style={unorderedList}>
-              <tr>
-                <td>
                   <div className = 'filterNum'><div className = 'emailNumber'>{numberEmails}</div>
                   </div>
                     <DropDown
@@ -93,8 +92,6 @@ module.exports = React.createClass({
                       key = {this.props.filterkey+'drop'}
                       dropKey={this.props.filterkey+'drop'}
                       />
-                </td>
-              </tr>
             </span>
         </div>
 

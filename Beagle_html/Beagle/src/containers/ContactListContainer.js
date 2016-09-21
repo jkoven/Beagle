@@ -43,11 +43,11 @@ class ContactListContainer extends Component {
 		return jsonQuery;
 	}
 
-	loadData(newState) {															//loadData sends the query to the suQl server and retrieves the data
+	loadData(newState) {
 		let query = `query getData($filters:[Rule]){
 				Select(filters:$filters){
 					Summaries {
-						To {
+						ToAddresses {
 							Key
 							Count
 							Counts{
@@ -73,7 +73,7 @@ class ContactListContainer extends Component {
 			query, this.translateStateToFilter(newState)
 		).then(r => {
 			if (typeof r.data !== 'undefined'){
-				this.setState({contacts: r.data.Select.Summaries.To})
+				this.setState({contacts: r.data.Select.Summaries.ToAddresses})
 			}
 		}).catch((err) => console.log('In ContactListContainer: ', err.message))
 	}

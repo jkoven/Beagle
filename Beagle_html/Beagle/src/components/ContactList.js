@@ -56,7 +56,7 @@ class ContactList extends React.Component {
 				<div>
 					<div className = 'searchLength'>{this.state.searchArr.length}</div>
 					<TextField
-						style={{ transform: 'scale(1.0) translate(-10%,-30px)', width: '100%', marginLeft:31, marginTop:20}}
+						style={{ transform: 'scale(1.0) translate(-10%,-30px)', width: '100%', marginLeft:'31px', marginTop:'20px'}}
 						fullWidth={true}
 						id='Search'
 						type='search'
@@ -72,12 +72,12 @@ class ContactList extends React.Component {
 						</div>) }
 						/>
 				</div>
-				<div className='contactlist-component-list' style={{ marginTop: -30 }}>
+				<div className='contactlist-component-list' style={{ marginTop: '-30px' }}>
 				<Infinite containerHeight={contactListHeight} elementHeight={contactElementHeight}>
 					{	this.state.searchArr.map(c => <div  className = 'hidden' key={c.Key} className='contactlist-component-contact'>
 						<div className = 'hi' >{c.Key}</div>
 						<div className = 'count'>
-							<svg className='goodCSS' width='85'>
+							<svg className='goodCSS' width='85px'>
 							<g>
 							<rect width = '85'  height = '11' x='0' y='-5' fill={'white'} className='borderCSS'>
 							</rect>
