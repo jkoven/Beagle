@@ -24,13 +24,19 @@ class FilterPanel extends React.Component {
   render() {
     let {numEmails, addFilter, addData, changeFilter, removeFilter, removeFilterLine, filters} = this.props;
     let style ={
-      position:'absolute',
-      marginLeft: 220,
-      marginTop: -22
+      margin: '0px',
+      top: '15px',
+      right: 'auto',
+      bottom: 'auto',
+      left: '200px',
+      position: 'fixed'
+      // position:'absolute',
+      // marginLeft: 220,
+      // marginTop: -22
     };
 
     let styleItem = {
-     marginTop:35
+     marginTop:'35px'
    }
     let size = filters.length;
 

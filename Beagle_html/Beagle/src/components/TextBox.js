@@ -54,7 +54,7 @@ var TextBox = React.createClass({
     let svgStyle = {
       display: 'inline-block',
       verticalAlign: 'top',
-      paddingBottom: 0,
+      paddingBottom: '0px',
       position: 'absolute',
       height:'100%'
     }
@@ -62,31 +62,31 @@ var TextBox = React.createClass({
     var buttonStyle
     if (!this.state.textFocus) {
       textStyle = {
-        width: 200,
-        marginLeft: 20,
-        marginTop: 5,
+        width: '200px',
+        marginLeft: '20px',
+        marginTop: '5px',
         opacity: 0.5,
-        outline: 1
+        outline: '1px'
       }
     } else {
       textStyle =  {
-        width: 200,
-        marginLeft: 20,
-        marginTop: 5,
-        outline: 0,
+        width: '200px',
+        marginLeft: '20px',
+        marginTop: '5px',
+        outline: '0px',
         backgroundColor: 'white'
       }
     }
     if (this.props.textIdx === this.props.maxIdx) {
       buttonStyle = {
-        marginTop: 1,
+        marginTop: '1px',
         opacity: 0.5
       }
     } else {
       buttonStyle = {
-        marginTop: 1,
-        border: 0,
-        outline: 0,
+        marginTop:'1px',
+        border: '0px',
+        outline: '0px',
         visibility:'hidden'
       }
     }
@@ -96,8 +96,8 @@ var TextBox = React.createClass({
         <span>
         <span style = {svgStyle} width={30}>
           <svg width = {30} height = {30}>
-            <circle cx={10} cy={15} r={6} stroke='LightSkyBlue' strokeWidth={1} fill='LightSkyBlue' onClick={this.remove.bind(this)}/>
-            <line x1={7} y1={15} x2={13} y2={15} stroke='white' strokeWidth={3} fill='white' onClick={this.remove.bind(this)}/>
+            <circle cx={10} cy={15} r={6} stroke='LightSkyBlue' strokeWidth={1} fill='LightSkyBlue' onClick={this.remove}/>
+            <line x1={7} y1={15} x2={13} y2={15} stroke='white' strokeWidth={3} fill='white' onClick={this.remove}/>
             </svg>
             <div style = {textStyle}></div>
             </span>

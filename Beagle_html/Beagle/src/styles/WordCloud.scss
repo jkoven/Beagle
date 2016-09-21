@@ -1,4 +1,15 @@
 @import './Variables.scss';
+.wordsvg{
+        flex: 0;
+         min-height: 6px;
+         max-height: 6px;
+         font-size: 14px;
+         min-width: 21%;
+         background-color: rgba(255, 255, 255, 0.7);
+         text-align: left;
+         padding: 8px;
+
+}
 .goodCSS{
         flex: 0;
          min-height: 6px;
@@ -17,20 +28,15 @@
 }
 
 
-#count {
+.num {
     opacity: 0.0;
 }
-#hover {
-}
-#hover:hover + #count {
-    opacity: 1.0;
-}
 
-#svg:hover{
-  #key {
+.wordsvg:hover{
+  .term {
     opacity:0;
   }
-  #num{
+  .num{
     opacity: 1;
   }
 }
@@ -49,13 +55,13 @@
 }
 
 
-.tCSS{
+.term{
    	color: $primaryTextColor;
     font-size:14px;
 
 }
 
-#num{
+.num{
    	color: $primaryTextColor;
     font-size:14px;
     opacity:0;

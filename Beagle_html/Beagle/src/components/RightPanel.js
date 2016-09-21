@@ -17,7 +17,7 @@ export class RightPanel extends React.Component {
 		super();
 		this.state = {
 			visible: false,
-			width: 800,
+			width: '800px',
 			destroyOnClose: false,
 			center: false
 		}
@@ -39,13 +39,19 @@ export class RightPanel extends React.Component {
 
   render() {
     let helpButtonStyle ={
-      position:'absolute',
-      marginLeft: 400,
-      marginTop: -30
+      margin: '0px',
+      top: '15px',
+      right: '20px',
+      bottom: 'auto',
+      left: 'auto',
+      position: 'fixed'
+      // position:'absolute',
+      // marginLeft: 400,
+      // marginTop: -22
     };
     let dialog;
-    let mentionHeight = 596;
-    let emailHeight = window.innerHeight - mentionHeight - 30;
+    let mentionHeight = '596px';
+    let emailHeight = toString(window.innerHeight - parseInt(mentionHeight) - 30) + 'px';
     let wrapClassName = '';
     if (this.state.center) {
 			wrapClassName = 'center';

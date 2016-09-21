@@ -93,7 +93,7 @@ class Emails extends React.Component {
 
 			<div className='Emails-component'>
 			<div className='Emails-component-list' style={{ marginTop: -30 }}>
-				{emails.map((c,idx) => <RaisedButton fullWidth = {true}  key={c.Subject} className='Emails-component-info' onClick={()=>(this.onClick(c.Subject,c.From,c.To,c.Contents))}><div  className = 'text2'>{fullDates[idx] + c.Subject}</div>
+				{emails.map((c,idx) => <RaisedButton  key={'email' + c.Subject+ idx} className='Emails-component-info' onClick={()=>(this.onClick(c.Subject,c.From,c.To,c.Contents))}><div  className = 'text2'>{fullDates[idx] + c.Subject}</div>
 				</RaisedButton>
 			)}
 			</div>
