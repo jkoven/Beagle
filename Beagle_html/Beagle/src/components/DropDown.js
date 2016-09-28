@@ -32,20 +32,25 @@ var DropDown = React.createClass({
   },
 
   componentWillReceiveProps: function (newProps){
-    console.log(newProps.filter.values.length, this.state.textVals.length);
-    if (newProps.filter.values.length > this.state.textVals.length) {
-      let addVals = newProps.filter.values;
-      let addCount = newProps.filter.values.length - this.state.textVals.length;
-      let newVals = this.state.textVals;
-      let newIds = this.state.textUids;
-      for (let i = 0; i < addCount; i++){
-        newVals.push(addVals[this.state.textVals.length + i]);
-        newIds.push(textUid++);
+    if (typeof newProps.filter.values !== 'undefined'){
+      if (newProps.filter.values.length > this.state.textVals.length) {
+        let addVals = newProps.filter.values;
+        let addCount = newProps.filter.values.length - this.state.textVals.length;
+        let newVals = this.state.textVals;
+        let newIds = this.state.textUids;
+        for (let i = 0; i < addCount; i++){
+          newVals.push(addVals[this.state.textVals.length + i]);
+          newIds.push(textUid++);
+        }
+        this.setState({
+          textVals: newVals,
+          textUids: newIds
+        })
+      } else if (newProps.filter.values[newProps.filter.values.length-1] !== this.state.textVals[this.state.textVals.length - 1]) {
+        this.setState({
+          textVals: newProps.filter.values.slice(0)
+        })
       }
-      this.setState({
-        textVals: newVals,
-        textUids: newIds
-      })
     }
   },
 
@@ -123,7 +128,6 @@ var DropDown = React.createClass({
     // }
 //    console.log('props:', this.props);
 //    console.log('state:', this.state);
-
 
     return (
       <span style={dropStyle} >

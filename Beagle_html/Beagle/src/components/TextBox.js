@@ -9,6 +9,12 @@ var TextBox = React.createClass({
     }
   },
 
+  componentWillReceiveProps: function (newProps){
+    this.setState({
+      inputValue: newProps.ftext
+    })
+  },
+
   toggleFocus: function() {
     this.setState(
       {focus: !this.state.focus})
