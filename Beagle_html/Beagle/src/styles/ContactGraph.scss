@@ -13,7 +13,6 @@
   height: 100%;
 
   text {
-    fill: $primaryTextColor;
     font-size: 12px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -22,18 +21,38 @@
     vertical-align: bottom;
   }
 
+  text.highlighted {
+    fill: black;
+  }
+
+  text.normal {
+    fill: $primaryTextColor;
+  }
+
+  .linklabel {
+    fill: $primaryTextColor;
+  }
   text:hover {
     fill: black;
     font-weight: bold;
   }
 
-  circle{
+  circle.nqnode{
     fill: lightBlue;
     stroke: lightBlue
   }
+  circle.qnode{
+    fill: Blue;
+    stroke: lightBlue
+  }
 
-  line{
+  line.normal{
     stroke: lightGrey;
     stroke-width: 2px
+  }
+
+  line.highlighted{
+    stroke: black;
+    stroke-width: 1px
   }
 }

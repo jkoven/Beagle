@@ -1,7 +1,7 @@
 .contactlist-component {
     display: flex;
     flex-direction: column;
-    width: 350px;
+    width: 300px;
 
     .contactlist-component-list {
       	flex: 1;
@@ -23,7 +23,7 @@
 }
 
 .searchLength{
-  font-size:14.5px;
+  font-size:12.5px;
   margin-top: -22px;
   margin-left: 65%;
   font-family: 'Roboto', sans-serif;
@@ -35,7 +35,7 @@
 
 .red{
   margin-top:-22px;
-  margin-left: 210px;
+  margin-left: 200px;
   background:#ff9393;
   width:100px;
   color:#000000;
@@ -53,7 +53,7 @@
   display:inline;
   float:right;
   text-align: center;
-  margin-left:250px;
+  margin-left:200px;
   height:15px;
   margin-top: -2px;
 }

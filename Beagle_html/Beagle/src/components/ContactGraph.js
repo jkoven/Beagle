@@ -28,13 +28,13 @@ module.exports = React.createClass({
   componentWillReceiveProps: function (newProps){
     let nodes = newProps.contacts;
     let links = newProps.links;
-    console.log(nodes, links);
     let height = parseInt(d3.select(ReactDOM.findDOMNode(this)).style('height'));
     let width = parseInt(d3.select(ReactDOM.findDOMNode(this)).style('width'));
     d3.forceSimulation(nodes)
-    .force('link', d3.forceLink(links).id(function(d) {return d.id; }).distance(100))
+    .force('link', d3.forceLink(links).id(function(d) {return d.id; }).distance(200))
     .force('charge', d3.forceManyBody())
     .force('center', d3.forceCenter(width / 2, height / 2))
+    .alphaDecay(0.1)
     .on('end', (() => {
       links.map ((link) => {
         link['midpointx'] = (link.source.x + link.target.x) / 2;
@@ -61,6 +61,33 @@ module.exports = React.createClass({
     return theta;
   },
 
+  mouseOverNode: function (e){
+    let name = e.target.parentNode.getAttribute('class');
+    let currentLinks = this.state.links;
+    currentLinks.map((link) => {
+      if(link.source.id === name || link.target.id === name) {
+        link.lineClass = 'highlighted';
+        link.source.nodeClass = 'highlighted';
+        link.target.nodeClass = 'highlighted';
+      }
+      this.setState({
+        links: currentLinks
+      });
+    });
+  },
+
+  mouseOutOfNode: function(){
+    let currentLinks = this.state.links;
+    currentLinks.map((link) => {
+      link.lineClass = 'normal';
+      link.source.nodeClass = 'normal';
+      link.target.nodeClass = 'normal';
+      this.setState({
+        links: currentLinks
+      });
+    });
+  },
+
   render: function(){
     let rad = 5;
     return (
@@ -68,9 +95,14 @@ module.exports = React.createClass({
         <svg className='contact-graph-svg'>
         {this.state.links.map((link, i) =>
           <g key={'g-graphline' + link.id + i}>
-            <line key={'graphline' + link.id + i}  x1={link.source.x} y1={link.source.y} x2={link.target.x} y2={link.target.y}/>
+            <line
+              key={'graphline' + link.id + i}
+              className={link.lineClass}
+              x1={link.source.x} y1={link.source.y}
+              x2={link.target.x} y2={link.target.y}
+            />
             <text key={'linklabel' + link.id + i}
-              className='label'
+              className={link.lineClass}
               x={link.midpointx} y={link.midpointy}
               transform={'rotate(' + link.angle + ' ' + link.midpointx + ' ' + link.midpointy + ')'}
               textAnchor='middle'>
@@ -79,9 +111,26 @@ module.exports = React.createClass({
           </g>
         )}
         {this.state.nodes.map((contact, i) =>
-          <g key={'g-graphcircle' + contact.id + i}>
-            <circle key={'graphcircle' + contact.id + i} cx={contact.x} cy={contact.y} r={rad}/>
-            <text key={'nodelabel' + contact.id + i} className='label' x={contact.x} y={contact.y - rad - 2} textAnchor='middle'>{contact.id}</text>
+          <g
+            key={'g-graphcircle' + contact.id + i}
+            className={contact.id}
+          >
+            <circle
+              key={'graphcircle' + contact.id + i}
+              className={contact.queryNode ? 'qnode' : 'nqnode'}
+              cx={contact.x}
+              cy={contact.y}
+              r={rad}
+              onMouseOver={this.mouseOverNode}
+              onMouseOut={this.mouseOutOfNode}
+            />
+            <text
+              key={'nodelabel' + contact.id + i}
+              className={contact.queryNode ? 'highlighted' : contact.nodeClass}
+              x={contact.x}
+              y={contact.y - rad - 2}
+              textAnchor='middle'>{contact.id}
+            </text>
           </g>
         )}
         </svg>

@@ -31,21 +31,27 @@ class FilterContainer extends Component {
       filters: []
     };
     for (var i = index; i >= 0; i--) {
-      var jsonData ={};
-      var selection;
+      if (typeof state[i].values !== 'undefined'){
+        var jsonData ={};
+        var selection;
 
-      if (state[i].selection == 'SUBJECT CONTAINS:') {
-        selection = 'Subject';
-      } else if (state[i].selection == 'MENTION:') {
-        selection = 'Contents';
-      } else {
-        selection = 'ToAddresses';
+        if (state[i].selection == 'SUBJECT CONTAINS:') {
+					selection = 'Subject';
+				} else if (state[i].selection == 'CONTENT CONTAINS:') {
+					selection = 'Contents';
+				} else if (state[i].selection == 'PERSON:') {
+					selection = 'PERSON';
+				} else if (state[i].selection == 'ORGANIZATION:') {
+					selection = 'ORGANIZATION';
+				} else {
+					selection = 'ToAddresses';
+				}
+
+        jsonData['field'] = selection;
+        jsonData['operation'] = 'contains';
+        jsonData['value'] = state[i].values;
+        jsonQuery.filters.push(jsonData);
       }
-
-      jsonData['field'] = selection;
-      jsonData['operation'] = 'contains';
-      jsonData['value'] = state[i].values;
-      jsonQuery.filters.push(jsonData);
     }
     return jsonQuery;
   }
