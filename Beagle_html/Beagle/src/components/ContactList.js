@@ -39,6 +39,10 @@ class ContactList extends React.Component {
 			this.state.maxCount = _.get(this.state.searchArr,'0.Count');
 		}
 
+	mouseDoubleClick(e){
+		this.props.addContactListItem(e.target.textContent);
+	}
+
 	render() {
 		let {contacts} = this.props;
 		    this.state.maxCount = _.get(contacts,'0.Count');
@@ -49,6 +53,7 @@ class ContactList extends React.Component {
 
 		let contactListHeight = window.innerHeight - 111;
 		let contactElementHeight = 38;
+		let self = this;
 
 
 		return (
@@ -75,7 +80,7 @@ class ContactList extends React.Component {
 				<div className='contactlist-component-list' style={{ marginTop: '-30px' }}>
 				<Infinite containerHeight={contactListHeight} elementHeight={contactElementHeight}>
 					{	this.state.searchArr.map(c => <div  className = 'hidden' key={c.Key} className='contactlist-component-contact'>
-						<div className = 'hi' >{c.Key}</div>
+						<div className = 'hi' onDoubleClick={function (e) {self.mouseDoubleClick(e)}}>{c.Key}</div>
 						<div className = 'count'>
 							<svg className='goodCSS' width='85px'>
 							<g>

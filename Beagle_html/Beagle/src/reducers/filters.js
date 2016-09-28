@@ -42,6 +42,25 @@ module.exports = function(state = initialState, action) {
       return [...state.slice(0,action.filterIdx), Object.assign({}, state[action.filterIdx]), ...state.slice(action.filterIdx+1)]
     }
 
+    case 'ADD_CONTACT_LIST_ITEM' : {
+      if (state.length > 0) {
+        let idx = state.length - 1;
+        if (state[idx].selection === 'IS FROM/TO:'){
+          var filter = Object.assign({},state[idx]);
+          if (typeof filter.values === 'undefined') {
+            filter.values = [action.contact];
+          } else {
+            filter.values.push(action.contact);
+          }
+          return [...state.slice(0, idx), filter];
+        } else {
+          return [...state, {selection: 'IS FROM/TO:', values: [action.contact], filterId: filterUid++}];
+        }
+      } else  {
+        return [...state, {selection: 'IS FROM/TO:', values: [action.contact], filterId: filterUid++}];
+      }
+    }
+
     case 'REMOVE_FILTER' : {
 //      console.log('removeFilter: ',[...state.slice(0,action.filterIdx), ...state.slice(action.filterIdx+1)])
       return [...state.slice(0,action.filterIdx), ...state.slice(action.filterIdx+1)];

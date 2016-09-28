@@ -18,7 +18,7 @@ module.exports = React.createClass({
       removeFilter(filterIdx);
     },
     render: function() {
-      let {numEmails, addData,filterIdx, changeFilter, removeFilterLine, size} = this.props;
+      let {filter, numEmails, addData, filterIdx, changeFilter, removeFilterLine, size} = this.props;
       let lineStyle;
 
       let svgStyle = {
@@ -81,7 +81,7 @@ module.exports = React.createClass({
                   <div className = 'filterNum'><div className = 'emailNumber'>{numberEmails}</div>
                   </div>
                     <DropDown
-                      options= {['IS FROM/TO:', 'MENTION:', 'SUBJECT CONTAINS:']}
+                      options= {['IS FROM/TO:', 'CONTENT CONTAINS:', 'SUBJECT CONTAINS:',  'PERSON:', 'ORGANIZATION:']}
                       active= {this.state.active}
                       onChange={this.updateActive}
                       size={size}
@@ -91,6 +91,7 @@ module.exports = React.createClass({
                       removeFilterLine={removeFilterLine}
                       key = {this.props.filterkey+'drop'}
                       dropKey={this.props.filterkey+'drop'}
+                      filter={filter}
                       />
             </span>
         </div>

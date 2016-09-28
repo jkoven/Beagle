@@ -51,7 +51,7 @@ export class RightPanel extends React.Component {
     };
     let dialog;
     let mentionHeight = '596px';
-    let emailHeight = toString(window.innerHeight - parseInt(mentionHeight) - 30) + 'px';
+    let emailHeight = (window.innerHeight - parseInt(mentionHeight) - 30) + 'px';
     let wrapClassName = '';
     if (this.state.center) {
 			wrapClassName = 'center';

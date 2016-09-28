@@ -19,11 +19,33 @@ var DropDown = React.createClass({
   },
 
   getInitialState: function(){
+    let textVals = [''];
+    if (typeof this.props.filter.values !== 'undefined') {
+      textVals = this.props.filter.values.slice();
+    }
     return {
-      textVals: [''],
+      textVals: textVals,
       textUids: [textUid++],
       hover: false,
       focus: false
+    }
+  },
+
+  componentWillReceiveProps: function (newProps){
+    console.log(newProps.filter.values.length, this.state.textVals.length);
+    if (newProps.filter.values.length > this.state.textVals.length) {
+      let addVals = newProps.filter.values;
+      let addCount = newProps.filter.values.length - this.state.textVals.length;
+      let newVals = this.state.textVals;
+      let newIds = this.state.textUids;
+      for (let i = 0; i < addCount; i++){
+        newVals.push(addVals[this.state.textVals.length + i]);
+        newIds.push(textUid++);
+      }
+      this.setState({
+        textVals: newVals,
+        textUids: newIds
+      })
     }
   },
 

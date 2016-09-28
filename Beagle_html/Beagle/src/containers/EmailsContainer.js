@@ -29,23 +29,29 @@ class EmailsContainer extends Component {
       filters: []
     }
     state.filters.forEach(function(element) {
-      var jsonData ={};
-      var selection;
-      //console.log(element.selection);
+      if (typeof element.values !== 'undefined'){
+        var jsonData ={};
+        var selection;
+        //console.log(element.selection);
 
-      //var selection = this.translateSelection(element.selection);
-      if (element.selection == 'SUBJECT CONTAINS:') {
-        selection = 'Subject';
-      } else if (element.selection == 'MENTION:') {
-        selection = 'Contents';
-      } else {
-        selection = 'ToAddresses';
+        //var selection = this.translateSelection(element.selection);
+        if (element.selection == 'SUBJECT CONTAINS:') {
+					selection = 'Subject';
+				} else if (element.selection == 'CONTENT CONTAINS:') {
+					selection = 'Contents';
+				} else if (element.selection == 'PERSON:') {
+					selection = 'PERSON';
+				} else if (element.selection == 'ORGANIZATION:') {
+					selection = 'ORGANIZATION';
+				} else {
+					selection = 'ToAddresses';
+				}
+
+        jsonData['field'] = selection;
+        jsonData['operation'] = 'contains';
+        jsonData['value'] = element.values;
+        jsonQuery.filters.push(jsonData);
       }
-
-      jsonData['field'] = selection;
-      jsonData['operation'] = 'contains';
-      jsonData['value'] = element.values;
-      jsonQuery.filters.push(jsonData);
     });
     return jsonQuery;
   }

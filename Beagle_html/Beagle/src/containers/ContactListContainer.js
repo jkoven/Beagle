@@ -3,6 +3,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ContactList from '../components/ContactList';
 import dataSource from '../sources/dataSource';
+import { addContactListItem} from '../actions/const';
+
+
 class ContactListContainer extends Component {
 	constructor() {
 		super();
@@ -24,21 +27,26 @@ class ContactListContainer extends Component {
 			filters: []
 		}
 		state.filters.forEach(function(element) {
-			var jsonData ={};
-			var selection;
+			if (typeof element.values !== 'undefined'){
+				var jsonData ={};
+				var selection;
+				if (element.selection == 'SUBJECT CONTAINS:') {
+					selection = 'Subject';
+				} else if (element.selection == 'CONTENT CONTAINS:') {
+					selection = 'Contents';
+				} else if (element.selection == 'PERSON:') {
+					selection = 'PERSON';
+				} else if (element.selection == 'ORGANIZATION:') {
+					selection = 'ORGANIZATION';
+				} else {
+					selection = 'ToAddresses';
+				}
 
-			if (element.selection == 'SUBJECT CONTAINS:') {
-				selection = 'Subject';
-			} else if (element.selection == 'MENTION:') {
-				selection = 'Contents';
-			} else {
-				selection = 'ToAddresses';
+				jsonData['field'] = selection;
+				jsonData['operation'] = 'contains';
+				jsonData['value'] = element.values;
+				jsonQuery.filters.push(jsonData);
 			}
-
-			jsonData['field'] = selection;
-			jsonData['operation'] = 'contains';
-			jsonData['value'] = element.values;
-			jsonQuery.filters.push(jsonData);
 		});
 		return jsonQuery;
 	}
@@ -81,7 +89,8 @@ class ContactListContainer extends Component {
 
 	render() {
 //		const {actions} = this.props;
-		return <ContactList contacts={this.state.contacts}/>;
+		let {actions} = this.props;
+		return <ContactList contacts={this.state.contacts} {...actions}/>;
 	}
 }
 
@@ -95,7 +104,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-	const actions = {};
+	const actions = {addContactListItem};
 	const actionMap = { actions: bindActionCreators(actions, dispatch) };
 	return actionMap;
 }
