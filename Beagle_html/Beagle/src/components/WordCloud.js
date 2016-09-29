@@ -99,9 +99,9 @@ if(field =='Person'){
         {this.state.PersonArr.map((s, idx) =>
           <svg className='wordsvg' key={'person' + s + idx}>
           <g key={'persongroup' + s + idx}>
-          <rect width = '110'  height = '15' x='0' fill={'white'} className='borderCSS' >
+          <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
         </rect>
-          <rect  width = {'110'*((this.state.PersonCount[idx])/(this.state.PersonMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
+          <rect  width = {'65'*((this.state.PersonCount[idx])/(this.state.PersonMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
         </rect>
         <text className='term'  x='0' y='11.25'>{this.state.PersonArr[idx]}</text>
         <text className='num'  x='0' y='11.25'>{this.state.PersonCount[idx]}</text>
@@ -126,9 +126,9 @@ if(field =='Person'){
           {this.state.ContentsArr.map((s, idx) =>
             <svg  className='wordsvg' key={'contents' + s + idx}>
             <g key={'contentsgroup' + s + idx}>
-            <rect width = '110'  height = '15' x='0' fill={'white'} className='borderCSS' >
+            <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
           </rect>
-            <rect  width = {'110'*((this.state.ContentCount[idx])/(this.state.ContentMaxCount))}   height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
+            <rect  width = {'65'*((this.state.ContentCount[idx])/(this.state.ContentMaxCount))}   height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
           </rect>
               <text className='term' x='0' y='11.25' >{this.state.ContentsArr[idx]}</text>
               <text className='num'  x='0' y='11.25' >{this.state.ContentCount[idx]}</text>
@@ -153,9 +153,9 @@ if(field =='Person'){
             {this.state.SubjectArr.map((s, idx) =>
               <svg className='wordsvg' key={'subject' + s + idx}>
               <g key={'subjectgroup' + s + idx}>
-              <rect width = '110'  height = '15' x='0' fill={'white'} className='borderCSS' >
+              <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
             </rect>
-              <rect width = {'110'*((this.state.SubjectCount[idx])/(this.state.SubjectMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
+              <rect width = {'65'*((this.state.SubjectCount[idx])/(this.state.SubjectMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
             </rect>
                 <text className='term' x='0' y='11.25'>{this.state.SubjectArr[idx]}</text>
                 <text className='num' x='0' y='11.25'>{this.state.SubjectCount[idx]}</text>
@@ -180,9 +180,9 @@ if(field =='Person'){
               {this.state.OrganizationArr.map((s, idx) =>
                 <svg className='wordsvg' key={'org' + s + idx}>
                 <g key={'orggroup' + s + idx}>
-                <rect width = '110'  height = '15' x='0' fill={'white'} className='borderCSS' >
+                <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
               </rect>
-                <rect width = {'110'*((this.state.OrganizationCount[idx])/(this.state.OrganizationMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
+                <rect width = {'65'*((this.state.OrganizationCount[idx])/(this.state.OrganizationMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
               </rect>
                   <text className='term' x='0' y='11.25'>{this.state.OrganizationArr[idx]}</text>
                   <text className='num' x='0' y='11.25'>{this.state.OrganizationCount[idx]}</text>

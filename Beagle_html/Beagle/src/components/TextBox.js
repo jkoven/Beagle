@@ -68,7 +68,7 @@ var TextBox = React.createClass({
     var buttonStyle
     if (!this.state.textFocus) {
       textStyle = {
-        width: '200px',
+        width: '140px',
         marginLeft: '20px',
         marginTop: '5px',
         opacity: 0.5,
@@ -76,7 +76,7 @@ var TextBox = React.createClass({
       }
     } else {
       textStyle =  {
-        width: '200px',
+        width: '140px',
         marginLeft: '20px',
         marginTop: '5px',
         outline: '0px',

@@ -28,7 +28,7 @@ class FilterPanel extends React.Component {
       top: '15px',
       right: 'auto',
       bottom: 'auto',
-      left: '200px',
+      left: '180px',
       position: 'fixed'
       // position:'absolute',
       // marginLeft: 220,
@@ -42,7 +42,7 @@ class FilterPanel extends React.Component {
 
 //    console.log('filters',filters);
     return (
-      <div className='filterpanel-component' style={{width:285}}>
+      <div className='filterpanel-component'>
         <Panel title='Filters'>
           <FloatingActionButton style={style} mini={true} onClick={()=>addFilter()}>
             <ContentAdd />

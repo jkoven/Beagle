@@ -68,12 +68,18 @@ class GraphContainer extends Component {
 			let query = `query getData($filters:[Rule]){
 					Select(filters:$filters){
 						Summaries {
-							ToAddresses {
+							ToAddresses(limit:11) {
 								Key
 								Count
 								Counts{
-	          			From
+	          			ToAddresses
 	        			}
+								Summaries {
+								ToAddresses (limit:100){
+										Key
+										Count
+									}
+								}
 							}
 						}
 					}
@@ -97,7 +103,6 @@ class GraphContainer extends Component {
 				let contactList = [];
 				let contactNodes = [];
 				if (typeof r.data !== 'undefined'){
-//					console.log(r.data);
 					contactList = r.data.Select.Summaries.ToAddresses;
 				}
 				jsonQuery.contacts.map((c) => {
@@ -108,7 +113,7 @@ class GraphContainer extends Component {
 						contactNodes.push({id: contactData.Key, size: contactData.Count, queryNode: true});
 					}
 				});
-				contactList.slice(0, 9 + contactNodes.length).map ((contact) => {
+				contactList.map ((contact) => {
 					let foundNode = contactNodes.find(function (e){
 						return e.id === contact.Key;
 					});
@@ -136,53 +141,71 @@ class GraphContainer extends Component {
 
 	loadMoreData(jsonQuery, contactList, contactNodes, self){
 		let contactLinks = [];
-		let queries = [];
-		let query = `query getData($filters:[Rule]){
-				Select(filters:$filters){
-					Count
-				}
-			}`
-			contactNodes.map ((c, i, arr) => {
-				for(var idx = i + 1; idx < arr.length; idx++){
-					let contact2 = arr[idx].id;
-					let filters = [{
-						'field': 'ToAddresses',
-						'operation': 'contains',
-						'value': c.id
-					},{
-						'field': 'ToAddresses',
-						'operation': 'contains',
-						'value': contact2
-					}];
-					let newFilters = {
-						filters : filters
-					};
-					queries.push (dataSource.query(
-						query, newFilters
-					).then((result) => {
-						if (typeof result !== undefined){
-							return {c1: c.id, c2: contact2, result: result}
-						} else return {}
-					}));
-				}
+		contactNodes.map((sourceContact, idx) => {
+			let contactData = contactList.find(function(e){
+				return e.Key === sourceContact.id;
 			});
-			Promise.all(queries).then(r => {
-				if (typeof r !== 'undefined'){
-					r.map((d) => {
-						if (d.c1 !== 'undefined' && d.c2 !== 'undefined') {
-							contactLinks.push({source: d.c1, target: d.c2, value:d.result.data.Select.Count, lineClass: 'normal'});
-						}
-					});
-				}
-				return contactLinks;
-			}).then((dd) => {
-				self.setState({
-					contacts: contactList,
-					contactNodes: contactNodes,
-					contactLinks: dd
+			for (let idx1 = idx + 1; idx1 < contactNodes.length; idx1++){
+				let targetContact = contactData.Summaries.ToAddresses.find((e) => {
+					return e.Key === contactNodes[idx1].id;
 				});
-			}).catch((err) => console.log('In GraphContainer: ', err.message))
+				if (typeof targetContact !== 'undefined') {
+					contactLinks.push({source: sourceContact.id, target: targetContact.Key, value:targetContact.Count, lineClass: 'normal'})
+				}
+			}
+		});
+		self.setState({
+			contacts: contactList,
+			contactNodes: contactNodes,
+			contactLinks: contactLinks
+		});
 
+		// let queries = [];
+		// let query = `query getData($filters:[Rule]){
+		// 		Select(filters:$filters){
+		// 			Count
+		// 		}
+		// 	}`
+		// 	contactNodes.map ((c, i, arr) => {
+		// 		for(var idx = i + 1; idx < arr.length; idx++){
+		// 			let contact2 = arr[idx].id;
+		// 			let filters = [{
+		// 				'field': 'ToAddresses',
+		// 				'operation': 'contains',
+		// 				'value': c.id
+		// 			},{
+		// 				'field': 'ToAddresses',
+		// 				'operation': 'contains',
+		// 				'value': contact2
+		// 			}];
+		// 			let newFilters = {
+		// 				filters : filters
+		// 			};
+		// 			queries.push (dataSource.query(
+		// 				query, newFilters
+		// 			).then((result) => {
+		// 				if (typeof result !== undefined){
+		// 					return {c1: c.id, c2: contact2, result: result}
+		// 				} else return {}
+		// 			}));
+		// 		}
+		// 	});
+		// 	Promise.all(queries).then(r => {
+		// 		if (typeof r !== 'undefined'){
+		// 			r.map((d) => {
+		// 				if (d.c1 !== 'undefined' && d.c2 !== 'undefined') {
+		// 					contactLinks.push({source: d.c1, target: d.c2, value:d.result.data.Select.Count, lineClass: 'normal'});
+		// 				}
+		// 			});
+		// 		}
+		// 		return contactLinks;
+		// 	}).then((dd) => {
+		// 		self.setState({
+		// 			contacts: contactList,
+		// 			contactNodes: contactNodes,
+		// 			contactLinks: dd
+		// 		});
+		// 	}).catch((err) => console.log('In GraphContainer: ', err.message))
 	}
 
 

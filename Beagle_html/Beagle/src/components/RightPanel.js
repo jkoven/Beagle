@@ -50,7 +50,7 @@ export class RightPanel extends React.Component {
       // marginTop: -22
     };
     let dialog;
-    let mentionHeight = '596px';
+    let mentionHeight = '515px';
     let emailHeight = (window.innerHeight - parseInt(mentionHeight) - 30) + 'px';
     let wrapClassName = '';
     if (this.state.center) {

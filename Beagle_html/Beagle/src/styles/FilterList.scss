@@ -1,13 +1,22 @@
 .filterlist-component {
   border: 1px dashed #f00;
 }
-
 .filterNum{
-  margin-left: 220px;
+  font-size: 12px;
+  margin-left: 160px;
   position: absolute;
 }
 
 .emailNumber{
   background-color: #D0E7F0 !important;
   color: #000000;
+}
+
+.dropSelect {
+  border: 0;
+  outline: 0;
+  background-color: 'white';
+  display: 'inline-block';
+  overflow: 'hidden';
+  font-size: 12px
 }

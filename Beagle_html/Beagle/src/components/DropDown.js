@@ -95,13 +95,6 @@ var DropDown = React.createClass({
   },
 
   render () {
-    let dropStyle = {
-      border: 0,
-      outline: 0,
-      backgroundColor: 'white',
-      display: 'inline-block',
-      overflow: 'hidden'
-    }
 
 //    var buttonStyle
 
@@ -130,9 +123,9 @@ var DropDown = React.createClass({
 //    console.log('state:', this.state);
 
     return (
-      <span style={dropStyle} >
+      <span className= {'dropSelect'}>
 
-      <select style={dropStyle} size='1' onChange={this.handleChange} value={this.props.active}>
+      <select className='{dropSelect}' size='1' onChange={this.handleChange} value={this.props.active}>
         {lodashMap(options, function mapOptions (value, key) {
           return (
             <option value={key} key={key}>{value}</option>
