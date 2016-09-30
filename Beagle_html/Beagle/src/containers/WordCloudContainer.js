@@ -6,6 +6,8 @@ import {	bindActionCreators} from 'redux';
 import {	connect} from 'react-redux';
 import WordCloud from '../components/WordCloud';
 import dataSource from '../sources/dataSource';
+import {addListItem} from '../actions/const';
+
 require('styles//wordcloud-component-words.scss');
 class WordCloudContainer extends Component {
 	constructor() {
@@ -84,7 +86,7 @@ class WordCloudContainer extends Component {
 	render() {
 		const {actions} = this.props;
 
-		return <WordCloud actions = {actions} words = {this.state.words} field = {this.state.field}/>;
+		return <WordCloud {...actions} words = {this.state.words} field = {this.state.field}/>;
 	}
 }
 
@@ -98,7 +100,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-	const actions = {};
+	const actions = {addListItem};
 	const actionMap = {
 		actions: bindActionCreators(actions, dispatch)
 	};

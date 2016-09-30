@@ -42,10 +42,10 @@ module.exports = function(state = initialState, action) {
       return [...state.slice(0,action.filterIdx), Object.assign({}, state[action.filterIdx]), ...state.slice(action.filterIdx+1)]
     }
 
-    case 'ADD_CONTACT_LIST_ITEM' : {
+    case 'ADD_LIST_ITEM' : {
       if (state.length > 0) {
         let idx = state.length - 1;
-        if (state[idx].selection === 'IS FROM/TO:'){
+        if (state[idx].selection === action.selection){
           var filter = Object.assign({},state[idx]);
           if (typeof filter.values === 'undefined') {
             filter.values = [action.contact];
@@ -54,10 +54,10 @@ module.exports = function(state = initialState, action) {
           }
           return [...state.slice(0, idx), filter];
         } else {
-          return [...state, {selection: 'IS FROM/TO:', values: [action.contact], filterId: filterUid++}];
+          return [...state, {selection: action.selection, values: [action.contact], filterId: filterUid++}];
         }
       } else  {
-        return [...state, {selection: 'IS FROM/TO:', values: [action.contact], filterId: filterUid++}];
+        return [...state, {selection: action.selection, values: [action.contact], filterId: filterUid++}];
       }
     }
 

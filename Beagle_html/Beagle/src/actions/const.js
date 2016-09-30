@@ -4,7 +4,7 @@ export const ADD_DATA = 'ADD_DATA'
 export const CHANGE_FILTER = 'CHANGE_FILTER'
 export const REMOVE_FILTER = 'REMOVE_FILTER'
 export const REMOVE_FILTER_LINE = 'REMOVE_FILTER_LINE'
-export const ADD_CONTACT_LIST_ITEM = 'ADD_CONTACT_LIST_ITEM'
+export const ADD_LIST_ITEM = 'ADD_LIST_ITEM'
 
 export function addFilter() {
   return {type: ADD_FILTER }
@@ -26,6 +26,6 @@ export function removeFilterLine(filterIdx, textIdx) {
   return {type: REMOVE_FILTER_LINE, filterIdx, textIdx}
 }
 
-export function addContactListItem(contact){
-  return {type: ADD_CONTACT_LIST_ITEM, contact}
+export function addListItem(contact, selection){
+  return {type: ADD_LIST_ITEM, contact, selection}
 }

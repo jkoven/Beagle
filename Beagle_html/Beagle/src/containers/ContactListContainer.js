@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ContactList from '../components/ContactList';
 import dataSource from '../sources/dataSource';
-import { addContactListItem} from '../actions/const';
+import {addListItem} from '../actions/const';
 
 
 class ContactListContainer extends Component {
@@ -104,7 +104,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-	const actions = {addContactListItem};
+	const actions = {addListItem};
 	const actionMap = { actions: bindActionCreators(actions, dispatch) };
 	return actionMap;
 }

@@ -40,7 +40,7 @@ class ContactList extends React.Component {
 		}
 
 	mouseDoubleClick(e){
-		this.props.addContactListItem(e.target.textContent);
+		this.props.addListItem(e.target.textContent, 'IS TO/FROM:');
 	}
 
 	render() {

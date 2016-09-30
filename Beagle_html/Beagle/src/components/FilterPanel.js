@@ -48,7 +48,19 @@ class FilterPanel extends React.Component {
             <ContentAdd />
           </FloatingActionButton>
           <div style={styleItem}>
-          {filters.map((s, idx) => <FilterItem numEmails={numEmails} filter = {s} key = {s.filterId} filterkey={s.filterId} addData={addData} changeFilter={changeFilter} filterIdx={idx} size={size} removeFilter={removeFilter} removeFilterLine={removeFilterLine}/>)}
+          {filters.map((s, idx) =>
+            <FilterItem
+              numEmails={numEmails}
+              filter = {s}
+              key = {s.filterId}
+              filterkey={s.filterId}
+              addData={addData}
+              changeFilter={changeFilter}
+              filterIdx={idx}
+              size={size}
+              removeFilter={removeFilter}
+              removeFilterLine={removeFilterLine}
+            />)}
           </div>
 
 

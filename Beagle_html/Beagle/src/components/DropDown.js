@@ -99,6 +99,7 @@ var DropDown = React.createClass({
 //    var buttonStyle
 
     var {filterIdx, options} = this.props
+    let self = this;
 
     // if (!this.state.hover) {
     //   buttonStyle =  {
@@ -125,10 +126,10 @@ var DropDown = React.createClass({
     return (
       <span className= {'dropSelect'}>
 
-      <select className='{dropSelect}' size='1' onChange={this.handleChange} value={this.props.active}>
+      <select className='{dropSelect}' size='1' onChange={this.handleChange} value={self.props.filter.selection}>
         {lodashMap(options, function mapOptions (value, key) {
           return (
-            <option value={key} key={key}>{value}</option>
+            <option value={value} key={key}>{value}</option>
           )
         })}
         </select>
