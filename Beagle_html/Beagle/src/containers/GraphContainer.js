@@ -1,7 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import ContactGraph from '../components/ContactGraph';
+//import ContactGraph from '../components/ContactGraph';
+import ContactTree from '../components/ContactTree';
 import dataSource from '../sources/dataSource';
 
 class GraphContainer extends Component {
@@ -10,7 +11,8 @@ class GraphContainer extends Component {
 		this.state = {
 			contacts: [],
 			contactNodes:[],
-			contactLinks:[]
+			contactLinks:[],
+			contactRootNodes:[]
 		};
 	}
 
@@ -68,11 +70,11 @@ class GraphContainer extends Component {
 			let query = `query getData($filters:[Rule]){
 					Select(filters:$filters){
 						Summaries {
-							ToAddresses(limit:11) {
+							ToAddresses (limit:50){
 								Key
 								Count
 								Counts{
-	          			ToAddresses
+	          			From
 	        			}
 								Summaries {
 								ToAddresses (limit:100){
@@ -102,6 +104,7 @@ class GraphContainer extends Component {
 			).then(r => {
 				let contactList = [];
 				let contactNodes = [];
+				let contactRootNodes = [];
 				if (typeof r.data !== 'undefined'){
 					contactList = r.data.Select.Summaries.ToAddresses;
 				}
@@ -110,23 +113,26 @@ class GraphContainer extends Component {
 						return (c === e.Key);
 					});
 					if (typeof contactData !== 'undefined'){
-						contactNodes.push({id: contactData.Key, size: contactData.Count, queryNode: true});
+						contactNodes.push({id: contactData.Key, size: contactData.Count, queryNode: true, mouseOver: false, nodeClass: 'normal'});
+						contactRootNodes.push({id: contactData.Key, size: contactData.Count, queryNode: true, mouseOver: false, nodeClass: 'normal'});
 					}
 				});
-				contactList.map ((contact) => {
-					let foundNode = contactNodes.find(function (e){
-						return e.id === contact.Key;
+				if (contactNodes.length < contactList.length + 10){
+					contactList.map ((contact) => {
+						let foundNode = contactNodes.find(function (e){
+							return e.id === contact.Key;
+						});
+						if (typeof foundNode === 'undefined') {
+							contactNodes.push ({id:contact.Key, size: contact.Count, queryNode: false, mouseOver: false, nodeClass: 'normal'});
+						}
 					});
-					if (typeof foundNode === 'undefined') {
-						contactNodes.push ({id:contact.Key, size: contact.Count, queryNode: false, mouseOver: false, nodeClass: 'normal'});
-					}
-				});
-				return {cn:contactNodes, cl:contactList};
+				}
+				return {cn:contactNodes, cl:contactList, cr:contactRootNodes};
 			}));
 			Promise.all(queries).then(rr => {
 				rr.map((d) => {
 					let self = this;
-					loadMoreData(jsonQuery, d.cl, d.cn, self)
+					loadMoreData(jsonQuery, d.cl, d.cn, d.cr, self)
 				});
 			}).catch((err) => console.log('In GraphContainer: ', err.message));
 			// Do the queiry to get the inter contact counts.
@@ -134,12 +140,13 @@ class GraphContainer extends Component {
 			this.setState({
 				contacts: [],
 				contactNodes: [],
-				contactLinks: []
+				contactLinks: [],
+				contactRootNodes: []
 			});
 		}
 	}
 
-	loadMoreData(jsonQuery, contactList, contactNodes, self){
+	loadMoreData(jsonQuery, contactList, contactNodes, contactRootNodes, self){
 		let contactLinks = [];
 		contactNodes.map((sourceContact, idx) => {
 			let contactData = contactList.find(function(e){
@@ -157,7 +164,8 @@ class GraphContainer extends Component {
 		self.setState({
 			contacts: contactList,
 			contactNodes: contactNodes,
-			contactLinks: contactLinks
+			contactLinks: contactLinks,
+			contactRootNodes: contactRootNodes
 		});
 
 		// let queries = [];
@@ -212,7 +220,9 @@ class GraphContainer extends Component {
 
 	render() {
 //		const {actions} = this.props;
-		return <ContactGraph contacts={this.state.contactNodes} links={this.state.contactLinks}/>;
+//		return <ContactGraph contacts={this.state.contactNodes} links={this.state.contactLinks}/>;
+		return <ContactTree contactNodes={this.state.contactNodes} links={this.state.contactLinks} roots={this.state.contactRootNodes} contacts={this.state.contacts}/>;
+
 	}
 }
 

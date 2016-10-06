@@ -26,7 +26,7 @@ module.exports = React.createClass({
   },
 
   componentWillReceiveProps: function (newProps){
-    let nodes = newProps.contacts;
+    let nodes = newProps.contactNodes;
     let links = newProps.links;
     let height = parseInt(d3.select(ReactDOM.findDOMNode(this)).style('height'));
     let width = parseInt(d3.select(ReactDOM.findDOMNode(this)).style('width'));
