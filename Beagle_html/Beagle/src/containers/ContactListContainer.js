@@ -29,20 +29,8 @@ class ContactListContainer extends Component {
 		state.filters.forEach(function(element) {
 			if (typeof element.values !== 'undefined'){
 				var jsonData ={};
-				var selection;
-				if (element.selection == 'SUBJECT CONTAINS:') {
-					selection = 'Subject';
-				} else if (element.selection == 'CONTENT CONTAINS:') {
-					selection = 'Contents';
-				} else if (element.selection == 'PERSON:') {
-					selection = 'PERSON';
-				} else if (element.selection == 'ORGANIZATION:') {
-					selection = 'ORGANIZATION';
-				} else {
-					selection = 'ToAddresses';
-				}
 
-				jsonData['field'] = selection;
+				jsonData['field'] = element.selection;
 				jsonData['operation'] = 'contains';
 				jsonData['value'] = element.values;
 				jsonQuery.filters.push(jsonData);
@@ -55,11 +43,11 @@ class ContactListContainer extends Component {
 		let query = `query getData($filters:[Rule]){
 				Select(filters:$filters){
 					Summaries {
-						ToAddresses {
+						Any {
 							Key
 							Count
 							Counts{
-          			From
+          			FromAddress
         			}
 						}
 					}
@@ -81,7 +69,7 @@ class ContactListContainer extends Component {
 			query, this.translateStateToFilter(newState)
 		).then(r => {
 			if (typeof r.data !== 'undefined'){
-				this.setState({contacts: r.data.Select.Summaries.ToAddresses})
+				this.setState({contacts: r.data.Select.Summaries.Any})
 			}
 		}).catch((err) => console.log('In ContactListContainer: ', err.message))
 	}

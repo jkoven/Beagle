@@ -1,5 +1,5 @@
 var React = require('react')
-var lodashMap = require('lodash.map')
+//var lodashMap = require('lodash.map')
 var TextBox = require('./TextBox.js')
 
 var textUid = 0;
@@ -14,7 +14,7 @@ var DropDown = React.createClass({
 
   handleChange (event) {
     let {changeFilter,filterIdx} = this.props;
-    changeFilter(filterIdx,this.props.options[event.target.value]);
+    changeFilter(filterIdx, event.target.value);
     this.props.onChange(event.target.value);
   },
 
@@ -126,11 +126,9 @@ var DropDown = React.createClass({
     return (
       <span className= {'dropSelect'}>
 
-      <select className='{dropSelect}' size='1' onChange={this.handleChange} value={self.props.filter.selection}>
-        {lodashMap(options, function mapOptions (value, key) {
-          return (
-            <option value={value} key={key}>{value}</option>
-          )
+      <select className='{dropSelect}' size='1' onChange={self.handleChange} value={self.props.filter.selection}>
+        {options.map((opt) => {
+          return (<option value={opt.value} key={opt.text}>{opt.text}</option>)
         })}
         </select>
 

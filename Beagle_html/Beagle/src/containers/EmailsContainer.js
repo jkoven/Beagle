@@ -31,23 +31,8 @@ class EmailsContainer extends Component {
     state.filters.forEach(function(element) {
       if (typeof element.values !== 'undefined'){
         var jsonData ={};
-        var selection;
-        //console.log(element.selection);
 
-        //var selection = this.translateSelection(element.selection);
-        if (element.selection == 'SUBJECT CONTAINS:') {
-					selection = 'Subject';
-				} else if (element.selection == 'CONTENT CONTAINS:') {
-					selection = 'Contents';
-				} else if (element.selection == 'PERSON:') {
-					selection = 'PERSON';
-				} else if (element.selection == 'ORGANIZATION:') {
-					selection = 'ORGANIZATION';
-				} else {
-					selection = 'ToAddresses';
-				}
-
-        jsonData['field'] = selection;
+        jsonData['field'] = element.selection;
         jsonData['operation'] = 'contains';
         jsonData['value'] = element.values;
         jsonQuery.filters.push(jsonData);

@@ -26,13 +26,13 @@ class ContactList extends React.Component {
 		let {contacts} = this.props;
 			for(var i = 0; i < contacts.length; i++){
 				if((_.get(contacts,i+'.Key')).includes(input)==true){
-					if((_.get(contacts,i+'.Counts')).From > this.state.test){
-						this.state.test = (_.get(contacts,i+'.Counts')).From;
+					if((_.get(contacts,i+'.Counts')).FromAddress > this.state.test){
+						this.state.test = (_.get(contacts,i+'.Counts')).FromAddress;
 					}
 					this.state.searchArr.push({
 					Key:	(_.get(contacts,i+'.Key')),
 					Count: (_.get(contacts,i+'.Count')),
-					Counts: (_.get(contacts,i+'.Counts')).From
+					Counts: (_.get(contacts,i+'.Counts')).FromAddress
 				})
 				}
 			}
@@ -40,7 +40,7 @@ class ContactList extends React.Component {
 		}
 
 	mouseDoubleClick(e){
-		this.props.addListItem(e.target.textContent, 'IS TO/FROM:');
+		this.props.addListItem(e.target.textContent, 'Any');
 	}
 
 	render() {

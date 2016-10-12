@@ -26,30 +26,41 @@ class GraphContainer extends Component {
 	translateStateToFilter(state) {
 		var jsonQuery = {
 			filters: [],
-			contacts: []
+			contacts: [],
+			anyList: [],
+			toList: [],
+			fromList: []
 		}
 		let clist = [];
 		state.filters.forEach(function(element) {
 			if (typeof element.values != 'undefined') {
 				var jsonData ={};
-				var selection;
 
-				if (element.selection == 'SUBJECT CONTAINS:') {
-					selection = 'Subject';
-				} else if (element.selection == 'CONTENT CONTAINS:') {
-					selection = 'Contents';
-				} else if (element.selection == 'PERSON:') {
-					selection = 'PERSON';
-				} else if (element.selection == 'ORGANIZATION:') {
-					selection = 'ORGANIZATION';
-				} else {
-					selection = 'ToAddresses';
-					if (typeof element.values !== 'undefined'){
-						clist = [...clist.slice(0), ...element.values.slice(0)]
-					}
+				let contact = {
+					'Any': true,
+					'ToAddresses': true,
+					'FromAddress': true
 				}
 
-				jsonData['field'] = selection;
+				if (contact[element.selection] && typeof element.values !== 'undefined'){
+					clist = [...clist.slice(0), ...element.values.slice(0)]
+				}
+				switch (element.selection) {
+					case 'Any':
+						jsonQuery.anyList = [...jsonQuery.anyList.slice(0), ...element.values.slice(0)]
+						break;
+					case 'ToAddresses':
+						jsonQuery.toList = [...jsonQuery.toList.slice(0), ...element.values.slice(0)]
+						break;
+					case 'FromAddress':
+						jsonQuery.fromList = [...jsonQuery.fromList.slice(0), ...element.values.slice(0)]
+						break;
+					default:
+						break;
+				}
+
+
+				jsonData['field'] = element.selection;
 				jsonData['operation'] = 'contains';
 				jsonData['value'] = element.values;
 				jsonQuery.filters.push(jsonData);
@@ -70,14 +81,40 @@ class GraphContainer extends Component {
 			let query = `query getData($filters:[Rule]){
 					Select(filters:$filters){
 						Summaries {
-							ToAddresses (limit:50){
+							FromAddress (limit:100) {
+								Key
+								Count
+								Counts {
+	          			From
+	        			}
+								Summaries {
+								ToAddresses {
+										Key
+										Count
+									}
+								}
+							}
+							ToAddresses (limit:100) {
 								Key
 								Count
 								Counts{
 	          			From
 	        			}
 								Summaries {
-								ToAddresses (limit:100){
+								FromAddress {
+										Key
+										Count
+									}
+								}
+							}
+							Any (limit:100) {
+								Key
+								Count
+								Counts{
+	          			From
+	        			}
+								Summaries {
+									Any {
 										Key
 										Count
 									}
@@ -106,19 +143,31 @@ class GraphContainer extends Component {
 				let contactNodes = [];
 				let contactRootNodes = [];
 				if (typeof r.data !== 'undefined'){
-					contactList = r.data.Select.Summaries.ToAddresses;
+					contactList = r.data.Select.Summaries;
 				}
 				jsonQuery.contacts.map((c) => {
-					let contactData = contactList.find(function(e){
+					let contactData = contactList.Any.find(function(e){
 						return (c === e.Key);
 					});
+//					console.log('testing', c);
 					if (typeof contactData !== 'undefined'){
 						contactNodes.push({id: contactData.Key, size: contactData.Count, queryNode: true, mouseOver: false, nodeClass: 'normal'});
-						contactRootNodes.push({id: contactData.Key, size: contactData.Count, queryNode: true, mouseOver: false, nodeClass: 'normal'});
+						if (typeof jsonQuery.anyList.find(function(con) {return (con === contactData.Key)}) !== 'undefined'){
+//							console.log('any', contactData.Key);
+							contactRootNodes.push({id: contactData.Key, size: contactData.Count, queryNode: true, mouseOver: false, nodeClass: 'normal', nodeType: 'any'});
+						}
+						if (typeof jsonQuery.toList.find(function(con) {return (con === contactData.Key)}) !== 'undefined'){
+//							console.log('to', contactData.Key);
+							contactRootNodes.push({id: contactData.Key, size: contactData.Count, queryNode: true, mouseOver: false, nodeClass: 'normal', nodeType: 'to'});
+						}
+						if (typeof jsonQuery.fromList.find(function(con) {return (con === contactData.Key)}) !== 'undefined'){
+//							console.log('from', contactData.Key);
+							contactRootNodes.push({id: contactData.Key, size: contactData.Count, queryNode: true, mouseOver: false, nodeClass: 'normal', nodeType: 'from'});
+						}
 					}
 				});
-				if (contactNodes.length < contactList.length + 10){
-					contactList.map ((contact) => {
+				if (contactNodes.length < contactList.Any.length + 10){
+					contactList.Any.map ((contact) => {
 						let foundNode = contactNodes.find(function (e){
 							return e.id === contact.Key;
 						});
@@ -149,13 +198,47 @@ class GraphContainer extends Component {
 	loadMoreData(jsonQuery, contactList, contactNodes, contactRootNodes, self){
 		let contactLinks = [];
 		contactNodes.map((sourceContact, idx) => {
-			let contactData = contactList.find(function(e){
-				return e.Key === sourceContact.id;
-			});
+			let contactData;
+			switch (sourceContact.nodeType) {
+				case 'any':
+				  contactData = contactList.Any.find(function(e){
+						return e.Key === sourceContact.id;
+					});
+					break;
+				case 'to':
+				  contactData = contactList.toAddresses.find(function(e){
+						return e.Key === sourceContact.id;
+					});
+					break;
+				case 'from':
+				  contactData = contactList.FromAddress.find(function(e){
+						return e.Key === sourceContact.id;
+					});
+					break;
+				default:
+					break;
+			}
 			for (let idx1 = idx + 1; idx1 < contactNodes.length; idx1++){
-				let targetContact = contactData.Summaries.ToAddresses.find((e) => {
-					return e.Key === contactNodes[idx1].id;
-				});
+				let targetContact;
+				switch (sourceContact.nodeType) {
+					case 'any':
+						targetContact = contactData.Summaries.Any.find((e) => {
+							return e.Key === contactNodes[idx1].id;
+						});
+						break;
+					case 'to':
+						targetContact = contactData.Summaries.FromAddress.find((e) => {
+							return e.Key === contactNodes[idx1].id;
+						});
+						break;
+					case 'from':
+						targetContact = contactData.Summaries.ToAddresses.find((e) => {
+							return e.Key === contactNodes[idx1].id;
+						});
+						break;
+					default:
+						break;
+				}
 				if (typeof targetContact !== 'undefined') {
 					contactLinks.push({source: sourceContact.id, target: targetContact.Key, value:targetContact.Count, lineClass: 'normal'})
 				}
@@ -221,7 +304,12 @@ class GraphContainer extends Component {
 	render() {
 //		const {actions} = this.props;
 //		return <ContactGraph contacts={this.state.contactNodes} links={this.state.contactLinks}/>;
-		return <ContactTree contactNodes={this.state.contactNodes} links={this.state.contactLinks} roots={this.state.contactRootNodes} contacts={this.state.contacts}/>;
+		return <ContactTree
+			contactNodes={this.state.contactNodes} l
+			inks={this.state.contactLinks}
+			roots={this.state.contactRootNodes}
+			contacts={this.state.contacts}
+			/>;
 
 	}
 }

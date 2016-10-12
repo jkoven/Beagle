@@ -5,6 +5,8 @@ import ReactDOM from 'react-dom'
 
 require('styles//ContactGraph.scss');
 var d3 = require('d3');
+let nodeScale = d3.scaleLog();
+let linkScale = d3.scaleLog();
 
 module.exports = React.createClass({
 
@@ -40,30 +42,88 @@ module.exports = React.createClass({
     let rootStartY = yCenter - (((rootNodes.length - 1) * rootSpacing)/2);
     let rootX = 100;
     let childX = rootX + 300;
+    let minLinkCount = Number.MAX_VALUE;
+    let maxLinkCount = 0;
+    let minNodeCount = Number.MAX_VALUE;
+    let maxNodeCount = 0;
+
+    linkScale.range([.5, 5]);
+    nodeScale.range([1, 5])
 
     rootNodes.map ((snode, idx) => {
+      minNodeCount = Math.min(snode.size, minNodeCount);
+      maxNodeCount = Math.max(snode.size, maxNodeCount);
       snode['y'] = rootStartY + (idx * rootSpacing);
       snode['x'] = rootX;
-      let nodeData = contacts.find(function(contact){
-        return (snode.id === contact.Key);
-      });
+      let nodeData;
+      switch (snode.nodeType) {
+        case 'any':
+          nodeData = contacts.Any.find(function(contact){
+            return (snode.id === contact.Key);
+          });
+          break;
+        case 'to':
+          nodeData = contacts.ToAddresses.find(function(contact){
+            return (snode.id === contact.Key);
+          });
+          break;
+        case 'from':
+          nodeData = contacts.FromAddress.find(function(contact){
+            return (snode.id === contact.Key);
+          });
+          break;
+        default:
+          break;
+      }
+
       if (typeof nodeData !== 'undefined'){
-        nodeData.Summaries.ToAddresses.slice(0,10 + rootNodes.length).map((cnode) => {
-          if (typeof rootNodes.find (function(tnode){
-            return (cnode.Key === tnode.id)
-          }) === 'undefined') {
+        let thisNodeData;
+        switch (snode.nodeType) {
+          case 'any':
+            thisNodeData = nodeData.Summaries.Any.slice(0,10 + rootNodes.length);
+            break;
+          case 'to':
+            thisNodeData = nodeData.Summaries.FromAddress.slice(0,10 + rootNodes.length);
+            break;
+          case 'from':
+            thisNodeData = nodeData.Summaries.ToAddresses.slice(0,10 + rootNodes.length);
+            break;
+          default:
+            break;
+        }
+        thisNodeData.slice(0,10 + rootNodes.length).map((cnode) => {
+          // if (typeof rootNodes.find (function(tnode){
+          //   return (cnode.Key === tnode.id)
+          // }) === 'undefined') {
             let thisChild = childNodes.find(function(tnode){
               return(tnode.id === cnode.Key);
             });
             if (typeof thisChild === 'undefined') {
-              thisChild = {id: cnode.Key, size: cnode.Count, queryNode: false, mouseOver: false, nodeClass: 'normal'};
+              thisChild = {
+                id: cnode.Key,
+                size: cnode.Count,
+                queryNode: false,
+                mouseOver: false,
+                nodeClass: 'normal',
+                nodeType: snode.nodeType === 'any' ? 'any' : snode.nodeType === 'to' ? 'from' : 'to'};
+              if (typeof rootNodes.find (function(tnode){
+                return (cnode.Key === tnode.id)
+              }) !== 'undefined') {
+                thisChild['queryNode'] = true;
+              }
+              minNodeCount = Math.min(thisChild.size, minNodeCount);
+              maxNodeCount = Math.max(thisChild.size, maxNodeCount);
+              minLinkCount = Math.min(thisChild.size, minLinkCount);
+              maxLinkCount = Math.max(thisChild.size, maxLinkCount);
               childNodes.push(thisChild);
             }
-            links.push({source: snode, target: thisChild, value:cnode.Count,lineClass: 'normal'})
-          }
+            links.push({source: snode, target: thisChild, value:cnode.Count,lineClass: 'normal', lineType: snode.nodeType})
+//          }
         });
       }
     });
+    linkScale.domain([minLinkCount, maxLinkCount]);
+    nodeScale.domain([minNodeCount, maxNodeCount]);
     let childSpacing = (height - 30) / childNodes.length;
     let childStartY = yCenter - (((childNodes.length - 1) * childSpacing)/2);
     childNodes.map((cnode, index) => {
@@ -121,6 +181,15 @@ module.exports = React.createClass({
     });
   },
 
+  /* Link label code for later
+                <text key={'linklabel' + link.id + i}
+                className={link.lineClass}
+                x={link.midpointx} y={link.midpointy}
+                transform={'rotate(' + link.angle + ' ' + link.midpointx + ' ' + link.midpointy + ')'}
+                textAnchor='middle'>
+                {link.value}
+              </text>
+  */
   render: function(){
     let rad = 5;
     return (
@@ -130,17 +199,11 @@ module.exports = React.createClass({
           <g key={'g-graphline' + link.id + i}>
             <line
               key={'graphline' + link.id + i}
-              className={link.lineClass}
+              className={link.lineClass +link.lineType}
               x1={link.source.x} y1={link.source.y}
               x2={link.target.x} y2={link.target.y}
+              style={{strokeWidth: linkScale(link.value)}}
             />
-            <text key={'linklabel' + link.id + i}
-              className={link.lineClass}
-              x={link.midpointx} y={link.midpointy}
-              transform={'rotate(' + link.angle + ' ' + link.midpointx + ' ' + link.midpointy + ')'}
-              textAnchor='middle'>
-              {link.value}
-            </text>
           </g>
         )}
         {this.state.rootNodes.map((contact, i) =>
@@ -150,10 +213,10 @@ module.exports = React.createClass({
           >
             <circle
               key={'graphcircle' + contact.id + i}
-              className={contact.queryNode ? 'qnode' : 'nqnode'}
+              className={(contact.queryNode ? 'qnode' : 'nqnode') + contact.nodeType}
               cx={contact.x}
               cy={contact.y}
-              r={rad}
+              r={nodeScale(contact.size)}
               onMouseOver={this.mouseOverNode}
               onMouseOut={this.mouseOutOfNode}
             />
@@ -173,10 +236,10 @@ module.exports = React.createClass({
           >
             <circle
               key={'graphcircle' + contact.id + i}
-              className={contact.queryNode ? 'qnode' : 'nqnode'}
+              className={(contact.queryNode ? 'qnode' : 'nqnode') + contact.nodeType}
               cx={contact.x}
               cy={contact.y}
-              r={rad}
+              r={nodeScale(contact.size)}
               onMouseOver={this.mouseOverNode}
               onMouseOut={this.mouseOutOfNode}
             />

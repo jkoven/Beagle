@@ -37,22 +37,56 @@
     font-weight: bold;
   }
 
-  circle.nqnode{
-    fill: lightBlue;
-    stroke: lightBlue
+  circle.nqnodeany{
+    fill: #a6cee3;
+    stroke: #a6cee3
   }
-  circle.qnode{
-    fill: Blue;
-    stroke: lightBlue
+  circle.qnodeany{
+    fill: #1f78b4;
+    stroke: #1f78b4
+  }
+  circle.nqnodeto{
+    fill: #b2df8a;
+    stroke: #b2df8a
+  }
+  circle.qnodeto{
+    fill: #33a02c;
+    stroke: #33a02c
+  }
+  circle.nqnodefrom{
+    fill: #fb9a99;
+    stroke: #fb9a99
+  }
+  circle.qnodefrom{
+    fill: #e31a1c;
+    stroke: #e31a1c
   }
 
-  line.normal{
-    stroke: lightGrey;
+  line.normalany{
+    stroke: #a6cee3;
     stroke-width: 2px
   }
 
-  line.highlighted{
-    stroke: black;
+  line.highlightedany{
+    stroke: #1f78b4;
+    stroke-width: 1px
+  }
+  line.normalto{
+    stroke: #b2df8a;
+    stroke-width: 2px
+  }
+
+  line.highlightedto{
+    stroke: #33a02c;
+    stroke-width: 1px
+  }
+  line.normalfrom{
+    stroke: #fb9a99;
+    stroke-width: 2px
+  }
+
+  line.highlightedfrom{
+    stroke: #e31a1c;
     stroke-width: 1px
   }
 }

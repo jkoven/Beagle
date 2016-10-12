@@ -102,7 +102,7 @@ if(field =='Person'){
       <tr >
       <td className='wordcloud-component'>
         {this.state.PersonArr.map((s, idx) =>
-          <svg className='wordsvg' key={'person' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.PersonArr[idx], 'PERSON:')}}>
+          <svg className='wordsvg' key={'person' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.PersonArr[idx], 'PERSON')}}>
           <g key={'persongroup' + s + idx}>
           <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
         </rect>
@@ -129,7 +129,7 @@ if(field =='Person'){
         <tr >
         <td className='wordcloud-component'>
           {this.state.ContentsArr.map((s, idx) =>
-            <svg  className='wordsvg' key={'contents' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.ContentsArr[idx], 'CONTENT CONTAINS:')}}>
+            <svg  className='wordsvg' key={'contents' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.ContentsArr[idx], 'Contents')}}>
             <g key={'contentsgroup' + s + idx}>
             <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
           </rect>
@@ -156,7 +156,7 @@ if(field =='Person'){
           <tr>
           <td className='wordcloud-component'>
             {this.state.SubjectArr.map((s, idx) =>
-              <svg className='wordsvg' key={'subject' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.SubjectArr[idx], 'SUBJECT CONTAINS:')}}>
+              <svg className='wordsvg' key={'subject' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.SubjectArr[idx], 'Subject')}}>
               <g key={'subjectgroup' + s + idx}>
               <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
             </rect>
@@ -183,7 +183,7 @@ if(field =='Person'){
             <tr>
             <td className='wordcloud-component'>
               {this.state.OrganizationArr.map((s, idx) =>
-                <svg className='wordsvg' key={'org' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.OrganizationArr[idx], 'ORGANIZATION:')}}>
+                <svg className='wordsvg' key={'org' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.OrganizationArr[idx], 'ORGANIZATION')}}>
                 <g key={'orggroup' + s + idx}>
                 <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
               </rect>

@@ -33,21 +33,8 @@ class FilterContainer extends Component {
     for (var i = index; i >= 0; i--) {
       if (typeof state[i].values !== 'undefined'){
         var jsonData ={};
-        var selection;
 
-        if (state[i].selection == 'SUBJECT CONTAINS:') {
-					selection = 'Subject';
-				} else if (state[i].selection == 'CONTENT CONTAINS:') {
-					selection = 'Contents';
-				} else if (state[i].selection == 'PERSON:') {
-					selection = 'PERSON';
-				} else if (state[i].selection == 'ORGANIZATION:') {
-					selection = 'ORGANIZATION';
-				} else {
-					selection = 'ToAddresses';
-				}
-
-        jsonData['field'] = selection;
+        jsonData['field'] = state[i].selection;
         jsonData['operation'] = 'contains';
         jsonData['value'] = state[i].values;
         jsonQuery.filters.push(jsonData);
@@ -60,15 +47,20 @@ class FilterContainer extends Component {
     let query = `query getData($filters:[Rule]){
 				Select(filters:$filters){
           Count
-					Documents {
-            Subject
-            Timestamp
-            From
-            To
-            Contents
-					}
 				}
 		}`
+    // let query = `query getData($filters:[Rule]){
+		// 		Select(filters:$filters){
+    //       Count
+		// 			Documents {
+    //         Subject
+    //         Timestamp
+    //         From
+    //         To
+    //         Contents
+		// 			}
+		// 		}
+		// }`
 
     this.state.emails = [];
     newState.forEach(function(element,index) {

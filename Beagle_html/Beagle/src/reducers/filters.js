@@ -17,7 +17,7 @@ module.exports = function(state = initialState, action) {
     } break;
     */
     case 'ADD_FILTER' : {
-              return [...state, {selection: 'IS FROM/TO:', filterId: filterUid++}]
+              return [...state, {selection: 'Any', filterId: filterUid++}]
     }
 
     case 'ADD_DATA' : {
@@ -43,9 +43,10 @@ module.exports = function(state = initialState, action) {
     }
 
     case 'ADD_LIST_ITEM' : {
+      let contact = {'Any': 0, 'ToAddresses': 0, 'FromAddress': 0}
       if (state.length > 0) {
         let idx = state.length - 1;
-        if (state[idx].selection === action.selection){
+        if (state[idx].selection === action.selection || (action.selection === 'Any') && contact.hasOwnProperty(state[idx].selection)){
           var filter = Object.assign({},state[idx]);
           if (typeof filter.values === 'undefined') {
             filter.values = [action.contact];
