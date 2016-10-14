@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Panel from './Panel';
-import GraphContainer from '../containers/GraphContainer';
+import BiGraphContainer from '../containers/BiGraphContainer';
 //import ContactGraph from './ContactGraph'
 require('styles//GraphPanel.scss');
 class GraphPanel extends React.Component {
@@ -10,7 +10,7 @@ class GraphPanel extends React.Component {
     return (
       <div className='graphpanel-component'>
         <Panel title='Contact Graph'>
-        	<GraphContainer />
+        	<BiGraphContainer />
         </Panel>
       </div>
     )
