@@ -198,7 +198,11 @@ module.exports = React.createClass({
               className={contact.queryNode ? 'highlighted' : contact.nodeClass}
               x={contact.x}
               y={contact.y - rad - 2}
-              textAnchor='middle'>{contact.id}
+              textAnchor='middle'
+              onMouseOver={this.mouseOverNode}
+              onMouseOut={this.mouseOutOfNode}
+              >
+              {contact.id}
             </text>
           </g>
         )}
@@ -221,7 +225,11 @@ module.exports = React.createClass({
               className={contact.queryNode ? 'highlighted' : contact.nodeClass}
               x={contact.x}
               y={contact.y - rad - 2}
-              textAnchor='middle'>{contact.id}
+              textAnchor='middle'
+              onMouseOver={this.mouseOverNode}
+              onMouseOut={this.mouseOutOfNode}
+              >
+              {contact.id}
             </text>
           </g>
         )}
