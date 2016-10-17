@@ -24,16 +24,32 @@ class ContactListContainer extends Component {
 
 	translateStateToFilter(state) {
 		var jsonQuery = {
-			filters: []
+			filters: [],
+			queryContacts: {}
 		}
+		let clist = {};
 		state.filters.forEach(function(element) {
-			if (typeof element.values !== 'undefined'){
+			if (typeof element.values != 'undefined') {
 				var jsonData ={};
+
+				let contact = {
+					'Any': true,
+					'ToAddresses': true,
+					'FromAddress': true
+				}
+
+				if (contact[element.selection] && typeof element.values !== 'undefined'){
+					element.values.map((e) => {
+						clist[e] = true;
+					});
+				}
 
 				jsonData['field'] = element.selection;
 				jsonData['operation'] = 'contains';
 				jsonData['value'] = element.values;
 				jsonQuery.filters.push(jsonData);
+				jsonQuery['queryContacts'] = clist;
+
 			}
 		});
 		return jsonQuery;
@@ -65,11 +81,16 @@ class ContactListContainer extends Component {
 			}*/
 			/*{'filters':  [{'field':'ToAddress', 'operation': 'in',
 			      'value':['sue.nord@enron.com', 'susan.mara@enron.com']}]}*/
+		let qdata = this.translateStateToFilter(newState);
 		dataSource.query(
-			query, this.translateStateToFilter(newState)
+			query, qdata
 		).then(r => {
 			if (typeof r.data !== 'undefined'){
-				this.setState({contacts: r.data.Select.Summaries.Any})
+				this.setState({
+					contacts: r.data.Select.Summaries.Any.filter(function(c){
+						return (!qdata.queryContacts.hasOwnProperty(c.Key));
+					})
+				})
 			}
 		}).catch((err) => console.log('In ContactListContainer: ', err.message))
 	}
