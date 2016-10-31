@@ -7,7 +7,7 @@ require('styles//ContactGraph.scss');
 var d3 = require('d3');
 let nodeScale = d3.scaleLog();
 let linkScale = d3.scaleLog();
-let linkSpacing = 10;
+let linkSpacing = 8;
 let width = 300;
 module.exports = React.createClass({
 
@@ -40,7 +40,7 @@ module.exports = React.createClass({
     let yCenter = height/2;
     let nodeSpacing = (height - 30) / nodes.length;
     let nodeStartY = yCenter - (((nodes.length - 1) * nodeSpacing)/2);
-    linkSpacing = ((width - 10) / 3) / nodes.length;
+    linkSpacing = ((width - 4) / 3) / nodes.length;
     let nodeX = width/2;
     let minLinkCount = Number.MAX_VALUE;
     let maxLinkCount = 0;
@@ -51,7 +51,7 @@ module.exports = React.createClass({
     nodeScale.range([2, 7])
 
     nodes.map ((node, idx) => {
-      node['ndx'] = idx+1;
+      node['ndx'] = node.queryNode ? idx+1 : 0;
       minNodeCount = Math.min(node.size, minNodeCount);
       maxNodeCount = Math.max(node.size, maxNodeCount);
       node['y'] = nodeStartY + (idx * nodeSpacing);
@@ -63,14 +63,15 @@ module.exports = React.createClass({
           });
           if (typeof thisTo !== 'undefined') {
             if (thisTo.id !== node.id) {
-              node.toLinks.push({
-                target: thisTo,
-                size: thisTo.size
-              });
+            //   node.toLinks.push({
+            //     target: thisTo,
+            //     size: thisTo.size
+            //   });
               thisTo.fromLinks.push({
                 target: node,
                 size: thisTo.size
               });
+              minLinkCount = Math.min(thisTo.size, minLinkCount);
               maxLinkCount = Math.max(thisTo.size, maxLinkCount);
             }
           }
@@ -81,10 +82,10 @@ module.exports = React.createClass({
           });
           if (typeof thisFrom !== 'undefined') {
             if (thisFrom.id !== node.id) {
-              node.fromLinks.push({
-                target: thisFrom,
-                size: thisFrom.size
-              });
+            //   node.fromLinks.push({
+            //     target: thisFrom,
+            //     size: thisFrom.size
+            //   });
               thisFrom.toLinks.push({
                 target: node,
                 size: thisFrom.size
@@ -238,7 +239,7 @@ module.exports = React.createClass({
         <svg className='contact-graph-svg'>
         <text
           className={'header'}
-          x={width/4}
+          x={width/6}
           y={20}
           textAnchor='middle'
           >
@@ -246,7 +247,7 @@ module.exports = React.createClass({
         </text>
         <text
           className={'header'}
-          x={width/4 * 3}
+          x={width/6 * 5}
           y={20}
           textAnchor='middle'
           >
@@ -278,28 +279,28 @@ module.exports = React.createClass({
               {contact.id}
             </text>
             {contact.fromLinks.map((link, i) =>
-              <rect
-                key={'fromlinkrect' + contact.id + i}
-                className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
-                x={(width/3) - (i*linkSpacing)}
-                y={(contact.y - rad) + (12 - linkScale(link.size))}
-                height={linkScale(link.size)}
-                width={4}
-                onMouseOver={function (e) {overLink(e, link.target)}}
-                onMouseOut={function () {outOfLink()}}
-              />
+                <rect
+                  key={'fromlinkrect' + contact.id + i}
+                  className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
+                  x={(width/4) - (i*linkSpacing)}
+                  y={(contact.y - rad - 15) + (12 - linkScale(link.size))}
+                  height={linkScale(link.size)}
+                  width={4}
+                  onMouseOver={function (e) {overLink(e, link.target)}}
+                  onMouseOut={function () {outOfLink()}}
+                />
             )}
             {contact.toLinks.map((link, i) =>
-              <rect
-                key={'tolinkrect' + contact.id + i}
-                className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
-                x={(2 * width / 3) + (i*linkSpacing)}
-                y={(contact.y - rad) + (12 - linkScale(link.size))}
-                height={linkScale(link.size)}
-                width={4}
-                onMouseOver={function (e) {overLink(e, link.target)}}
-                onMouseOut={function () {outOfLink()}}
-              />
+                <rect
+                  key={'tolinkrect' + contact.id + i}
+                  className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
+                  x={(3 * width / 4) + (i*linkSpacing)}
+                  y={(contact.y - rad - 15) + (12 - linkScale(link.size))}
+                  height={linkScale(link.size)}
+                  width={4}
+                  onMouseOver={function (e) {overLink(e, link.target)}}
+                  onMouseOut={function () {outOfLink()}}
+                />
             )}
           </g>
         )}

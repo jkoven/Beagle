@@ -51,7 +51,19 @@ class WordCloudContainer extends Component {
 		let query = `query getData($filters:[Rule]){
 			Select(filters:$filters) {
 				Summaries{
-					${field} {
+					PERSON {
+						Key
+						Count
+					}
+					Contents {
+						Key
+						Count
+					}
+					Subject {
+						Key
+						Count
+					}
+					ORGANIZATION {
 						Key
 						Count
 					}
@@ -64,7 +76,7 @@ class WordCloudContainer extends Component {
 		).then(
 			r => {
 				if (typeof r.data !== 'undefined'){
-					this.setState({words: r.data.Select.Summaries[field]})
+					this.setState({words: r.data.Select.Summaries})
 				}
 			}).catch((err) => console.log('In ContactListContainer: ', err.message));
 
@@ -74,7 +86,7 @@ class WordCloudContainer extends Component {
 	render() {
 		const {actions} = this.props;
 
-		return <WordCloud {...actions} words = {this.state.words} field = {this.state.field}/>;
+		return <WordCloud {...actions} words = {this.state.words}/>;
 	}
 }
 

@@ -83,10 +83,7 @@ export class RightPanel extends React.Component {
           <FloatingActionButton style={helpButtonStyle} mini={true} onClick={()=>this.openHelp()}>
             <ActionHelp />
             </FloatingActionButton>
-          <WordCloudContainer field="PERSON" />
-          <WordCloudContainer field="Contents" />
-          <WordCloudContainer field="Subject" />
-          <WordCloudContainer field="ORGANIZATION" />
+          <WordCloudContainer />
         </Panel>
         <Panel title="Communications" height={emailHeight}>
             <EmailsContainer />
