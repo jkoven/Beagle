@@ -305,7 +305,7 @@ class GraphContainer extends Component {
 //		const {actions} = this.props;
 //		return <ContactGraph contacts={this.state.contactNodes} links={this.state.contactLinks}/>;
 		return <ContactTree
-			contactNodes={this.state.contactNodes} l
+			contactNodes={this.state.contactNodes}
 			inks={this.state.contactLinks}
 			roots={this.state.contactRootNodes}
 			contacts={this.state.contacts}

@@ -7,7 +7,8 @@ require('styles//ContactGraph.scss');
 var d3 = require('d3');
 let nodeScale = d3.scaleLog();
 let linkScale = d3.scaleLog();
-
+let linkSpacing = 10;
+let width = 300;
 module.exports = React.createClass({
 
   getInitialState: function() {
@@ -30,69 +31,63 @@ module.exports = React.createClass({
   },
 
   componentWillReceiveProps: function (newProps){
-    let toNodes = newProps.toNodes;
+    let nodes = newProps.nodes;
+//    let toNodes = newProps.nodes;
 //    let contacts = newProps.contacts;
-    let fromNodes = newProps.fromNodes;
     let links = [];
     let height = parseInt(d3.select(ReactDOM.findDOMNode(this)).style('height'));
-    let width = parseInt(d3.select(ReactDOM.findDOMNode(this)).style('width'));
+    width = parseInt(d3.select(ReactDOM.findDOMNode(this)).style('width'));
     let yCenter = height/2;
-    let fromSpacing = (height - 30) / fromNodes.length;
-    let fromStartY = yCenter - (((fromNodes.length - 1) * fromSpacing)/2);
-    let fromX = 100;
-    let toX = width - 100;
-    let toSpacing = (height - 30) / toNodes.length;
-    let toStartY = yCenter - (((toNodes.length - 1) * toSpacing)/2);
+    let nodeSpacing = (height - 30) / nodes.length;
+    let nodeStartY = yCenter - (((nodes.length - 1) * nodeSpacing)/2);
+    linkSpacing = ((width - 10) / 3) / nodes.length;
+    let nodeX = width/2;
     let minLinkCount = Number.MAX_VALUE;
     let maxLinkCount = 0;
     let minNodeCount = Number.MAX_VALUE;
     let maxNodeCount = 0;
 
-    linkScale.range([.5, 5]);
-    nodeScale.range([1, 5])
+    linkScale.range([2, 12]);
+    nodeScale.range([2, 7])
 
-    fromNodes.map ((fnode, idx) => {
-      minNodeCount = Math.min(fnode.size, minNodeCount);
-      maxNodeCount = Math.max(fnode.size, maxNodeCount);
-      fnode['y'] = fromStartY + (idx * fromSpacing);
-      fnode['x'] = fromX;
-      if (fnode.queryNode) {
-        fnode.toList.map((tnode) => {
-          let thisTo = toNodes.find(function(ttnode){
+    nodes.map ((node, idx) => {
+      node['ndx'] = idx+1;
+      minNodeCount = Math.min(node.size, minNodeCount);
+      maxNodeCount = Math.max(node.size, maxNodeCount);
+      node['y'] = nodeStartY + (idx * nodeSpacing);
+      node['x'] = nodeX;
+      if (node.queryNode) {
+        node.toList.map((tnode) => {
+          let thisTo = nodes.find(function(ttnode){
             return(ttnode.id === tnode.Key);
           });
           if (typeof thisTo !== 'undefined') {
-            links.push({
-              source: fnode,
-              target: thisTo,
-              value: thisTo.size,
-              lineClass: 'normal',
-              lineType: (thisTo.queryNode && fnode.queryNode) ? 'any' : 'from'
-            });
-            minLinkCount = Math.min(thisTo.size, minLinkCount);
-            maxLinkCount = Math.max(thisTo.size, maxLinkCount);
+            if (thisTo.id !== node.id) {
+              node.toLinks.push({
+                target: thisTo,
+                size: thisTo.size
+              });
+              thisTo.fromLinks.push({
+                target: node,
+                size: thisTo.size
+              });
+              maxLinkCount = Math.max(thisTo.size, maxLinkCount);
+            }
           }
         });
-      }
-    });
-    toNodes.map ((tnode, idx) => {
-      minNodeCount = Math.min(tnode.size, minNodeCount);
-      maxNodeCount = Math.max(tnode.size, maxNodeCount);
-      tnode['y'] = toStartY + (idx * toSpacing);
-      tnode['x'] = toX;
-      if (tnode.queryNode) {
-        tnode.fromList.map((fnode) => {
-          let thisFrom = fromNodes.find(function(ffnode){
+        node.fromList.map((fnode) => {
+          let thisFrom = nodes.find(function(ffnode){
             return(ffnode.id === fnode.Key);
           });
           if (typeof thisFrom !== 'undefined') {
-              if (typeof links.find(function(link){return (link.source === thisFrom && link.target === tnode)}) === 'undefined') {
-              links.push({
-                source: tnode,
+            if (thisFrom.id !== node.id) {
+              node.fromLinks.push({
                 target: thisFrom,
-                value: thisFrom.size,
-                lineClass: 'normal',
-                lineType: 'to'
+                size: thisFrom.size
+              });
+              thisFrom.toLinks.push({
+                target: node,
+                size: thisFrom.size
               });
               minLinkCount = Math.min(thisFrom.size, minLinkCount);
               maxLinkCount = Math.max(thisFrom.size, maxLinkCount);
@@ -101,16 +96,46 @@ module.exports = React.createClass({
         });
       }
     });
+    // toNodes.map ((tnode, idx) => {
+    //   minNodeCount = Math.min(tnode.size, minNodeCount);
+    //   maxNodeCount = Math.max(tnode.size, maxNodeCount);
+    //   tnode['y'] = toStartY + (idx * toSpacing);
+    //   tnode['x'] = toX;
+    //   if (tnode.queryNode) {
+    //     tnode.fromList.map((fnode) => {
+    //       let thisFrom = fromNodes.find(function(ffnode){
+    //         return(ffnode.id === fnode.Key);
+    //       });
+    //       if (typeof thisFrom !== 'undefined' ) {
+    //         if (thisFrom.id !== tnode.id) {
+    //           let fromLink = links.find(function(link){return (link.source === thisFrom && link.target === tnode)});
+    //           if (typeof fromLink === 'undefined') {
+    //             links.push({
+    //               source: tnode,
+    //               target: thisFrom,
+    //               value: thisFrom.size,
+    //               lineClass: 'normal',
+    //               lineType: 'to'
+    //             });
+    //             minLinkCount = Math.min(thisFrom.size, minLinkCount);
+    //             maxLinkCount = Math.max(thisFrom.size, maxLinkCount);
+    //           } else {
+    //             fromLink.lineType = 'any';
+    //           }
+    //         }
+    //       }
+    //     });
+    //   }
+    // });
     linkScale.domain([minLinkCount, maxLinkCount]);
     nodeScale.domain([minNodeCount, maxNodeCount]);
-    links.map ((link) => {
-      link['midpointx'] = (link.source.x + link.target.x) / 2;
-      link['midpointy'] = (link.source.y + link.target.y) / 2;
-      link['angle'] = this.angle(link.source.x, link.source.y, link.target.x, link.target.y);
-    });
+    // links.map ((link) => {
+    //   link['midpointx'] = (link.source.x + link.target.x) / 2;
+    //   link['midpointy'] = (link.source.y + link.target.y) / 2;
+    //   link['angle'] = this.angle(link.source.x, link.source.y, link.target.x, link.target.y);
+    // });
     this.setState({
-      fromNodes: fromNodes,
-      toNodes: toNodes,
+      nodes: nodes,
       links: links
     });
   },
@@ -129,27 +154,45 @@ module.exports = React.createClass({
 
   mouseOverNode: function (e){
     let name = e.target.parentNode.getAttribute('class');
-    let currentLinks = this.state.links;
-    currentLinks.map((link) => {
-      if(link.source.id === name || link.target.id === name) {
-        link.lineClass = 'highlighted';
-        link.source.nodeClass = 'highlighted';
-        link.target.nodeClass = 'highlighted';
+    let currentNodes = this.state.nodes;
+    currentNodes.map((node) => {
+      if(node.id === name) {
+        node.nodeClass = 'highlighted';
       }
       this.setState({
-        links: currentLinks
+        nodes: currentNodes
       });
     });
   },
 
   mouseOutOfNode: function(){
-    let currentLinks = this.state.links;
-    currentLinks.map((link) => {
-      link.lineClass = 'normal';
-      link.source.nodeClass = 'normal';
-      link.target.nodeClass = 'normal';
+    let currentNodes = this.state.nodes;
+    currentNodes.map((node) => {
+        node.nodeClass = 'normal';
       this.setState({
-        links: currentLinks
+        nodes: currentNodes
+      });
+    });
+  },
+  mouseOverlink: function (e, link){
+    let name = link.id;
+    let currentNodes = this.state.nodes;
+    currentNodes.map((node) => {
+      if(node.id === name) {
+        node.nodeClass = 'node' + link.ndx;
+      }
+      this.setState({
+        nodes: currentNodes
+      });
+    });
+  },
+
+  mouseOutOfLink: function(){
+    let currentNodes = this.state.nodes;
+    currentNodes.map((node) => {
+        node.nodeClass = 'normal';
+      this.setState({
+        nodes: currentNodes
       });
     });
   },
@@ -162,31 +205,61 @@ module.exports = React.createClass({
                 textAnchor='middle'>
                 {link.value}
               </text>
+    Save for bubbles if needed
+              {contact.fromLinks.map((link, i) =>
+                <circle
+                  key={'fromlinkcircle' + contact.id + i}
+                  className={'node'+link.target.ndx}
+                  cx={contact.x - 20 - (i*linkSpacing)}
+                  cy={contact.y}
+                  r={linkScale(link.size)}
+                  onMouseOver={this.mouseOverNode}
+                  onMouseOut={this.mouseOutOfNode}
+                />
+              )}
+              {contact.toLinks.map((link, i) =>
+                <circle
+                  key={'tolinkcircle' + contact.id + i}
+                  className={'node'+link.target.ndx}
+                  cx={contact.x + 20 + (i*linkSpacing)}
+                  cy={contact.y}
+                  r={linkScale(link.size)}
+                  onMouseOver={this.mouseOverNode}
+                  onMouseOut={this.mouseOutOfNode}
+                />
+              )}
   */
   render: function(){
-    let rad = 5;
+    let overLink = this.mouseOverlink;
+    let outOfLink = this.mouseOutOfLink;
+    let rad = 7;
     return (
       <div className='contactgraph-component'>
         <svg className='contact-graph-svg'>
-        {this.state.links.map((link, i) =>
-          <g key={'g-graphline' + link.id + i}>
-            <line
-              key={'graphline' + link.id + i}
-              className={link.lineClass +link.lineType}
-              x1={link.source.x} y1={link.source.y}
-              x2={link.target.x} y2={link.target.y}
-              style={{strokeWidth: linkScale(link.value)}}
-            />
-          </g>
-        )}
-        {this.state.fromNodes.map((contact, i) =>
+        <text
+          className={'header'}
+          x={width/4}
+          y={20}
+          textAnchor='middle'
+          >
+          {'FROM'}
+        </text>
+        <text
+          className={'header'}
+          x={width/4 * 3}
+          y={20}
+          textAnchor='middle'
+          >
+          {'TO'}
+        </text>
+        {this.state.nodes.map((contact, i) =>
           <g
             key={'g-graphcircle' + contact.id + i}
             className={contact.id}
           >
             <circle
               key={'graphcircle' + contact.id + i}
-              className={(contact.queryNode ? 'qnode' : 'nqnode') + contact.nodeType}
+              className={'node'+contact.ndx}
               cx={contact.x}
               cy={contact.y}
               r={nodeScale(contact.size)}
@@ -195,42 +268,39 @@ module.exports = React.createClass({
             />
             <text
               key={'nodelabel' + contact.id + i}
-              className={contact.queryNode ? 'highlighted' : contact.nodeClass}
+              className={contact.nodeClass === 'normal' ? contact.queryNode ? 'highlighted' : contact.nodeClass : contact.nodeClass}
               x={contact.x}
-              y={contact.y - rad - 2}
+              y={contact.y - rad - 3}
               textAnchor='middle'
               onMouseOver={this.mouseOverNode}
               onMouseOut={this.mouseOutOfNode}
               >
               {contact.id}
             </text>
-          </g>
-        )}
-        {this.state.toNodes.map((contact, i) =>
-          <g
-            key={'g-graphcircle' + contact.id + i}
-            className={contact.id}
-          >
-            <circle
-              key={'graphcircle' + contact.id + i}
-              className={(contact.queryNode ? 'qnode' : 'nqnode') + contact.nodeType}
-              cx={contact.x}
-              cy={contact.y}
-              r={nodeScale(contact.size)}
-              onMouseOver={this.mouseOverNode}
-              onMouseOut={this.mouseOutOfNode}
-            />
-            <text
-              key={'nodelabel' + contact.id + i}
-              className={contact.queryNode ? 'highlighted' : contact.nodeClass}
-              x={contact.x}
-              y={contact.y - rad - 2}
-              textAnchor='middle'
-              onMouseOver={this.mouseOverNode}
-              onMouseOut={this.mouseOutOfNode}
-              >
-              {contact.id}
-            </text>
+            {contact.fromLinks.map((link, i) =>
+              <rect
+                key={'fromlinkrect' + contact.id + i}
+                className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
+                x={(width/3) - (i*linkSpacing)}
+                y={(contact.y - rad) + (12 - linkScale(link.size))}
+                height={linkScale(link.size)}
+                width={4}
+                onMouseOver={function (e) {overLink(e, link.target)}}
+                onMouseOut={function () {outOfLink()}}
+              />
+            )}
+            {contact.toLinks.map((link, i) =>
+              <rect
+                key={'tolinkrect' + contact.id + i}
+                className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
+                x={(2 * width / 3) + (i*linkSpacing)}
+                y={(contact.y - rad) + (12 - linkScale(link.size))}
+                height={linkScale(link.size)}
+                width={4}
+                onMouseOver={function (e) {overLink(e, link.target)}}
+                onMouseOut={function () {outOfLink()}}
+              />
+            )}
           </g>
         )}
         </svg>

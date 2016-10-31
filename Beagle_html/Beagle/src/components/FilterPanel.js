@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import Panel from './Panel'
+//import Panel from './Panel'
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FilterItem from '../components/FilterItem'
@@ -42,8 +42,7 @@ class FilterPanel extends React.Component {
 
 //    console.log('filters',filters);
     return (
-      <div className='filterpanel-component'>
-        <Panel title='Filters'>
+      <div>
           <FloatingActionButton style={style} mini={true} onClick={()=>addFilter()}>
             <ContentAdd />
           </FloatingActionButton>
@@ -62,10 +61,6 @@ class FilterPanel extends React.Component {
               removeFilterLine={removeFilterLine}
             />)}
           </div>
-
-
-
-        </Panel>
       </div>
     );
   }

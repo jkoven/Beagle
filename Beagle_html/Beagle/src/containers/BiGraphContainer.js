@@ -10,8 +10,7 @@ class BiGraphContainer extends Component {
 		super();
 		this.state = {
 			contacts: [],
-			fromNodes:[],
-      toNodes: []
+			nodes:[]
 		};
 	}
 
@@ -79,32 +78,6 @@ class BiGraphContainer extends Component {
 			let query = `query getData($filters:[Rule]){
 					Select(filters:$filters){
 						Summaries {
-							FromAddress (limit:100) {
-								Key
-								Count
-								Counts {
-	          			From
-	        			}
-								Summaries {
-								ToAddresses {
-										Key
-										Count
-									}
-								}
-							}
-							ToAddresses (limit:100) {
-								Key
-								Count
-								Counts{
-	          			From
-	        			}
-								Summaries {
-								FromAddress {
-										Key
-										Count
-									}
-								}
-							}
 							Any (limit:100) {
 								Key
 								Count
@@ -112,7 +85,11 @@ class BiGraphContainer extends Component {
 	          			From
 	        			}
 								Summaries {
-									Any {
+									ToAddresses {
+										Key
+										Count
+									}
+									FromAddress {
 										Key
 										Count
 									}
@@ -138,87 +115,77 @@ class BiGraphContainer extends Component {
 				query, jsonQuery
 			).then(r => {
 				let contactList = [];
-        let fromNodes = [];
-        let toNodes = [];
+        let queryNodes = [];
 				if (typeof r.data !== 'undefined'){
 					contactList = r.data.Select.Summaries;
 				}
 				jsonQuery.contacts.map((c) => {
-          let toData = contactList.ToAddresses.find(function(e){
+          let queryData = contactList.Any.find(function(e){
 						return (c === e.Key);
 					});
-          let fromData = contactList.FromAddress.find(function(e){
-						return (c === e.Key);
-					});
-          if (typeof toData !== 'undefined'){
-  					if (typeof jsonQuery.toList.find(function(con) {return (con === toData.Key)}) !== 'undefined'){
-  						toNodes.push({id: toData.Key, size: toData.Count, fromList: toData.Summaries.FromAddress, queryNode: true, mouseOver: false, nodeClass: 'normal', nodeType: 'to'});
-  					}
-          }
-          if (typeof fromData !== 'undefined'){
-  					if (typeof jsonQuery.fromList.find(function(con) {return (con === fromData.Key)}) !== 'undefined'){
-  						fromNodes.push({id: fromData.Key, size: fromData.Count, toList: fromData.Summaries.ToAddresses, queryNode: true, mouseOver: false, nodeClass: 'normal', nodeType: 'from'});
-  					}
+          if (typeof queryData !== 'undefined'){
+  					queryNodes.push({
+							id: queryData.Key,
+							size: queryData.Count,
+							fromList: queryData.Summaries.FromAddress,
+							toList: queryData.Summaries.ToAddresses,
+							toLinks: [],
+							fromLinks: [],
+							queryNode: true,
+							mouseOver: false,
+							nodeClass: 'normal',
+							nodeType: 'to'
+						});
           }
 				});
 // We now have to fill out the to and from nodes with non query nodes.
-        let toNodeList = [];
-        let toNodesInList = {};
-        let fromNodeList = [];
-        let fromNodesInList = {};
+        let nodeList = [];
+        let nodesInList = {};
 
-        fromNodes.map((fnode) => {
-          fromNodesInList[fnode.id] = true;
-        });
-        toNodes.map((tnode) => {
-          toNodesInList[tnode.id] = true;
+        queryNodes.map((qnode) => {
+          nodesInList[qnode.id] = true;
         });
 
-        fromNodes.map((fnode) => {
-          fnode.toList.map((tn) => {
-            if (!toNodesInList.hasOwnProperty(tn.Key)){
-              toNodeList.push(tn);
-              toNodesInList[tn.Key] = true;
+        queryNodes.map((qnode) => {
+          qnode.toList.map((tn) => {
+            if (!nodesInList.hasOwnProperty(tn.Key)){
+              nodeList.push(tn);
+              nodesInList[tn.Key] = true;
             }
           });
-        });
-        toNodes.map((tnode) => {
-          tnode.fromList.map((fn) => {
-            if (!fromNodesInList.hasOwnProperty(fn.Key)){
-              fromNodeList.push(fn);
-              fromNodesInList[fn.Key] = true;
+          qnode.fromList.map((fn) => {
+            if (!nodesInList.hasOwnProperty(fn.Key)){
+              nodeList.push(fn);
+              nodesInList[fn.Key] = true;
             }
-          });
-        });
+					});
+				});
         // Sort from biggest to smallest
-        toNodeList.sort(function(a,b){
+        nodeList.sort(function(a,b){
           return(b.Count - a.Count);
         });
-        if (toNodeList.length > 20 - toNodes.length){
-          toNodeList = toNodeList.slice(0, 20 - toNodes.length)
+        if (nodeList.length > 12 - queryNodes.length){
+          nodeList = nodeList.slice(0, 12 - queryNodes.length)
         }
-        fromNodeList.sort(function(a, b){
-          return(b.Count - a.Count);
+        nodeList.map((nData) => {
+          queryNodes.push({
+						id: nData.Key,
+						size: nData.Count,
+						toLinks: [],
+						fromLinks: [],
+						queryNode: false,
+						mouseOver: false,
+						nodeClass: 'normal',
+						nodeType: 'to'});
         });
-        if (fromNodeList.length > 20 - fromNodes.length){
-          fromNodeList = fromNodeList.slice(0, 20 - fromNodes.length)
-        }
-
-        toNodeList.map((toData) => {
-          toNodes.push({id: toData.Key, size: toData.Count, queryNode: false, mouseOver: false, nodeClass: 'normal', nodeType: 'to'});
-        });
-        fromNodeList.map((fromData) => {
-          fromNodes.push({id: fromData.Key, size: fromData.Count, queryNode: false, mouseOver: false, nodeClass: 'normal', nodeType: 'from'});
-        });
-        console.log(fromNodes, toNodes);
-  			return {tn:toNodes, fn:fromNodes, cl:contactList};
-			}));
+				return {qn:queryNodes, cl:contactList};
+				})
+			);
       Promise.all(queries).then(rr => {
 				rr.map((d) => {
           this.setState({
             contacts: d.cl,
-            fromNodes: d.fn,
-            toNodes: d.tn
+            nodes: d.qn
           });
 				});
 			}).catch((err) => console.log('In BiGraphContainer: ', err.message));
@@ -226,8 +193,7 @@ class BiGraphContainer extends Component {
 		} else {
 			this.setState({
 				contacts: [],
-				fromNodes: [],
-        toNodes: []
+				nodes: []
 			});
 		}
 	}
@@ -236,8 +202,7 @@ class BiGraphContainer extends Component {
 //		const {actions} = this.props;
 //		return <ContactGraph contacts={this.state.contactNodes} links={this.state.contactLinks}/>;
 		return <ContactBiGraph
-			toNodes={this.state.toNodes} l
-			fromNodes={this.state.fromNodes}
+			nodes={this.state.nodes}
 			contacts={this.state.contacts}
 			/>;
 

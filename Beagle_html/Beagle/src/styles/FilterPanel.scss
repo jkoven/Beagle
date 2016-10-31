@@ -1,6 +1,8 @@
 .filterpanel-component {
-  box-shadow: 0px 0px 10px #ccc;
+  height: 90%;
+  flex-grow: 0;
   padding: 10px;
   padding-top: 20px;
+  padding-bottom: 0px;
   width:220px
 }

@@ -4,13 +4,61 @@
   flex: 1;
   position: relative;
   flex-direction: column;
-  border-left: solid 1px #ccc;
   width: 100%;
   height: 100%;
 }
 .contact-graph-svg {
   width: 100%;
   height: 100%;
+
+  @keyframes blink1 {
+    0% { fill: $NColor1; stroke: $NColor1; }
+    100% { fill: none; stroke: none; }
+  }
+  @keyframes blink2 {
+    0% { fill: $NColor2; stroke: $NColor2; }
+    100% { fill: none; stroke: none; }
+  }
+  @keyframes blink3 {
+    0% { fill: $NColor3; stroke: $NColor3; }
+    100% { fill: none; stroke: none; }
+  }
+  @keyframes blink4 {
+    0% { fill: $NColor4; stroke: $NColor4; }
+    100% { fill: none; stroke: none; }
+  }
+  @keyframes blink5 {
+    0% { fill: $NColor5; stroke: $NColor5; }
+    100% { fill: none; stroke: none; }
+  }
+  @keyframes blink6 {
+    0% { fill: $NColor6; stroke: $NColor6; }
+    100% { fill: none; stroke: none; }
+  }
+  @keyframes blink7 {
+    0% { fill: $NColor7; stroke: $NColor7; }
+    100% { fill: none; stroke: none; }
+  }
+  @keyframes blink8 {
+    0% { fill: $NColor8; stroke: $NColor8; }
+    100% { fill: none; stroke: none; }
+  }
+  @keyframes blink9 {
+    0% { fill: $NColor9; stroke: $NColor9; }
+    100% { fill: none; stroke: none; }
+  }
+  @keyframes blink10 {
+    0% { fill: $NColor10; stroke: $NColor10; }
+    100% { fill: none; stroke: none; }
+  }
+  @keyframes blink11 {
+    0% { fill: $NColor11; stroke: $NColor11; }
+    100% { fill: none; stroke: none; }
+  }
+  @keyframes blink12 {
+    0% { fill: $NColor12; stroke: $NColor12; }
+    100% { fill: none; stroke: none; }
+  }
 
   text {
     font-size: 12px;
@@ -25,6 +73,10 @@
     fill: black;
   }
 
+  text.header{
+    font-size: 14px
+  }
+
   text.normal {
     fill: $primaryTextColor;
   }
@@ -34,59 +86,160 @@
   }
   text:hover {
     fill: black;
-    font-weight: bold;
   }
 
   circle.nqnodeany{
-    fill: #a6cee3;
-    stroke: #a6cee3
+    fill: $PQColor1;
+    stroke: $PQColor1
   }
   circle.qnodeany{
-    fill: #1f78b4;
-    stroke: #1f78b4
+    fill: $PQColor2;
+    stroke: $PQColor2
   }
   circle.nqnodeto{
-    fill: #b2df8a;
-    stroke: #b2df8a
+    fill: $PQColor3;
+    stroke: $PQColor3
   }
   circle.qnodeto{
-    fill: #33a02c;
-    stroke: #33a02c
+    fill: $PQColor4;
+    stroke: $PQColor4
   }
   circle.nqnodefrom{
-    fill: #fdbf6f;
-    stroke: #fdbf6f
+    fill: $PQColor7;
+    stroke: $PQColor7
   }
   circle.qnodefrom{
-    fill: #ff7f00;
-    stroke: #ff7f00
+    fill: $PQColor8;
+    stroke: $PQColor8
+  }
+  .node1{
+    fill: $NColor1;
+    stroke: $NColor1;
+  }
+  .node2{
+    fill: $NColor2;
+    stroke: $NColor2;
+  }
+  .node3{
+    fill: $NColor3;
+    stroke: $NColor3;
+  }
+  .node4{
+    fill: $NColor4;
+    stroke: $NColor4;
+  }
+  .node5{
+    fill: $NColor5;
+    stroke: $NColor5;
+  }
+  .node6{
+    fill: $NColor6;
+    stroke: $NColor6;
+  }
+  .node7{
+    fill: $NColor7;
+    stroke: $NColor7;
+  }
+  .node8{
+    fill: $NColor8;
+    stroke: $NColor8;
+  }
+  .node9{
+    fill: $NColor9;
+    stroke: $NColor9;
+  }
+  .node10{
+    fill: $NColor10;
+    stroke: $NColor10;
+  }
+  .node11{
+    fill: $NColor11;
+    stroke: $NColor11;
+  }
+  .node12{
+    fill: $NColor12;
+    stroke: $NColor12;
+  }
+  .blinknode1{
+    fill: $NColor1;
+    stroke: $NColor1;
+    animation: blink1 1s linear infinite;
+  }
+  .blinknode2{
+    fill: $NColor2;
+    stroke: $NColor2;
+    animation: blink2 1s linear infinite;
+  }
+  .blinknode3{
+    fill: $NColor3;
+    stroke: $NColor3;
+    animation: blink3 1s linear infinite;
+  }
+  .blinknode4{
+    fill: $NColor4;
+    stroke: $NColor4;
+    animation: blink4 1s linear infinite;
+  }
+  .blinknode5{
+    fill: $NColor5;
+    stroke: $NColor5;
+    animation: blink5 1s linear infinite;
+  }
+  .blinknode6{
+    fill: $NColor6;
+    stroke: $NColor6;
+    animation: blink6 1s linear infinite;
+  }
+  .blinknode7{
+    fill: $NColor7;
+    stroke: $NColor7;
+    animation: blink7 1s linear infinite;
+  }
+  .blinknode8{
+    fill: $NColor8;
+    stroke: $NColor8;
+    animation: blink8 1s linear infinite;
+  }
+  .blinknode9{
+    fill: $NColor9;
+    stroke: $NColor9;
+    animation: blink9 1s linear infinite;
+  }
+  .blinknode10{
+    fill: $NColor10;
+    stroke: $NColor10;
+    animation: blink10 1s linear infinite;
+  }
+  .blinknode11{
+    fill: $NColor11;
+    stroke: $NColor11;
+    animation: blink11 1s linear infinite;
+  }
+  .blinknode12{
+    fill: $NColor12;
+    stroke: $NColor12;
+    animation: blink12 1s linear infinite;
   }
 
   line.normalany{
-    stroke: #a6cee3;
-    stroke-width: 2px
+    stroke: $PQColor1;
   }
 
   line.highlightedany{
-    stroke: #1f78b4;
-    stroke-width: 1px
+    stroke: $PQColor2;
   }
   line.normalto{
-    stroke: #b2df8a;
-    stroke-width: 2px
+    stroke: $PQColor3;
   }
 
   line.highlightedto{
-    stroke: #33a02c;
-    stroke-width: 1px
+    stroke: $PQColor4;
   }
   line.normalfrom{
-    stroke: #fdbf6f;
-    stroke-width: 2px
+    stroke: $PQColor7;
   }
 
   line.highlightedfrom{
-    stroke: #ff7f00;
-    stroke-width: 1px
+    stroke: $PQColor8;
   }
 }

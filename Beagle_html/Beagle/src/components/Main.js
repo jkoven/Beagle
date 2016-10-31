@@ -2,11 +2,12 @@ require('normalize.css/normalize.css');
 require('styles/App.scss');
 
 import React from 'react';
-import FilterContainer from '../containers/FilterContainer';
+import LeftPanel from './LeftPanel';
 import CenterPanel from './CenterPanel';
 import GraphPanel from './GraphPanel';
 import RightPanel from './RightPanel';
 import ProgressBar from './ProgressBar'
+import TimePanel from './TimePanel'
 
 export class AppComponent extends React.Component {
 
@@ -14,10 +15,11 @@ export class AppComponent extends React.Component {
 		return (
 			<div className="index">
 				<ProgressBar />
-				<FilterContainer />
+				<LeftPanel />
 				<CenterPanel />
 				<GraphPanel/>
 				<RightPanel />
+				<TimePanel />
 			</div>
 		);
 	}

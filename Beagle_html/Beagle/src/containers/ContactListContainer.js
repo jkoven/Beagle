@@ -99,7 +99,7 @@ class ContactListContainer extends Component {
 	render() {
 //		const {actions} = this.props;
 		let {actions} = this.props;
-		return <ContactList contacts={this.state.contacts} {...actions}/>;
+		return <ContactList parent={this} contacts={this.state.contacts} {...actions}/>;
 	}
 }
 

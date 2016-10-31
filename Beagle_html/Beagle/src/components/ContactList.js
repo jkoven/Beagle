@@ -1,6 +1,7 @@
 'use strict';
 
 import React from 'react';
+import ReactDOM from 'react-dom'
 import Infinite from 'react-infinite';
 import TextField from 'material-ui/TextField';
 import SearchIcon from 'material-ui/svg-icons/action/search';
@@ -16,8 +17,15 @@ class ContactList extends React.Component {
 			searchArr : [],
 			fromCount: [],
 			contacts : [],
+			contactListHeight : 600,
 			test: 0
 		}
+	}
+
+	componentDidMount(){
+		this.setState({
+			contactListHeight: ReactDOM.findDOMNode(this).offsetHeight - 55
+		});
 	}
 
 	 search(input){
@@ -50,8 +58,7 @@ class ContactList extends React.Component {
 		if(this.state.searchArr != contacts){
 			this.search(this.state.input);
 		}
-
-		let contactListHeight = window.innerHeight - 111;
+		let contactListHeight = this.state.contactListHeight;
 		let contactElementHeight = 38;
 		let self = this;
 
