@@ -134,7 +134,8 @@ class BiGraphContainer extends Component {
 							queryNode: true,
 							mouseOver: false,
 							nodeClass: 'normal',
-							nodeType: 'to'
+							toNode: jsonQuery.toList.includes(queryData.Key) ? true : false,
+							fromNode: jsonQuery.fromList.includes(queryData.Key) ? true : false
 						});
           }
 				});
@@ -176,7 +177,9 @@ class BiGraphContainer extends Component {
 						queryNode: false,
 						mouseOver: false,
 						nodeClass: 'normal',
-						nodeType: 'to'});
+						toNode: false,
+						fromNode: false
+					});
         });
 				return {qn:queryNodes, cl:contactList};
 				})

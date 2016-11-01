@@ -65,7 +65,7 @@ class EmailsContainer extends Component {
 
   render() {
     const {actions} = this.props;
-    return <Emails actions={actions} emails={this.state.emails} />;
+    return <Emails actions={actions} emails={this.state.emails} position={this.props.position + 15}/>;
   }
 }
 

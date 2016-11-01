@@ -51,10 +51,10 @@ module.exports = React.createClass({
     nodeScale.range([2, 7])
 
     nodes.map ((node, idx) => {
-      node['ndx'] = node.queryNode ? idx+1 : 0;
+      node['ndx'] = idx+1;
       minNodeCount = Math.min(node.size, minNodeCount);
       maxNodeCount = Math.max(node.size, maxNodeCount);
-      node['y'] = nodeStartY + (idx * nodeSpacing);
+      node['y'] = nodeStartY + (idx * nodeSpacing) + (nodeSpacing/2);
       node['x'] = nodeX;
       if (node.queryNode) {
         node.toList.map((tnode) => {
@@ -234,6 +234,9 @@ module.exports = React.createClass({
     let overLink = this.mouseOverlink;
     let outOfLink = this.mouseOutOfLink;
     let rad = 7;
+    let fromX = width/5;
+    let toX = ((width/5) * 4) - 10;
+
     return (
       <div className='contactgraph-component'>
         <svg className='contact-graph-svg'>
@@ -258,6 +261,8 @@ module.exports = React.createClass({
             key={'g-graphcircle' + contact.id + i}
             className={contact.id}
           >
+          {
+            contact.queryNode &&
             <circle
               key={'graphcircle' + contact.id + i}
               className={'node'+contact.ndx}
@@ -267,6 +272,7 @@ module.exports = React.createClass({
               onMouseOver={this.mouseOverNode}
               onMouseOut={this.mouseOutOfNode}
             />
+          }
             <text
               key={'nodelabel' + contact.id + i}
               className={contact.nodeClass === 'normal' ? contact.queryNode ? 'highlighted' : contact.nodeClass : contact.nodeClass}
@@ -278,11 +284,17 @@ module.exports = React.createClass({
               >
               {contact.id}
             </text>
+            {
+              contact.fromNode && <polygon points={[fromX, contact.y - rad - 3, fromX + 5 ,contact.y - rad - 12, fromX + 10 ,contact.y - rad - 3]}/>
+            }
+            {
+              contact.toNode && <polygon points={[toX, contact.y - rad - 3, toX + 5 ,contact.y - rad - 12, toX + 10 ,contact.y - rad - 3]}/>
+            }
             {contact.fromLinks.map((link, i) =>
                 <rect
                   key={'fromlinkrect' + contact.id + i}
                   className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
-                  x={(width/4) - (i*linkSpacing)}
+                  x={(4 * width / 5) + (link.target.ndx*linkSpacing)}
                   y={(contact.y - rad - 15) + (12 - linkScale(link.size))}
                   height={linkScale(link.size)}
                   width={4}
@@ -294,7 +306,7 @@ module.exports = React.createClass({
                 <rect
                   key={'tolinkrect' + contact.id + i}
                   className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
-                  x={(3 * width / 4) + (i*linkSpacing)}
+                  x={(width/5) - (link.target.ndx*linkSpacing)}
                   y={(contact.y - rad - 15) + (12 - linkScale(link.size))}
                   height={linkScale(link.size)}
                   width={4}

@@ -50,8 +50,8 @@ export class RightPanel extends React.Component {
       // marginTop: -22
     };
     let dialog;
-    let mentionHeight = '515px';
-    let emailHeight = (window.innerHeight - parseInt(mentionHeight) - 30) + 'px';
+    let emailHeight = ((window.innerHeight - 30) / 2)+ 'px';
+    let mentionHeight = emailHeight;
     let wrapClassName = '';
     if (this.state.center) {
 			wrapClassName = 'center';
@@ -86,7 +86,7 @@ export class RightPanel extends React.Component {
           <WordCloudContainer />
         </Panel>
         <Panel title="Communications" height={emailHeight}>
-            <EmailsContainer />
+            <EmailsContainer position={mentionHeight}/>
         </Panel>
         {dialog}
       </div>

@@ -1,7 +1,27 @@
+@import './Variables.scss';
 .wordcloud-component{
+  background-color: white;
+  position: absolute;
+  left: 0px;
+  top: 30px;
+  height: 100%;
+  max-height: 100%;
+  width:100%;
+  overflow-x: hidden;
+}
+.wordcloud-component-content{
+  position: absolute;
+  top: 20px;
+  left:0;
+  background-color: white;
   display: flex;
   flex-flow: row wrap;
-  height:95px;
+  height:90%;
+  max-height: 90%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow: scroll;
+}
+.wordCloudSelect {
+  font-size: 12px;
+  width: 80%
 }

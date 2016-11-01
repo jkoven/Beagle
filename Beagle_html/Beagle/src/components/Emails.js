@@ -91,8 +91,8 @@ class Emails extends React.Component {
 
 		return (
 
-			<div className='Emails-component'>
-			<div className='Emails-component-list' style={{ marginTop: -30 }}>
+			<div className='Emails-component' >
+			<div className='Emails-component-list' >
 				{emails.map((c,idx) => <RaisedButton  key={'email' + c.Subject+ idx} className='Emails-component-info' onClick={()=>(this.onClick(c.Subject,c.From,c.To,c.Contents))}><div  className = 'text2'>{fullDates[idx] + c.Subject}</div>
 				</RaisedButton>
 			)}

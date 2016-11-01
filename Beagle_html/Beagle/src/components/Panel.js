@@ -16,7 +16,7 @@ class Panel extends React.Component {
 		return (
 			<div className="panel-component" style={styles.component}>
 				<h1>{title}</h1>
-				<div className="panel-component-content" style={styles.content}>
+				<div className={"panel-component-content"} style={styles.content}>
 					{this.props.children}
 				</div>
 			</div>
