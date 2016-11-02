@@ -2,6 +2,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom'
+import dataSource from '../sources/dataSource';
 
 require('styles//ContactGraph.scss');
 var d3 = require('d3');
@@ -156,6 +157,28 @@ module.exports = React.createClass({
   mouseOverNode: function (e){
     let name = e.target.parentNode.getAttribute('class');
     let currentNodes = this.state.nodes;
+    // let query = `query getData($filters:[Rule]){
+    //           Select(filters:$filters){
+    //             Summaries {
+    //               Any {
+    //                 Key
+    //                 Count
+    //               }
+    //             }
+    //           }
+    //         }`
+    // let jsonQuery = this.props.jsonQuery;
+    // if (jsonQuery.filters.length > 0){
+    //   dataSource.query(
+    //     query, jsonQuery
+    //   ).then(r => {
+    //     let contactList = [];
+    //     if (typeof r.data !== 'undefined'){
+    //       contactList = r.data.Select.Summaries;
+    //       console.log(contactList);
+    //     }
+    //   });
+    // }
     currentNodes.map((node) => {
       if(node.id === name) {
         node.nodeClass = 'highlighted';
@@ -229,6 +252,16 @@ module.exports = React.createClass({
                   onMouseOut={this.mouseOutOfNode}
                 />
               )}
+    Save if we want the node back under the label
+              <circle
+                key={'graphcircle' + contact.id + i}
+                className={'node'+contact.ndx}
+                cx={contact.x}
+                cy={contact.y}
+                r={nodeScale(contact.size)}
+                onMouseOver={this.mouseOverNode}
+                onMouseOut={this.mouseOutOfNode}
+              />
   */
   render: function(){
     let overLink = this.mouseOverlink;
@@ -261,18 +294,7 @@ module.exports = React.createClass({
             key={'g-graphcircle' + contact.id + i}
             className={contact.id}
           >
-          {
             contact.queryNode &&
-            <circle
-              key={'graphcircle' + contact.id + i}
-              className={'node'+contact.ndx}
-              cx={contact.x}
-              cy={contact.y}
-              r={nodeScale(contact.size)}
-              onMouseOver={this.mouseOverNode}
-              onMouseOut={this.mouseOutOfNode}
-            />
-          }
             <text
               key={'nodelabel' + contact.id + i}
               className={contact.nodeClass === 'normal' ? contact.queryNode ? 'highlighted' : contact.nodeClass : contact.nodeClass}
@@ -285,35 +307,47 @@ module.exports = React.createClass({
               {contact.id}
             </text>
             {
-              contact.fromNode && <polygon points={[fromX, contact.y - rad - 3, fromX + 5 ,contact.y - rad - 12, fromX + 10 ,contact.y - rad - 3]}/>
+              contact.fromNode &&
+                <polygon
+                  className={'node'+contact.ndx}
+                  points={[fromX, contact.y - rad - 3, fromX + 5 ,contact.y - rad - 12, fromX + 10 ,contact.y - rad - 3]}
+                />
             }
             {
-              contact.toNode && <polygon points={[toX, contact.y - rad - 3, toX + 5 ,contact.y - rad - 12, toX + 10 ,contact.y - rad - 3]}/>
+              contact.toNode &&
+                <polygon
+                  className={'node'+contact.ndx}
+                  points={[toX, contact.y - rad - 3, toX + 5 ,contact.y - rad - 12, toX + 10 ,contact.y - rad - 3]}
+                />
             }
-            {contact.fromLinks.map((link, i) =>
-                <rect
-                  key={'fromlinkrect' + contact.id + i}
-                  className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
-                  x={(4 * width / 5) + (link.target.ndx*linkSpacing)}
-                  y={(contact.y - rad - 15) + (12 - linkScale(link.size))}
-                  height={linkScale(link.size)}
-                  width={4}
-                  onMouseOver={function (e) {overLink(e, link.target)}}
-                  onMouseOut={function () {outOfLink()}}
-                />
-            )}
-            {contact.toLinks.map((link, i) =>
-                <rect
-                  key={'tolinkrect' + contact.id + i}
-                  className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
-                  x={(width/5) - (link.target.ndx*linkSpacing)}
-                  y={(contact.y - rad - 15) + (12 - linkScale(link.size))}
-                  height={linkScale(link.size)}
-                  width={4}
-                  onMouseOver={function (e) {overLink(e, link.target)}}
-                  onMouseOut={function () {outOfLink()}}
-                />
-            )}
+                {contact.fromLinks.map((link, i) =>
+                  link.target.fromNode &&
+                    <rect
+                      key={'fromlinkrect' + contact.id + i}
+                      className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
+                      x={(4 * width / 5) + (link.target.ndx*linkSpacing)}
+                      y={(contact.y - rad - 15) + (12 - linkScale(link.size))}
+                      height={linkScale(link.size)}
+                      width={4}
+                      onMouseOver={function (e) {overLink(e, link.target)}}
+                      onMouseOut={function () {outOfLink()}}
+                    />
+                  )
+                }
+                {contact.toLinks.map((link, i) =>
+                  link.target.toNode &&
+                    <rect
+                      key={'tolinkrect' + contact.id + i}
+                      className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
+                      x={(width/5) - (link.target.ndx*linkSpacing)}
+                      y={(contact.y - rad - 15) + (12 - linkScale(link.size))}
+                      height={linkScale(link.size)}
+                      width={4}
+                      onMouseOver={function (e) {overLink(e, link.target)}}
+                      onMouseOut={function () {outOfLink()}}
+                    />
+                  )
+                }
           </g>
         )}
         </svg>

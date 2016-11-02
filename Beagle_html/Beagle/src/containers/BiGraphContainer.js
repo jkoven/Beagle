@@ -10,7 +10,32 @@ class BiGraphContainer extends Component {
 		super();
 		this.state = {
 			contacts: [],
-			nodes:[]
+			nodes:[],
+			jsonQuery: [],
+			query: `query getData($filters:[Rule]){
+								Select(filters:$filters){
+									Summaries {
+										Any (limit:100) {
+											Key
+											Count
+											Counts{
+				          			From
+				        			}
+											Summaries {
+												ToAddresses {
+													Key
+													Count
+												}
+												FromAddress {
+													Key
+													Count
+												}
+											}
+										}
+									}
+								}
+							}`
+
 		};
 	}
 
@@ -75,29 +100,6 @@ class BiGraphContainer extends Component {
 	loadData(newState) {
 		var jsonQuery = this.translateStateToFilter(newState);
 		if (newState.filters.length > 0) {															//loadData sends the query to the suQl server and retrieves the data
-			let query = `query getData($filters:[Rule]){
-					Select(filters:$filters){
-						Summaries {
-							Any (limit:100) {
-								Key
-								Count
-								Counts{
-	          			From
-	        			}
-								Summaries {
-									ToAddresses {
-										Key
-										Count
-									}
-									FromAddress {
-										Key
-										Count
-									}
-								}
-							}
-						}
-					}
-				}`
 				/*{
 				  Select(filters:[
 				    {field:Contents, operation: in, value:'california'},
@@ -112,7 +114,7 @@ class BiGraphContainer extends Component {
 				      'value':['sue.nord@enron.com', 'susan.mara@enron.com']}]}*/
 			let queries = [];
 			queries.push(dataSource.query(
-				query, jsonQuery
+				this.state.query, jsonQuery
 			).then(r => {
 				let contactList = [];
         let queryNodes = [];
@@ -165,8 +167,8 @@ class BiGraphContainer extends Component {
         nodeList.sort(function(a,b){
           return(b.Count - a.Count);
         });
-        if (nodeList.length > 12 - queryNodes.length){
-          nodeList = nodeList.slice(0, 12 - queryNodes.length)
+        if (nodeList.length > 20 - queryNodes.length){
+          nodeList = nodeList.slice(0, 20 - queryNodes.length)
         }
         nodeList.map((nData) => {
           queryNodes.push({
@@ -188,7 +190,8 @@ class BiGraphContainer extends Component {
 				rr.map((d) => {
           this.setState({
             contacts: d.cl,
-            nodes: d.qn
+            nodes: d.qn,
+						jsonQuery: jsonQuery
           });
 				});
 			}).catch((err) => console.log('In BiGraphContainer: ', err.message));
@@ -207,6 +210,7 @@ class BiGraphContainer extends Component {
 		return <ContactBiGraph
 			nodes={this.state.nodes}
 			contacts={this.state.contacts}
+			jsonQuery={this.state.jsonQuery}
 			/>;
 
 	}
