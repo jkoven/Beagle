@@ -3,7 +3,7 @@ require('styles/App.scss');
 
 import React from 'react';
 import LeftPanel from './LeftPanel';
-import CenterPanel from './CenterPanel';
+//import CenterPanel from './CenterPanel';
 import GraphPanel from './GraphPanel';
 import RightPanel from './RightPanel';
 import ProgressBar from './ProgressBar'
@@ -16,7 +16,6 @@ export class AppComponent extends React.Component {
 			<div className="index">
 				<ProgressBar />
 				<LeftPanel />
-				<CenterPanel />
 				<GraphPanel/>
 				<RightPanel />
 				<TimePanel />

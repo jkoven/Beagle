@@ -53,7 +53,7 @@ class ContactList extends React.Component {
 
 	render() {
 		let {contacts} = this.props;
-		    this.state.maxCount = _.get(contacts,'0.Count');
+		this.state.maxCount = _.get(contacts,'0.Count');
 
 		if(this.state.searchArr != contacts){
 			this.search(this.state.input);

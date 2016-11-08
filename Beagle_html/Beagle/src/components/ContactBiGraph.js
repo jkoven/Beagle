@@ -2,7 +2,9 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom'
-import dataSource from '../sources/dataSource';
+import Infinite from 'react-infinite';
+import _ from 'lodash'
+//import dataSource from '../sources/dataSource';
 
 require('styles//ContactGraph.scss');
 var d3 = require('d3');
@@ -10,21 +12,28 @@ let nodeScale = d3.scaleLog();
 let linkScale = d3.scaleLog();
 let linkSpacing = 8;
 let width = 300;
+let height = 40;
 module.exports = React.createClass({
 
   getInitialState: function() {
     return {
+      maxCount: 0,
+      test: 0,
       nodes: [],
       fromNodes: [],
       toNodes: [],
-      links: []
+      links: [],
+      searchArr : [],
+      input: '',
+      queryNodeHeight: 40,
+      contactListHeight : 600
     };
 },
 
   componentDidMount: function() {
-    // let el = React.findDOMNode(this);
-    // console.log(el);
-    // d3.select(el).append('svg').attr('class','contact-graph-svg');
+    this.setState({
+			contactListHeight: ReactDOM.findDOMNode(this).offsetHeight - 55
+		});
   },
 
   componentDidUpdate: function() {
@@ -33,28 +42,23 @@ module.exports = React.createClass({
 
   componentWillReceiveProps: function (newProps){
     let nodes = newProps.nodes;
+//    console.log(nodes);
 //    let toNodes = newProps.nodes;
 //    let contacts = newProps.contacts;
     let links = [];
-    let height = parseInt(d3.select(ReactDOM.findDOMNode(this)).style('height'));
+    height = 24 * nodes.length + 40;
     width = parseInt(d3.select(ReactDOM.findDOMNode(this)).style('width'));
-    let yCenter = height/2;
-    let nodeSpacing = (height - 30) / nodes.length;
-    let nodeStartY = yCenter - (((nodes.length - 1) * nodeSpacing)/2);
-    linkSpacing = ((width - 4) / 3) / nodes.length;
+//    let yCenter = height/2;
+    let nodeSpacing = 24;
+    let nodeStartY = 35;
+    linkSpacing = ((width - 4) / 5) / 12;
     let nodeX = width/2;
-    let minLinkCount = Number.MAX_VALUE;
-    let maxLinkCount = 0;
-    let minNodeCount = Number.MAX_VALUE;
-    let maxNodeCount = 0;
 
-    linkScale.range([2, 12]);
-    nodeScale.range([2, 7])
+    linkScale.range([1, 19]);
+    nodeScale.range([1, 19])
 
     nodes.map ((node, idx) => {
       node['ndx'] = idx+1;
-      minNodeCount = Math.min(node.size, minNodeCount);
-      maxNodeCount = Math.max(node.size, maxNodeCount);
       node['y'] = nodeStartY + (idx * nodeSpacing) + (nodeSpacing/2);
       node['x'] = nodeX;
       if (node.queryNode) {
@@ -70,10 +74,8 @@ module.exports = React.createClass({
             //   });
               thisTo.fromLinks.push({
                 target: node,
-                size: thisTo.size
+                size: tnode.Count
               });
-              minLinkCount = Math.min(thisTo.size, minLinkCount);
-              maxLinkCount = Math.max(thisTo.size, maxLinkCount);
             }
           }
         });
@@ -89,56 +91,20 @@ module.exports = React.createClass({
             //   });
               thisFrom.toLinks.push({
                 target: node,
-                size: thisFrom.size
+                size: fnode.Count
               });
-              minLinkCount = Math.min(thisFrom.size, minLinkCount);
-              maxLinkCount = Math.max(thisFrom.size, maxLinkCount);
             }
           }
         });
       }
     });
-    // toNodes.map ((tnode, idx) => {
-    //   minNodeCount = Math.min(tnode.size, minNodeCount);
-    //   maxNodeCount = Math.max(tnode.size, maxNodeCount);
-    //   tnode['y'] = toStartY + (idx * toSpacing);
-    //   tnode['x'] = toX;
-    //   if (tnode.queryNode) {
-    //     tnode.fromList.map((fnode) => {
-    //       let thisFrom = fromNodes.find(function(ffnode){
-    //         return(ffnode.id === fnode.Key);
-    //       });
-    //       if (typeof thisFrom !== 'undefined' ) {
-    //         if (thisFrom.id !== tnode.id) {
-    //           let fromLink = links.find(function(link){return (link.source === thisFrom && link.target === tnode)});
-    //           if (typeof fromLink === 'undefined') {
-    //             links.push({
-    //               source: tnode,
-    //               target: thisFrom,
-    //               value: thisFrom.size,
-    //               lineClass: 'normal',
-    //               lineType: 'to'
-    //             });
-    //             minLinkCount = Math.min(thisFrom.size, minLinkCount);
-    //             maxLinkCount = Math.max(thisFrom.size, maxLinkCount);
-    //           } else {
-    //             fromLink.lineType = 'any';
-    //           }
-    //         }
-    //       }
-    //     });
-    //   }
-    // });
-    linkScale.domain([minLinkCount, maxLinkCount]);
-    nodeScale.domain([minNodeCount, maxNodeCount]);
-    // links.map ((link) => {
-    //   link['midpointx'] = (link.source.x + link.target.x) / 2;
-    //   link['midpointy'] = (link.source.y + link.target.y) / 2;
-    //   link['angle'] = this.angle(link.source.x, link.source.y, link.target.x, link.target.y);
-    // });
+    linkScale.domain([newProps.minLinkCount, newProps.maxLinkCount]);
+    nodeScale.domain([newProps.minNodeCount, newProps.maxNodeCount]);
     this.setState({
       nodes: nodes,
-      links: links
+      contactListHeight: parseInt(d3.select(ReactDOM.findDOMNode(this)).style('height')) - height,
+      links: links,
+      queryNodeHeight: height
     });
   },
 
@@ -221,6 +187,29 @@ module.exports = React.createClass({
     });
   },
 
+  mouseDoubleClick: function(contact){
+		this.props.addListItem(contact, 'Any');
+	},
+
+  // search: function(input) {
+  //  this.state.test = 0;
+  //  this.state.searchArr = [];
+  //  let {contacts} = this.props;
+  //    for(var i = 0; i < contacts.length; i++){
+  //      if((_.get(contacts,i+'.Key')).includes(input)==true){
+  //        if((_.get(contacts,i+'.Counts')).FromAddress > this.state.test){
+  //          this.state.test = (_.get(contacts,i+'.Counts')).FromAddress;
+  //        }
+  //        this.state.searchArr.push({
+  //        Key:	(_.get(contacts,i+'.Key')),
+  //        Count: (_.get(contacts,i+'.Count')),
+  //        Counts: (_.get(contacts,i+'.Counts')).FromAddress
+  //      })
+  //      }
+  //    }
+  //    this.state.maxCount = _.get(this.state.searchArr,'0.Count');
+  //  },
+
   /* Link label code for later
                 <text key={'linklabel' + link.id + i}
                 className={link.lineClass}
@@ -263,7 +252,15 @@ module.exports = React.createClass({
                 onMouseOut={this.mouseOutOfNode}
               />
   */
-  render: function(){
+  render: function() {
+    let {contacts} = this.props;
+//    console.log(contacts);
+		this.state.maxCount = _.get(contacts,'0.Count');
+    // if(this.state.searchArr != contacts){
+		// 	this.search(this.state.input);
+		// }
+		let contactElementHeight = 24;
+    let mouseDoubleClick = this.mouseDoubleClick;
     let overLink = this.mouseOverlink;
     let outOfLink = this.mouseOutOfLink;
     let rad = 7;
@@ -299,7 +296,7 @@ module.exports = React.createClass({
               key={'nodelabel' + contact.id + i}
               className={contact.nodeClass === 'normal' ? contact.queryNode ? 'highlighted' : contact.nodeClass : contact.nodeClass}
               x={contact.x}
-              y={contact.y - rad - 3}
+              y={contact.y + 10}
               textAnchor='middle'
               onMouseOver={this.mouseOverNode}
               onMouseOut={this.mouseOutOfNode}
@@ -310,14 +307,18 @@ module.exports = React.createClass({
               contact.fromNode &&
                 <polygon
                   className={'node'+contact.ndx}
-                  points={[fromX, contact.y - rad - 3, fromX + 5 ,contact.y - rad - 12, fromX + 10 ,contact.y - rad - 3]}
+                  points={[
+                    fromX, contact.y + 10,
+                    fromX + 5, contact.y,
+                    fromX + 10, contact.y + 10
+                  ]}
                 />
             }
             {
               contact.toNode &&
                 <polygon
                   className={'node'+contact.ndx}
-                  points={[toX, contact.y - rad - 3, toX + 5 ,contact.y - rad - 12, toX + 10 ,contact.y - rad - 3]}
+                  points={[toX, contact.y + 10, toX + 5 ,contact.y, toX + 10 ,contact.y + 10]}
                 />
             }
                 {contact.fromLinks.map((link, i) =>
@@ -326,7 +327,7 @@ module.exports = React.createClass({
                       key={'fromlinkrect' + contact.id + i}
                       className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
                       x={(4 * width / 5) + (link.target.ndx*linkSpacing)}
-                      y={(contact.y - rad - 15) + (12 - linkScale(link.size))}
+                      y={contact.y + 10 - linkScale(link.size)}
                       height={linkScale(link.size)}
                       width={4}
                       onMouseOver={function (e) {overLink(e, link.target)}}
@@ -340,7 +341,7 @@ module.exports = React.createClass({
                       key={'tolinkrect' + contact.id + i}
                       className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
                       x={(width/5) - (link.target.ndx*linkSpacing)}
-                      y={(contact.y - rad - 15) + (12 - linkScale(link.size))}
+                      y={contact.y + 10 - linkScale(link.size)}
                       height={linkScale(link.size)}
                       width={4}
                       onMouseOver={function (e) {overLink(e, link.target)}}
@@ -351,6 +352,57 @@ module.exports = React.createClass({
           </g>
         )}
         </svg>
+        <div className='contactlist-component-list' style={{top: this.state.queryNodeHeight}}>
+				<Infinite containerHeight={this.state.contactListHeight} elementHeight={contactElementHeight}>
+					{ contacts.map((c,i) =>
+            <div
+              key={'contactdiv'+c.Key}
+              onDoubleClick= {function () {mouseDoubleClick(c.Key)}}
+              >
+              <svg
+                key={c.Key}
+                className='contactlist-component-contact-svg'>
+                <text
+                  key={'nodelabel' + c.Key + i}
+                  className={'normal'}
+                  x={width/2}
+                  y={contactElementHeight/2}
+                  textAnchor='middle'
+                  >
+                  {c.Key}
+                </text>
+                {c.sendsTo.map((link) =>
+                  link.target.toNode &&
+                  <rect
+                    key={'tolinkrectL' + link.target.id + i}
+                    className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
+                    x={(width/5) - (link.target.ndx*linkSpacing)}
+                    y={20 - linkScale(link.size)}
+                    height={linkScale(link.size)}
+                    width={4}
+                    onMouseOver={function (e) {overLink(e, link.target)}}
+                    onMouseOut={function () {outOfLink()}}
+                  />
+                  )
+                }
+                {c.receivedFrom.map((link) =>
+                  link.target.fromNode &&
+                  <rect
+                    key={'fromlinkrectL' + link.target.id + i}
+                    className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
+                    x={(4 * width / 5) + (link.target.ndx*linkSpacing)}
+                    y={20 - linkScale(link.size)}
+                    height={linkScale(link.size)}
+                    width={4}
+                    onMouseOver={function (e) {overLink(e, link.target)}}
+                    onMouseOut={function () {outOfLink()}}
+                  />
+                  )
+                }
+					    </svg>
+            </div>)}
+					</Infinite>
+				</div>
       </div>
     );
   }

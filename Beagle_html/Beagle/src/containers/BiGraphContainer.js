@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 //import ContactGraph from '../components/ContactGraph';
 import ContactBiGraph from '../components/ContactBiGraph';
 import dataSource from '../sources/dataSource';
+import {addListItem} from '../actions/const';
 
 class BiGraphContainer extends Component {
 	constructor() {
@@ -12,21 +13,28 @@ class BiGraphContainer extends Component {
 			contacts: [],
 			nodes:[],
 			jsonQuery: [],
+			minLinkCount: Number.MAX_VALUE,
+	    maxLinkCount: 0,
+	    minNodeCount: Number.MAX_VALUE,
+	    maxNodeCount: 0,
 			query: `query getData($filters:[Rule]){
 								Select(filters:$filters){
 									Summaries {
-										Any (limit:100) {
+										FromAddress {
 											Key
 											Count
-											Counts{
-				          			From
-				        			}
 											Summaries {
-												ToAddresses {
+												ToAddresses (limit: 1000) {
 													Key
 													Count
 												}
-												FromAddress {
+											}
+										}
+										ToAddresses {
+												Key
+												Count
+												Summaries {
+												FromAddress (limit: 1000) {
 													Key
 													Count
 												}
@@ -40,6 +48,7 @@ class BiGraphContainer extends Component {
 	}
 
 	componentWillMount() {
+		this.loadData(this.props.state);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -99,7 +108,7 @@ class BiGraphContainer extends Component {
 
 	loadData(newState) {
 		var jsonQuery = this.translateStateToFilter(newState);
-		if (newState.filters.length > 0) {															//loadData sends the query to the suQl server and retrieves the data
+//		if (newState.filters.length > 0) {															//loadData sends the query to the suQl server and retrieves the data
 				/*{
 				  Select(filters:[
 				    {field:Contents, operation: in, value:'california'},
@@ -113,6 +122,10 @@ class BiGraphContainer extends Component {
 				/*{'filters':  [{'field':'ToAddress', 'operation': 'in',
 				      'value':['sue.nord@enron.com', 'susan.mara@enron.com']}]}*/
 			let queries = [];
+			let minLinkCount = Number.MAX_VALUE;
+	    let maxLinkCount = 0;
+	    let minNodeCount = Number.MAX_VALUE;
+	    let maxNodeCount = 0;
 			queries.push(dataSource.query(
 				this.state.query, jsonQuery
 			).then(r => {
@@ -121,8 +134,8 @@ class BiGraphContainer extends Component {
 				if (typeof r.data !== 'undefined'){
 					contactList = r.data.Select.Summaries;
 				}
-				jsonQuery.contacts.map((c) => {
-          let queryData = contactList.Any.find(function(e){
+				jsonQuery.toList.map((c) => {
+          let queryData = contactList.ToAddresses.find(function(e){
 						return (c === e.Key);
 					});
           if (typeof queryData !== 'undefined'){
@@ -130,60 +143,113 @@ class BiGraphContainer extends Component {
 							id: queryData.Key,
 							size: queryData.Count,
 							fromList: queryData.Summaries.FromAddress,
-							toList: queryData.Summaries.ToAddresses,
+							toList: [],
 							toLinks: [],
 							fromLinks: [],
 							queryNode: true,
 							mouseOver: false,
 							nodeClass: 'normal',
-							toNode: jsonQuery.toList.includes(queryData.Key) ? true : false,
-							fromNode: jsonQuery.fromList.includes(queryData.Key) ? true : false
+							toNode: true,
+							fromNode: false
 						});
           }
 				});
-// We now have to fill out the to and from nodes with non query nodes.
-        let nodeList = [];
-        let nodesInList = {};
-
-        queryNodes.map((qnode) => {
-          nodesInList[qnode.id] = true;
-        });
-
-        queryNodes.map((qnode) => {
-          qnode.toList.map((tn) => {
-            if (!nodesInList.hasOwnProperty(tn.Key)){
-              nodeList.push(tn);
-              nodesInList[tn.Key] = true;
-            }
-          });
-          qnode.fromList.map((fn) => {
-            if (!nodesInList.hasOwnProperty(fn.Key)){
-              nodeList.push(fn);
-              nodesInList[fn.Key] = true;
-            }
+				jsonQuery.fromList.map((c) => {
+          let queryData = contactList.FromAddress.find(function(e){
+						return (c === e.Key);
 					});
+          if (typeof queryData !== 'undefined'){
+						let thisNode = queryNodes.find(function(n){
+							return (queryData.Key === n.id);
+						});
+						if (typeof thisNode === 'undefined') {
+	  					queryNodes.push({
+								id: queryData.Key,
+								size: queryData.Count,
+								fromList: [],
+								toList: queryData.Summaries.ToAddresses,
+								toLinks: [],
+								fromLinks: [],
+								queryNode: true,
+								mouseOver: false,
+								nodeClass: 'normal',
+								toNode: false,
+								fromNode: true
+							});
+						} else {
+							thisNode.toList = queryData.Summaries.ToAddresses;
+							thisNode.fromNode = true;
+						}
+          }
 				});
-        // Sort from biggest to smallest
-        nodeList.sort(function(a,b){
-          return(b.Count - a.Count);
-        });
-        if (nodeList.length > 20 - queryNodes.length){
-          nodeList = nodeList.slice(0, 20 - queryNodes.length)
-        }
-        nodeList.map((nData) => {
-          queryNodes.push({
-						id: nData.Key,
-						size: nData.Count,
-						toLinks: [],
-						fromLinks: [],
-						queryNode: false,
-						mouseOver: false,
-						nodeClass: 'normal',
-						toNode: false,
-						fromNode: false
+				contactList.ToAddresses.map((contact) => {
+					contact.Summaries.ToAddresses = [];
+					contact.receivedFrom = [];
+					contact.sendsTo = [];
+					minNodeCount = Math.min(contact.Count, minNodeCount);
+		      maxNodeCount = Math.max(contact.Count, maxNodeCount);
+					queryNodes.map((qn) => {
+						let linkNode = qn.toList.find(function(tn){return tn.Key === contact.Key});
+						if (typeof linkNode !== 'undefined') {
+							contact.receivedFrom.push({target: qn, size: linkNode.Count});
+							minLinkCount = Math.min(linkNode.Count, minLinkCount);
+              maxLinkCount = Math.max(linkNode.Count, maxLinkCount);
+						}
+					})
+				});
+				contactList.FromAddress.map((contact) => {
+					contact.Summaries.FromAddress = [];
+					contact.sendsTo = [];
+					contact.receivedFrom = [];
+					minNodeCount = Math.min(contact.Count, minNodeCount);
+		      maxNodeCount = Math.max(contact.Count, maxNodeCount);
+					queryNodes.map((qn) => {
+						let linkNode = qn.fromList.find(function(fn){return fn.Key === contact.Key});
+						if (typeof linkNode !== 'undefined') {
+							contact.sendsTo.push({target: qn, size: linkNode.Count});
+							minLinkCount = Math.min(linkNode.Count, minLinkCount);
+              maxLinkCount = Math.max(linkNode.Count, maxLinkCount);
+						}
+					})
+				});
+				let contacts = [];
+				if (jsonQuery.toList.length  < 1 && jsonQuery.toList.length < 1) {
+					contacts = contactList.ToAddresses;
+					contactList.FromAddress.map((contact) => {
+						let exists = contacts.find(function(c){
+							return (c.Key === contact.Key);
+						});
+						if (typeof exists === 'undefined'){
+							contacts.push(contact);
+						} else {
+							exists.Summaries.ToAddresses = contact.Summaries.ToAddresses;
+							exists.sendsTo = contact.sendsTo;
+							exists.Count = Math.max(contact.Count, exists.Count);
+						}
 					});
-        });
-				return {qn:queryNodes, cl:contactList};
+				} else {
+					if (jsonQuery.fromList.length  > 0) {
+						contacts = contactList.ToAddresses;
+					}
+					if (jsonQuery.toList.length > 0) {
+						contactList.FromAddress.map((contact) => {
+							let exists = contacts.find(function(c){
+								return (c.Key === contact.Key);
+							});
+							if (typeof exists === 'undefined'){
+								contacts.push(contact);
+							} else {
+								exists.Summaries.ToAddresses = contact.Summaries.ToAddresses;
+								exists.sendsTo = contact.sendsTo;
+								exists.Count = contact.Count+exists.Count;
+							}
+						});
+					}
+				}
+				contacts.sort(function(a,b){
+					return (b.Count - a.Count);
+				})
+				return {qn:queryNodes, cl:contacts, minLC: minLinkCount, maxLC: maxLinkCount, minNC: minLinkCount, maxNC: maxNodeCount} ;
 				})
 			);
       Promise.all(queries).then(rr => {
@@ -191,26 +257,34 @@ class BiGraphContainer extends Component {
           this.setState({
             contacts: d.cl,
             nodes: d.qn,
-						jsonQuery: jsonQuery
+						minLinkCount: d.minLC,
+						maxLinkCount: d.maxLC,
+						minNodeCount: d.minNC,
+						maxNodeCount: d.maxNC
           });
 				});
 			}).catch((err) => console.log('In BiGraphContainer: ', err.message));
 			// Do the queiry to get the inter contact counts.
-		} else {
-			this.setState({
-				contacts: [],
-				nodes: []
-			});
-		}
+		// } else {
+		// 	this.setState({
+		// 		contacts: [],
+		// 		nodes: [],
+		// 	});
+		// }
 	}
 
 	render() {
 //		const {actions} = this.props;
 //		return <ContactGraph contacts={this.state.contactNodes} links={this.state.contactLinks}/>;
+		let {actions} = this.props;
 		return <ContactBiGraph
 			nodes={this.state.nodes}
 			contacts={this.state.contacts}
-			jsonQuery={this.state.jsonQuery}
+			minLinkCount= {this.state.minLinkCount}
+			maxLinkCount= {this.state.maxLinkCount}
+			minNodeCount= {this.state.minLinkCount}
+			maxNodeCount= {this.state.maxNodeCount}
+			{...actions}
 			/>;
 
 	}
@@ -226,7 +300,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-	const actions = {};
+	const actions = {addListItem};
 	const actionMap = { actions: bindActionCreators(actions, dispatch) };
 	return actionMap;
 }
