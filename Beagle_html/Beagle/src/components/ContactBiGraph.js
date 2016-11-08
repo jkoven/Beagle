@@ -355,6 +355,7 @@ module.exports = React.createClass({
         <div className='contactlist-component-list' style={{top: this.state.queryNodeHeight}}>
 				<Infinite containerHeight={this.state.contactListHeight} elementHeight={contactElementHeight}>
 					{ contacts.map((c,i) =>
+            typeof this.state.nodes.find(function(n){return n.id === c.Key}) === 'undefined' &&
             <div
               key={'contactdiv'+c.Key}
               onDoubleClick= {function () {mouseDoubleClick(c.Key)}}
@@ -366,7 +367,7 @@ module.exports = React.createClass({
                   key={'nodelabel' + c.Key + i}
                   className={'normal'}
                   x={width/2}
-                  y={contactElementHeight/2}
+                  y={18}
                   textAnchor='middle'
                   >
                   {c.Key}
