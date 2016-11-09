@@ -3,6 +3,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
 import Infinite from 'react-infinite';
+import Dialog from 'rc-dialog';
+import dataSource from '../sources/dataSource';
 import _ from 'lodash'
 //import dataSource from '../sources/dataSource';
 
@@ -26,7 +28,26 @@ module.exports = React.createClass({
       searchArr : [],
       input: '',
       queryNodeHeight: 40,
-      contactListHeight : 600
+      contactListHeight: 600,
+      dialogVisible: false,
+      dialogWidth: 300,
+      dialogHeight: 500,
+      dialogNodes: [],
+      mousePosition:{
+        x: 0,
+        y: 0
+      },
+      dialogTitle: 'Emtpy List',
+      query: `query getData($filters:[Rule]){
+								Select(filters:$filters){
+									Summaries {
+										FromAddress {
+											Key
+											Count
+										}
+									}
+								}
+							}`
     };
 },
 
@@ -104,7 +125,8 @@ module.exports = React.createClass({
       nodes: nodes,
       contactListHeight: parseInt(d3.select(ReactDOM.findDOMNode(this)).style('height')) - height,
       links: links,
-      queryNodeHeight: height
+      queryNodeHeight: height,
+      dialogWidth: 3 * width / 5
     });
   },
 
@@ -123,28 +145,6 @@ module.exports = React.createClass({
   mouseOverNode: function (e){
     let name = e.target.parentNode.getAttribute('class');
     let currentNodes = this.state.nodes;
-    // let query = `query getData($filters:[Rule]){
-    //           Select(filters:$filters){
-    //             Summaries {
-    //               Any {
-    //                 Key
-    //                 Count
-    //               }
-    //             }
-    //           }
-    //         }`
-    // let jsonQuery = this.props.jsonQuery;
-    // if (jsonQuery.filters.length > 0){
-    //   dataSource.query(
-    //     query, jsonQuery
-    //   ).then(r => {
-    //     let contactList = [];
-    //     if (typeof r.data !== 'undefined'){
-    //       contactList = r.data.Select.Summaries;
-    //       console.log(contactList);
-    //     }
-    //   });
-    // }
     currentNodes.map((node) => {
       if(node.id === name) {
         node.nodeClass = 'highlighted';
@@ -184,6 +184,29 @@ module.exports = React.createClass({
       this.setState({
         nodes: currentNodes
       });
+    });
+  },
+
+  onClose: function() {
+   this.setState({
+     dialogVisible:false
+   })
+ },
+mouseClick: function(contact){
+    let jQuery = {};
+    jQuery.filters = [{'field': 'FromAddress', 'operation': 'contains', 'value': [contact]}];
+    dataSource.query(
+      this.state.query, jQuery
+    ).then(r => {
+      let contactList = [];
+      if (typeof r.data !== 'undefined'){
+        contactList = r.data.Select.Summaries.ToAddresses;
+      }
+      this.setState({
+        dialogVisible: true,
+        dialogTitle: contact,
+        dialogNodes: contactList
+      })
     });
   },
 
@@ -261,11 +284,47 @@ module.exports = React.createClass({
 		// }
 		let contactElementHeight = 24;
     let mouseDoubleClick = this.mouseDoubleClick;
+    let mouseClick = this.mouseClick;
     let overLink = this.mouseOverlink;
     let outOfLink = this.mouseOutOfLink;
-    let rad = 7;
+//    let rad = 7;
     let fromX = width/5;
     let toX = ((width/5) * 4) - 10;
+    let dialog = (
+			<Dialog
+				visible={this.state.dialogVisible}
+				wrapClassName={'none'}
+				animation='zoom'
+				maskAnimation='fade'
+				onClose={()=>(this.onClose())}
+				style={{width: this.state.dialogWidth, height: this.state.dialogHeight}}
+				mousePosition={this.state.mousePosition}
+				title={<div  className = 'contactlist-component-list' style = {{height: contactElementHeight}}>{this.state.dialogTitle}</div>}
+			>
+        <Infinite containerHeight={this.state.contactListHeight} elementHeight={24}>
+        { contacts.map((c,i) =>
+          typeof this.state.nodes.find(function(n){return n.id === c.Key}) === 'undefined' &&
+          <div
+            key={'contactdiv'+c.Key}
+            onDoubleClick= {function () {mouseDoubleClick(c.Key)}}
+            >
+            <svg
+              key={c.Key}
+              className='dialog-component-contact-svg'>
+              <text
+                key={'dialognodelabel' + c.Key + i}
+                className={'normal'}
+                x={this.state.dialogWidth/2}
+                y={18}
+                textAnchor='middle'
+                >
+                {c.Key}
+              </text>
+            </svg>
+          </div>)}
+        </Infinite>
+			</Dialog>
+		);
 
     return (
       <div className='contactgraph-component'>
@@ -359,6 +418,7 @@ module.exports = React.createClass({
             <div
               key={'contactdiv'+c.Key}
               onDoubleClick= {function () {mouseDoubleClick(c.Key)}}
+              onClick= {function() {mouseClick(c.Key)}}
               >
               <svg
                 key={c.Key}
@@ -404,6 +464,7 @@ module.exports = React.createClass({
             </div>)}
 					</Infinite>
 				</div>
+        {dialog}
       </div>
     );
   }

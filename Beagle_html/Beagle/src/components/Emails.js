@@ -52,7 +52,7 @@ class Emails extends React.Component {
  }
 
 	render() {
-		 let dialog;
+		let dialog;
 		let {emails} = this.props;
 		let fullDates = [];
 		let wrapClassName = '';
