@@ -186,8 +186,8 @@ class BiGraphContainer extends Component {
 					contact.Summaries.ToAddresses = [];
 					contact.receivedFrom = [];
 					contact.sendsTo = [];
-					minNodeCount = Math.min(contact.Count, minNodeCount);
-		      maxNodeCount = Math.max(contact.Count, maxNodeCount);
+					contact.toCount = contact.Count;
+					contact.fromCount = 0;
 					queryNodes.map((qn) => {
 						let linkNode = qn.toList.find(function(tn){return tn.Key === contact.Key});
 						if (typeof linkNode !== 'undefined') {
@@ -201,8 +201,8 @@ class BiGraphContainer extends Component {
 					contact.Summaries.FromAddress = [];
 					contact.sendsTo = [];
 					contact.receivedFrom = [];
-					minNodeCount = Math.min(contact.Count, minNodeCount);
-		      maxNodeCount = Math.max(contact.Count, maxNodeCount);
+					contact.fromCount = contact.Count;
+					contact.toCount = 0;
 					queryNodes.map((qn) => {
 						let linkNode = qn.fromList.find(function(fn){return fn.Key === contact.Key});
 						if (typeof linkNode !== 'undefined') {
@@ -224,7 +224,8 @@ class BiGraphContainer extends Component {
 						} else {
 							exists.Summaries.ToAddresses = contact.Summaries.ToAddresses;
 							exists.sendsTo = contact.sendsTo;
-							exists.Count = Math.max(contact.Count, exists.Count);
+							exists.Count = contact.Count + exists.Count;
+							exists.fromCount = contact.fromCount;
 						}
 					});
 				} else {
@@ -241,17 +242,23 @@ class BiGraphContainer extends Component {
 							} else {
 								exists.Summaries.ToAddresses = contact.Summaries.ToAddresses;
 								exists.sendsTo = contact.sendsTo;
-								exists.Count = contact.Count+exists.Count;
+								exists.Count = contact.Count + exists.Count;
+								exists.fromCount = contact.fromCount;
 							}
 						});
 					}
 				}
+				contacts.map((contact) => {
+					minNodeCount = Math.min(contact.toCount, contact.fromCount, minNodeCount);
+		      maxNodeCount = Math.max(contact.toCount, contact.fromCount, maxNodeCount);
+				});
 				contacts.sort(function(a,b){
 					return (b.Count - a.Count);
 				})
-				return {qn:queryNodes, cl:contacts, minLC: minLinkCount, maxLC: maxLinkCount, minNC: minLinkCount, maxNC: maxNodeCount} ;
+				return {qn:queryNodes, cl:contacts, minLC: minLinkCount, maxLC: maxLinkCount, minNC: minNodeCount, maxNC: maxNodeCount} ;
 				})
 			);
+
       Promise.all(queries).then(rr => {
 				rr.map((d) => {
           this.setState({
@@ -282,7 +289,7 @@ class BiGraphContainer extends Component {
 			contacts={this.state.contacts}
 			minLinkCount= {this.state.minLinkCount}
 			maxLinkCount= {this.state.maxLinkCount}
-			minNodeCount= {this.state.minLinkCount}
+			minNodeCount= {this.state.minNodeCount}
 			maxNodeCount= {this.state.maxNodeCount}
 			{...actions}
 			/>;

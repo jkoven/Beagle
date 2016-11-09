@@ -262,7 +262,7 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         vertical-align: bottom;
-        text-anchor: middle;
+        text-anchor: left;
       }
 
       text.highlighted {
@@ -530,7 +530,7 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         vertical-align: bottom;
-        text-anchor: middle;
+        text-anchor: left;
       }
 
       text.highlighted {
@@ -556,7 +556,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     vertical-align: bottom;
-    text-anchor: middle;
+    text-anchor: left;
   }
 
   text.highlighted {

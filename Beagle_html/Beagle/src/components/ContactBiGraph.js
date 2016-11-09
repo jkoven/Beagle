@@ -10,15 +10,16 @@ import _ from 'lodash'
 
 require('styles//ContactGraph.scss');
 var d3 = require('d3');
-let nodeScale = d3.scaleLog();
-let linkScale = d3.scaleLog();
 let linkSpacing = 8;
 let width = 300;
 let height = 40;
+let rad = 8;
 module.exports = React.createClass({
 
   getInitialState: function() {
     return {
+      nodeScale: d3.scaleLog(),
+      linkScale: d3.scaleLog(),
       maxCount: 0,
       test: 0,
       nodes: [],
@@ -62,6 +63,8 @@ module.exports = React.createClass({
   },
 
   componentWillReceiveProps: function (newProps){
+    let nodeScale = d3.scaleLog();
+    let linkScale = d3.scaleLog();
     let nodes = newProps.nodes;
 //    console.log(nodes);
 //    let toNodes = newProps.nodes;
@@ -72,11 +75,8 @@ module.exports = React.createClass({
 //    let yCenter = height/2;
     let nodeSpacing = 24;
     let nodeStartY = 35;
-    linkSpacing = ((width - 4) / 5) / 12;
-    let nodeX = width/2;
-
-    linkScale.range([1, 19]);
-    nodeScale.range([1, 19])
+    linkSpacing = 2 * rad + 2;
+    let nodeX = 5;
 
     nodes.map ((node, idx) => {
       node['ndx'] = idx+1;
@@ -119,14 +119,18 @@ module.exports = React.createClass({
         });
       }
     });
+    linkScale.range([1, rad]);
+    nodeScale.range([1, rad]);
     linkScale.domain([newProps.minLinkCount, newProps.maxLinkCount]);
-    nodeScale.domain([newProps.minNodeCount, newProps.maxNodeCount]);
+    nodeScale.domain([(newProps.minNodeCount > 0) ? newProps.minNodeCount : 1, newProps.maxNodeCount]);
     this.setState({
       nodes: nodes,
       contactListHeight: parseInt(d3.select(ReactDOM.findDOMNode(this)).style('height')) - height,
       links: links,
       queryNodeHeight: height,
-      dialogWidth: 3 * width / 5
+      dialogWidth: 3 * width / 5,
+      nodeScale: nodeScale,
+      linkScale: linkScale
     });
   },
 
@@ -288,8 +292,8 @@ mouseClick: function(contact){
     let overLink = this.mouseOverlink;
     let outOfLink = this.mouseOutOfLink;
 //    let rad = 7;
-    let fromX = width/5;
-    let toX = ((width/5) * 4) - 10;
+    let fromX = width/3;
+    let toX = ((width/3) * 2);
     let dialog = (
 			<Dialog
 				visible={this.state.dialogVisible}
@@ -316,7 +320,6 @@ mouseClick: function(contact){
                 className={'normal'}
                 x={this.state.dialogWidth/2}
                 y={18}
-                textAnchor='middle'
                 >
                 {c.Key}
               </text>
@@ -331,17 +334,17 @@ mouseClick: function(contact){
         <svg className='contact-graph-svg'>
         <text
           className={'header'}
-          x={width/6}
+          x={width/3}
           y={20}
-          textAnchor='middle'
+          textAnchor='left'
           >
           {'FROM'}
         </text>
         <text
           className={'header'}
-          x={width/6 * 5}
+          x={width/3 * 2}
           y={20}
-          textAnchor='middle'
+          textAnchor='left'
           >
           {'TO'}
         </text>
@@ -356,69 +359,42 @@ mouseClick: function(contact){
               className={contact.nodeClass === 'normal' ? contact.queryNode ? 'highlighted' : contact.nodeClass : contact.nodeClass}
               x={contact.x}
               y={contact.y + 10}
-              textAnchor='middle'
               onMouseOver={this.mouseOverNode}
               onMouseOut={this.mouseOutOfNode}
               >
               {contact.id}
             </text>
             {
-              contact.fromNode &&
+              contact.toNode &&
                 <polygon
                   className={'node'+contact.ndx}
                   points={[
-                    fromX, contact.y + 10,
-                    fromX + 5, contact.y,
-                    fromX + 10, contact.y + 10
+                    fromX - 5+ i * linkSpacing, contact.y,
+                    fromX + i * linkSpacing, contact.y + 10,
+                    fromX + 5 + i * linkSpacing, contact.y
                   ]}
                 />
             }
             {
-              contact.toNode &&
+              contact.fromNode &&
                 <polygon
                   className={'node'+contact.ndx}
-                  points={[toX, contact.y + 10, toX + 5 ,contact.y, toX + 10 ,contact.y + 10]}
+                  points={[
+                    toX - 5 + i * linkSpacing, contact.y,
+                    toX + i * linkSpacing,contact.y + 10,
+                    toX + 5 + i * linkSpacing,contact.y
+                  ]}
                 />
             }
-                {contact.fromLinks.map((link, i) =>
-                  link.target.fromNode &&
-                    <rect
-                      key={'fromlinkrect' + contact.id + i}
-                      className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
-                      x={(4 * width / 5) + (link.target.ndx*linkSpacing)}
-                      y={contact.y + 10 - linkScale(link.size)}
-                      height={linkScale(link.size)}
-                      width={4}
-                      onMouseOver={function (e) {overLink(e, link.target)}}
-                      onMouseOut={function () {outOfLink()}}
-                    />
-                  )
-                }
-                {contact.toLinks.map((link, i) =>
-                  link.target.toNode &&
-                    <rect
-                      key={'tolinkrect' + contact.id + i}
-                      className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
-                      x={(width/5) - (link.target.ndx*linkSpacing)}
-                      y={contact.y + 10 - linkScale(link.size)}
-                      height={linkScale(link.size)}
-                      width={4}
-                      onMouseOver={function (e) {overLink(e, link.target)}}
-                      onMouseOut={function () {outOfLink()}}
-                    />
-                  )
-                }
           </g>
         )}
         </svg>
         <div className='contactlist-component-list' style={{top: this.state.queryNodeHeight}}>
 				<Infinite containerHeight={this.state.contactListHeight} elementHeight={contactElementHeight}>
 					{ contacts.map((c,i) =>
-            typeof this.state.nodes.find(function(n){return n.id === c.Key}) === 'undefined' &&
             <div
               key={'contactdiv'+c.Key}
               onDoubleClick= {function () {mouseDoubleClick(c.Key)}}
-              onClick= {function() {mouseClick(c.Key)}}
               >
               <svg
                 key={c.Key}
@@ -426,21 +402,19 @@ mouseClick: function(contact){
                 <text
                   key={'nodelabel' + c.Key + i}
                   className={'normal'}
-                  x={width/2}
+                  x={5}
                   y={18}
-                  textAnchor='middle'
                   >
                   {c.Key}
                 </text>
                 {c.sendsTo.map((link) =>
                   link.target.toNode &&
-                  <rect
-                    key={'tolinkrectL' + link.target.id + i}
+                  <circle
+                    key={'tolinkcircleL' + link.target.id + i}
                     className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
-                    x={(width/5) - (link.target.ndx*linkSpacing)}
-                    y={20 - linkScale(link.size)}
-                    height={linkScale(link.size)}
-                    width={4}
+                    cx={fromX + ((link.target.ndx - 1) * linkSpacing)}
+                    cy={10}
+                    r={this.state.linkScale(link.size)}
                     onMouseOver={function (e) {overLink(e, link.target)}}
                     onMouseOut={function () {outOfLink()}}
                   />
@@ -448,17 +422,38 @@ mouseClick: function(contact){
                 }
                 {c.receivedFrom.map((link) =>
                   link.target.fromNode &&
-                  <rect
-                    key={'fromlinkrectL' + link.target.id + i}
+                  <circle
+                    key={'fromlinkcircleL' + link.target.id + i}
                     className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
-                    x={(4 * width / 5) + (link.target.ndx*linkSpacing)}
-                    y={20 - linkScale(link.size)}
-                    height={linkScale(link.size)}
-                    width={4}
+                    cx={toX + ((link.target.ndx-1)*linkSpacing)}
+                    cy={10}
+                    r={this.state.linkScale(link.size)}
                     onMouseOver={function (e) {overLink(e, link.target)}}
                     onMouseOut={function () {outOfLink()}}
                   />
                   )
+                }
+                {this.state.nodes.length < 1 && c.toCount > 0 &&
+                  <circle
+                    key={'tolinkcircleL' + c.Key + c.ndx + i}
+                    className={'node1'}
+                    cx={toX}
+                    cy={10}
+                    r={this.state.nodeScale(c.toCount)}
+                    onMouseOver={function (e) {overLink(e, c)}}
+                    onMouseOut={function () {outOfLink()}}
+                  />
+                }
+                {this.state.nodes.length < 1 && c.fromCount > 0 &&
+                  <circle
+                    key={'fromlinkcircleL' + c.Key+ c.ndx + i}
+                    className={'node2'}
+                    cx={fromX}
+                    cy={10}
+                    r={this.state.nodeScale(c.fromCount)}
+                    onMouseOver={function (e) {overLink(e, c)}}
+                    onMouseOut={function () {outOfLink()}}
+                  />
                 }
 					    </svg>
             </div>)}
