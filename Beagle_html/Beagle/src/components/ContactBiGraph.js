@@ -14,6 +14,8 @@ let linkSpacing = 8;
 let width = 300;
 let height = 40;
 let rad = 8;
+let oneClick=false;
+
 module.exports = React.createClass({
 
   getInitialState: function() {
@@ -231,21 +233,34 @@ module.exports = React.createClass({
    })
  },
 mouseClick: function(contact){
-    let jQuery = {};
-    jQuery.filters = [{'field': 'FromAddress', 'operation': 'contains', 'value': [contact]}];
-    dataSource.query(
-      this.state.query, jQuery
-    ).then(r => {
-      let contactList = [];
-      if (typeof r.data !== 'undefined'){
-        contactList = r.data.Select.Summaries.ToAddresses;
-      }
-      this.setState({
-        dialogVisible: true,
-        dialogTitle: contact,
-        dialogNodes: contactList
-      })
-    });
+  console.log('here');
+    let self = this;
+    if (oneClick) {
+      oneClick = false;
+      self.mouseDoubleClick(contact);
+    } else {
+      oneClick = true;
+      setTimeout(function() {
+        if (oneClick) {
+          oneClick = false;
+          let jQuery = {};
+          jQuery.filters = [{'field': 'FromAddress', 'operation': 'contains', 'value': [contact]}];
+          dataSource.query(
+            self.state.query, jQuery
+          ).then(r => {
+            let contactList = [];
+            if (typeof r.data !== 'undefined'){
+              contactList = r.data.Select.Summaries.ToAddresses;
+            }
+            self.setState({
+              dialogVisible: true,
+              dialogTitle: contact,
+              dialogNodes: contactList
+            })
+          });
+        }
+      }, 200)
+    }
   },
 
   mouseDoubleClick: function(contact){
@@ -355,7 +370,7 @@ mouseClick: function(contact){
               <text
                 key={'dialognodelabel' + c.Key + i}
                 className={'normal'}
-                x={this.state.dialogWidth/2}
+                x={5}
                 y={18}
                 >
                 {c.Key}
@@ -431,7 +446,7 @@ mouseClick: function(contact){
 					{ contacts.map((c,i) =>
             <div
               key={'contactdiv'+c.Key}
-              onDoubleClick= {function () {mouseDoubleClick(c.Key)}}
+              onClick= {function () {mouseClick(c.Key)}}
               >
               <svg
                 key={c.Key}
