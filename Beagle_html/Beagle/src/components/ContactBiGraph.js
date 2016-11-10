@@ -20,11 +20,11 @@ module.exports = React.createClass({
     return {
       nodeScale: d3.scaleLog(),
       linkScale: d3.scaleLog(),
+      contacts: [],
       maxCount: 0,
       test: 0,
+      fromCount: 0,
       nodes: [],
-      fromNodes: [],
-      toNodes: [],
       links: [],
       searchArr : [],
       input: '',
@@ -66,6 +66,7 @@ module.exports = React.createClass({
     let nodeScale = d3.scaleLog();
     let linkScale = d3.scaleLog();
     let nodes = newProps.nodes;
+    let fromCount = 0;
 //    console.log(nodes);
 //    let toNodes = newProps.nodes;
 //    let contacts = newProps.contacts;
@@ -83,6 +84,9 @@ module.exports = React.createClass({
       node['y'] = nodeStartY + (idx * nodeSpacing) + (nodeSpacing/2);
       node['x'] = nodeX;
       if (node.queryNode) {
+        if (node.toNode) {
+          fromCount++;
+        }
         node.toList.map((tnode) => {
           let thisTo = nodes.find(function(ttnode){
             return(ttnode.id === tnode.Key);
@@ -123,14 +127,19 @@ module.exports = React.createClass({
     nodeScale.range([1, rad]);
     linkScale.domain([newProps.minLinkCount, newProps.maxLinkCount]);
     nodeScale.domain([(newProps.minNodeCount > 0) ? newProps.minNodeCount : 1, newProps.maxNodeCount]);
+    newProps.contacts.map((contact) => {
+        contact.nodeClass = 'normal';
+    });
     this.setState({
       nodes: nodes,
       contactListHeight: parseInt(d3.select(ReactDOM.findDOMNode(this)).style('height')) - height,
       links: links,
+      contacts: newProps.contacts,
       queryNodeHeight: height,
       dialogWidth: 3 * width / 5,
       nodeScale: nodeScale,
-      linkScale: linkScale
+      linkScale: linkScale,
+      fromCount: fromCount
     });
   },
 
@@ -188,6 +197,31 @@ module.exports = React.createClass({
       this.setState({
         nodes: currentNodes
       });
+    });
+  },
+
+  mouseOverContact: function (contact){
+    let currentContacts = this.state.contacts;
+    contact.Summaries.ToAddresses.map((node) => {
+      let link = currentContacts.find(function(c){
+        return c.Key === node.Key;
+      });
+      if (typeof link !== 'undefined') {
+        link.nodeClass = 'highlighted';
+      }
+    });
+    this.setState({
+      contacts: currentContacts
+    });
+  },
+
+  mouseOutOfContact: function(){
+    let currentContacts = this.state.contacts;
+    currentContacts.map((node) => {
+        node.nodeClass = 'normal';
+    });
+    this.setState({
+      contacts: currentContacts
     });
   },
 
@@ -280,7 +314,7 @@ mouseClick: function(contact){
               />
   */
   render: function() {
-    let {contacts} = this.props;
+    let {contacts} = this.state;
 //    console.log(contacts);
 		this.state.maxCount = _.get(contacts,'0.Count');
     // if(this.state.searchArr != contacts){
@@ -291,9 +325,12 @@ mouseClick: function(contact){
     let mouseClick = this.mouseClick;
     let overLink = this.mouseOverlink;
     let outOfLink = this.mouseOutOfLink;
+    let overContact = this.mouseOverContact;
+    let outOfContact = this.mouseOutOfContact;
+
 //    let rad = 7;
     let fromX = width/3;
-    let toX = ((width/3) * 2);
+    let toX = fromX + 60 + ((this.state.fromCount < 3) ? 0 : this.state.fromCount - 2) * linkSpacing;
     let dialog = (
 			<Dialog
 				visible={this.state.dialogVisible}
@@ -334,17 +371,17 @@ mouseClick: function(contact){
         <svg className='contact-graph-svg'>
         <text
           className={'header'}
-          x={width/3}
+          x={fromX}
           y={20}
-          textAnchor='left'
+          textAnchor='middle'
           >
           {'FROM'}
         </text>
         <text
           className={'header'}
-          x={width/3 * 2}
+          x={toX}
           y={20}
-          textAnchor='left'
+          textAnchor='middle'
           >
           {'TO'}
         </text>
@@ -401,9 +438,11 @@ mouseClick: function(contact){
                 className='contactlist-component-contact-svg'>
                 <text
                   key={'nodelabel' + c.Key + i}
-                  className={'normal'}
+                  className={c.nodeClass === 'normal' ? c.queryNode ? 'highlighted' : c.nodeClass : c.nodeClass}
                   x={5}
                   y={18}
+                  onMouseOver={function () {overContact(c)}}
+                  onMouseOut={function () {outOfContact()}}
                   >
                   {c.Key}
                 </text>
