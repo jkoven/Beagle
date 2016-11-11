@@ -81,6 +81,7 @@ module.exports = function(state = initialState, action) {
         return [...state.slice(0,action.filterIdx), filter, ...state.slice(action.filterIdx+1)];
     }
 
+
     default: {
       /* Return original state if no actions were consumed. */
       return state;

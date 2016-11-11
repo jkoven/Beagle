@@ -233,7 +233,6 @@ module.exports = React.createClass({
    })
  },
 mouseClick: function(contact){
-  console.log('here');
     let self = this;
     if (oneClick) {
       oneClick = false;

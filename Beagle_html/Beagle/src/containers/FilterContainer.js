@@ -34,9 +34,15 @@ class FilterContainer extends Component {
       if (typeof state[i].values !== 'undefined'){
         var jsonData ={};
 
-        jsonData['field'] = state[i].selection;
-        jsonData['operation'] = 'contains';
-        jsonData['value'] = state[i].values;
+        if (state[i].selection === 'ToLength'){
+					jsonData['field'] = state[i].selection;
+					jsonData['operation'] = 'between';
+          jsonData['value'] = ['1', isNaN(parseInt(state[i].values[0])) ? '10' : parseInt(state[i].values[0]).toString()];
+				} else {
+					jsonData['field'] = state[i].selection;
+					jsonData['operation'] = 'contains';
+					jsonData['value'] = state[i].values;
+				}
         jsonQuery.filters.push(jsonData);
       }
     }

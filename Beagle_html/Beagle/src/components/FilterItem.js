@@ -85,6 +85,7 @@ module.exports = React.createClass({
                         {text: 'IS FROM or TO:', value: 'Any'},
                         {text: 'IS FROM:', value: 'FromAddress'},
                         {text: 'IS TO:', value: 'ToAddresses'},
+                        {text: 'TO FIELD SIZE LIMIT', value: 'ToLength'},
                         {text: 'CONTENT CONTAINS:', value: 'Contents'},
                         {text: 'SUBJECT CONTAINS:',  value: 'Subject'},
                         {text: 'PERSON:', value: 'PERSON'},

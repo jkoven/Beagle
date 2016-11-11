@@ -32,9 +32,15 @@ class EmailsContainer extends Component {
       if (typeof element.values !== 'undefined'){
         var jsonData ={};
 
-        jsonData['field'] = element.selection;
-        jsonData['operation'] = 'contains';
-        jsonData['value'] = element.values;
+        if (element.selection === 'ToLength'){
+					jsonData['field'] = element.selection;
+					jsonData['operation'] = 'between';
+          jsonData['value'] = ['1', isNaN(parseInt(element.values[0])) ? '10' : parseInt(element.values[0]).toString()];
+				} else {
+					jsonData['field'] = element.selection;
+					jsonData['operation'] = 'contains';
+					jsonData['value'] = element.values;
+				}
         jsonQuery.filters.push(jsonData);
       }
     });
