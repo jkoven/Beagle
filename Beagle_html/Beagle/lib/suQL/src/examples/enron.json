@@ -100,6 +100,14 @@
             "field": "to-addresses",
             "type": "List.String"
         },
+        "Any": {
+            "field": "any",
+            "type": "List.String"
+        },
+        "ToLength": {
+            "field": "toLength",
+            "type": "Number"
+        },
         "Verbs": {
             "field": "verb",
             "type": "String"
