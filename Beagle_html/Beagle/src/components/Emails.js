@@ -4,6 +4,8 @@ import React from 'react';
 import _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'rc-dialog';
+import Infinite from 'react-infinite';
+import ReactDOM from 'react-dom'
 import 'rc-dialog/assets/index.css';
 require('styles//Emails.scss');
 
@@ -20,9 +22,16 @@ class Emails extends React.Component {
 			subject:'',
 			from:'',
 			to:'',
+			emailListHeight: 400,
 			contents:''
 		}
 	}
+	componentDidMount () {
+    this.setState({
+			emailListHeight: ReactDOM.findDOMNode(this).offsetHeight
+		});
+  }
+
 	onClick(subject,from,to,contents) {
      this.setState({
        mousePosition: {
@@ -93,9 +102,19 @@ class Emails extends React.Component {
 
 			<div className='Emails-component' >
 			<div className='Emails-component-list' >
-				{emails.map((c,idx) => <RaisedButton  key={'email' + c.Subject+ idx} className='Emails-component-info' onClick={()=>(this.onClick(c.Subject,c.From,c.To,c.Contents))}><div  className = 'text2'>{fullDates[idx] + c.Subject}</div>
-				</RaisedButton>
-			)}
+			<Infinite containerHeight={this.state.emailListHeight} elementHeight={31}>
+				{emails.map((c,idx) =>
+					<RaisedButton
+						key={'email' + c.Subject+ idx}
+						className='Emails-component-info'
+						onClick={()=>(this.onClick(c.Subject,c.From,c.To,c.Contents))}>
+						<div
+							className = 'text2'>
+							{fullDates[idx] + c.Subject}
+						</div>
+					</RaisedButton>
+				)}
+			</Infinite>
 			</div>
 			{dialog}
       </div>

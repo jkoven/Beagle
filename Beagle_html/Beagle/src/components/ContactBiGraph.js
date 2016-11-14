@@ -258,7 +258,7 @@ mouseClick: function(contact){
             })
           });
         }
-      }, 200)
+      }, 300)
     }
   },
 
