@@ -386,7 +386,7 @@ mouseClick: function(contact){
                   onMouseOver={function () {overContact(c.Key)}}
                   onMouseOut={function () {outOfContact()}}
                   >
-                  {c.Count}
+                  {(this.state.nodes.length < 1) ? c.Count : c.fromLinkCount + c.toLinkCount}
                 </text>
 					    </svg>
             </div>)}
