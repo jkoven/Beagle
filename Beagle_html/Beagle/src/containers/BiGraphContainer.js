@@ -188,30 +188,38 @@ class BiGraphContainer extends Component {
           }
 				});
 				contactList.ToAddresses.map((contact) => {
+					contact.nodeClass='normal';
 					contact.Summaries.ToAddresses = [];
 					contact.receivedFrom = [];
 					contact.sendsTo = [];
 					contact.toCount = contact.Count;
 					contact.fromCount = 0;
+					contact.toLinkCount = 0;
+					contact.fromLinkCount = 0;
 					queryNodes.map((qn) => {
-						let linkNode = qn.toList.find(function(tn){return tn.Key === contact.Key});
+						let linkNode = contact.Summaries.FromAddress.find(function(tn){return tn.Key === qn.id});
 						if (typeof linkNode !== 'undefined') {
 							contact.receivedFrom.push({target: qn, size: linkNode.Count});
+							contact.fromLinkCount += linkNode.Count;
 							minLinkCount = Math.min(linkNode.Count, minLinkCount);
               maxLinkCount = Math.max(linkNode.Count, maxLinkCount);
 						}
 					})
 				});
 				contactList.FromAddress.map((contact) => {
+					contact.nodeClass='normal';
 					contact.Summaries.FromAddress = [];
 					contact.sendsTo = [];
 					contact.receivedFrom = [];
 					contact.fromCount = contact.Count;
 					contact.toCount = 0;
+					contact.toLinkCount = 0;
+					contact.fromLinkCount = 0;
 					queryNodes.map((qn) => {
-						let linkNode = qn.fromList.find(function(fn){return fn.Key === contact.Key});
+						let linkNode = contact.Summaries.ToAddresses.find(function(fn){return fn.Key === qn.id});
 						if (typeof linkNode !== 'undefined') {
 							contact.sendsTo.push({target: qn, size: linkNode.Count});
+							contact.toLinkCount += linkNode.Count;
 							minLinkCount = Math.min(linkNode.Count, minLinkCount);
               maxLinkCount = Math.max(linkNode.Count, maxLinkCount);
 						}
@@ -231,6 +239,7 @@ class BiGraphContainer extends Component {
 							exists.sendsTo = contact.sendsTo;
 							exists.Count = contact.Count + exists.Count;
 							exists.fromCount = contact.fromCount;
+							exists.toLinkCount = contact.toLinkCount;
 						}
 					});
 				} else {
@@ -249,17 +258,30 @@ class BiGraphContainer extends Component {
 								exists.sendsTo = contact.sendsTo;
 								exists.Count = contact.Count + exists.Count;
 								exists.fromCount = contact.fromCount;
+								exists.toLinkCount = contact.toLinkCount;
 							}
 						});
 					}
 				}
 				contacts.map((contact) => {
-					minNodeCount = Math.min(contact.toCount, contact.fromCount, minNodeCount);
-		      maxNodeCount = Math.max(contact.toCount, contact.fromCount, maxNodeCount);
+					if (contact.toCount > 0){
+						maxNodeCount = Math.max(contact.toCount, maxNodeCount);
+						minNodeCount = Math.min(contact.toCount, minNodeCount);
+					}
+					if (contact.fromCount > 0){
+			      maxNodeCount = Math.max(contact.fromCount, maxNodeCount);
+						minNodeCount = Math.min(contact.fromCount, minNodeCount);
+					}
 				});
-				contacts.sort(function(a,b){
-					return (b.Count - a.Count);
-				})
+				if (queryNodes.length < 1){
+					contacts.sort(function(a,b){
+						return ((b.Count) - (a.Count));
+					})
+				} else {
+					contacts.sort(function(a,b){
+						return ((b.fromLinkCount + b.toLinkCount) - (a.fromLinkCount + a.toLinkCount));
+					})
+				}
 				return {qn:queryNodes, cl:contacts, minLC: minLinkCount, maxLC: maxLinkCount, minNC: minNodeCount, maxNC: maxNodeCount} ;
 				})
 			);

@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom'
 import Infinite from 'react-infinite';
 import Dialog from 'rc-dialog';
 import dataSource from '../sources/dataSource';
+import ReactTooltip from 'react-tooltip'
 import _ from 'lodash'
 //import dataSource from '../sources/dataSource';
 
@@ -13,7 +14,7 @@ var d3 = require('d3');
 let linkSpacing = 8;
 let width = 300;
 let height = 40;
-let rad = 8;
+let rad = 15;
 let oneClick=false;
 
 module.exports = React.createClass({
@@ -36,6 +37,7 @@ module.exports = React.createClass({
       dialogWidth: 300,
       dialogHeight: 500,
       dialogNodes: [],
+      gridWidth: 300,
       mousePosition:{
         x: 0,
         y: 0
@@ -44,11 +46,15 @@ module.exports = React.createClass({
       query: `query getData($filters:[Rule]){
 								Select(filters:$filters){
 									Summaries {
-										FromAddress {
+										ToAddresses {
 											Key
 											Count
 										}
 									}
+								}
+							}`,
+      subQuery: `query getData($filters:[Rule]){
+									Select(filters:$filters){
 								}
 							}`
     };
@@ -56,7 +62,8 @@ module.exports = React.createClass({
 
   componentDidMount: function() {
     this.setState({
-			contactListHeight: ReactDOM.findDOMNode(this).offsetHeight - 55
+      contactListHeight: ReactDOM.findDOMNode(this).offsetHeight - 55,
+      gridWidth: (ReactDOM.findDOMNode(this).offsetWidth / 4) * 3
 		});
   },
 
@@ -73,11 +80,12 @@ module.exports = React.createClass({
 //    let toNodes = newProps.nodes;
 //    let contacts = newProps.contacts;
     let links = [];
-    height = 24 * nodes.length + 40;
+    let nodeStartY = 0;
+
+    height = nodes.length * 24 + 10
     width = parseInt(d3.select(ReactDOM.findDOMNode(this)).style('width'));
 //    let yCenter = height/2;
     let nodeSpacing = 24;
-    let nodeStartY = 35;
     linkSpacing = 2 * rad + 2;
     let nodeX = 5;
 
@@ -85,45 +93,45 @@ module.exports = React.createClass({
       node['ndx'] = idx+1;
       node['y'] = nodeStartY + (idx * nodeSpacing) + (nodeSpacing/2);
       node['x'] = nodeX;
-      if (node.queryNode) {
-        if (node.toNode) {
-          fromCount++;
-        }
-        node.toList.map((tnode) => {
-          let thisTo = nodes.find(function(ttnode){
-            return(ttnode.id === tnode.Key);
-          });
-          if (typeof thisTo !== 'undefined') {
-            if (thisTo.id !== node.id) {
-            //   node.toLinks.push({
-            //     target: thisTo,
-            //     size: thisTo.size
-            //   });
-              thisTo.fromLinks.push({
-                target: node,
-                size: tnode.Count
-              });
-            }
-          }
-        });
-        node.fromList.map((fnode) => {
-          let thisFrom = nodes.find(function(ffnode){
-            return(ffnode.id === fnode.Key);
-          });
-          if (typeof thisFrom !== 'undefined') {
-            if (thisFrom.id !== node.id) {
-            //   node.fromLinks.push({
-            //     target: thisFrom,
-            //     size: thisFrom.size
-            //   });
-              thisFrom.toLinks.push({
-                target: node,
-                size: fnode.Count
-              });
-            }
-          }
-        });
-      }
+    //   if (node.queryNode) {
+    //     if (node.toNode) {
+    //       fromCount++;
+    //     }
+    //     node.toList.map((tnode) => {
+    //       let thisTo = nodes.find(function(ttnode){
+    //         return(ttnode.id === tnode.Key);
+    //       });
+    //       if (typeof thisTo !== 'undefined') {
+    //         if (thisTo.id !== node.id) {
+    //         //   node.toLinks.push({
+    //         //     target: thisTo,
+    //         //     size: thisTo.size
+    //         //   });
+    //           thisTo.fromLinks.push({
+    //             target: node,
+    //             size: tnode.Count
+    //           });
+    //         }
+    //       }
+    //     });
+    //     node.fromList.map((fnode) => {
+    //       let thisFrom = nodes.find(function(ffnode){
+    //         return(ffnode.id === fnode.Key);
+    //       });
+    //       if (typeof thisFrom !== 'undefined') {
+    //         if (thisFrom.id !== node.id) {
+    //         //   node.fromLinks.push({
+    //         //     target: thisFrom,
+    //         //     size: thisFrom.size
+    //         //   });
+    //           thisFrom.toLinks.push({
+    //             target: node,
+    //             size: fnode.Count
+    //           });
+    //         }
+    //       }
+    //     });
+      // }
     });
     linkScale.range([1, rad]);
     nodeScale.range([1, rad]);
@@ -179,41 +187,44 @@ module.exports = React.createClass({
       });
     });
   },
-  mouseOverlink: function (e, link){
-    let name = link.id;
-    let currentNodes = this.state.nodes;
-    currentNodes.map((node) => {
-      if(node.id === name) {
-        node.nodeClass = 'node' + link.ndx;
-      }
-      this.setState({
-        nodes: currentNodes
-      });
-    });
+  mouseOverlink: function (contact){
+    let currentContact = this.state.contacts.find(function(c){return contact === c.Key});
+//    console.log(contact, currentContact.toLinkCount, currentContact.fromLinkCount);
+    currentContact.nodeClass='higlighted';
+    this.setState({
+      contacts: this.state.contacts
+    })
   },
 
-  mouseOutOfLink: function(){
-    let currentNodes = this.state.nodes;
-    currentNodes.map((node) => {
-        node.nodeClass = 'normal';
-      this.setState({
-        nodes: currentNodes
-      });
-    });
+  mouseOutOfLink: function(contact){
+    let currentContact = this.state.contacts.find(function(c){return contact === c.Key});
+    currentContact.nodeClass='normal';
+    this.setState({
+      contacts: this.state.contacts
+    })
   },
 
   mouseOverContact: function (contact){
+    let self = this;
     let currentContacts = this.state.contacts;
-    contact.Summaries.ToAddresses.map((node) => {
-      let link = currentContacts.find(function(c){
-        return c.Key === node.Key;
-      });
-      if (typeof link !== 'undefined') {
-        link.nodeClass = 'highlighted';
+    let jQuery = {};
+    jQuery.filters = [{'field': 'FromAddress', 'operation': 'contains', 'value': [contact]}];
+    dataSource.query(
+      self.state.query, jQuery
+    ).then(r => {
+      if (typeof r.data !== 'undefined'){
+        r.data.Select.Summaries.ToAddresses.map((c) => {
+          let link = currentContacts.find(function(cc){
+            return c.Key === cc.Key;
+          });
+          if (typeof link !== 'undefined') {
+            link.nodeClass = 'highlighted';
+          }
+        });
+        this.setState({
+          contacts: currentContacts
+        });
       }
-    });
-    this.setState({
-      contacts: currentContacts
     });
   },
 
@@ -266,67 +277,6 @@ mouseClick: function(contact){
 		this.props.addListItem(contact, 'Any');
 	},
 
-  // search: function(input) {
-  //  this.state.test = 0;
-  //  this.state.searchArr = [];
-  //  let {contacts} = this.props;
-  //    for(var i = 0; i < contacts.length; i++){
-  //      if((_.get(contacts,i+'.Key')).includes(input)==true){
-  //        if((_.get(contacts,i+'.Counts')).FromAddress > this.state.test){
-  //          this.state.test = (_.get(contacts,i+'.Counts')).FromAddress;
-  //        }
-  //        this.state.searchArr.push({
-  //        Key:	(_.get(contacts,i+'.Key')),
-  //        Count: (_.get(contacts,i+'.Count')),
-  //        Counts: (_.get(contacts,i+'.Counts')).FromAddress
-  //      })
-  //      }
-  //    }
-  //    this.state.maxCount = _.get(this.state.searchArr,'0.Count');
-  //  },
-
-  /* Link label code for later
-                <text key={'linklabel' + link.id + i}
-                className={link.lineClass}
-                x={link.midpointx} y={link.midpointy}
-                transform={'rotate(' + link.angle + ' ' + link.midpointx + ' ' + link.midpointy + ')'}
-                textAnchor='middle'>
-                {link.value}
-              </text>
-    Save for bubbles if needed
-              {contact.fromLinks.map((link, i) =>
-                <circle
-                  key={'fromlinkcircle' + contact.id + i}
-                  className={'node'+link.target.ndx}
-                  cx={contact.x - 20 - (i*linkSpacing)}
-                  cy={contact.y}
-                  r={linkScale(link.size)}
-                  onMouseOver={this.mouseOverNode}
-                  onMouseOut={this.mouseOutOfNode}
-                />
-              )}
-              {contact.toLinks.map((link, i) =>
-                <circle
-                  key={'tolinkcircle' + contact.id + i}
-                  className={'node'+link.target.ndx}
-                  cx={contact.x + 20 + (i*linkSpacing)}
-                  cy={contact.y}
-                  r={linkScale(link.size)}
-                  onMouseOver={this.mouseOverNode}
-                  onMouseOut={this.mouseOutOfNode}
-                />
-              )}
-    Save if we want the node back under the label
-              <circle
-                key={'graphcircle' + contact.id + i}
-                className={'node'+contact.ndx}
-                cx={contact.x}
-                cy={contact.y}
-                r={nodeScale(contact.size)}
-                onMouseOver={this.mouseOverNode}
-                onMouseOut={this.mouseOutOfNode}
-              />
-  */
   render: function() {
     let {contacts} = this.state;
 //    console.log(contacts);
@@ -345,6 +295,11 @@ mouseClick: function(contact){
 //    let rad = 7;
     let fromX = width/3;
     let toX = fromX + 60 + ((this.state.fromCount < 3) ? 0 : this.state.fromCount - 2) * linkSpacing;
+    let countX = width/4 - 5;
+    let gridY = rad + 1;
+    let gridBoxWidth = Math.floor(3+2*rad);
+    let gridBoxHeight = Math.floor(2+2*rad);
+    let gridCols = Math.floor(this.state.gridWidth / gridBoxWidth);
     let dialog = (
 			<Dialog
 				visible={this.state.dialogVisible}
@@ -383,22 +338,6 @@ mouseClick: function(contact){
     return (
       <div className='contactgraph-component'>
         <svg className='contact-graph-svg'>
-        <text
-          className={'header'}
-          x={fromX}
-          y={20}
-          textAnchor='middle'
-          >
-          {'FROM'}
-        </text>
-        <text
-          className={'header'}
-          x={toX}
-          y={20}
-          textAnchor='middle'
-          >
-          {'TO'}
-        </text>
         {this.state.nodes.map((contact, i) =>
           <g
             key={'g-graphcircle' + contact.id + i}
@@ -415,28 +354,6 @@ mouseClick: function(contact){
               >
               {contact.id}
             </text>
-            {
-              contact.toNode &&
-                <polygon
-                  className={'node'+contact.ndx}
-                  points={[
-                    fromX - 5+ i * linkSpacing, contact.y,
-                    fromX + i * linkSpacing, contact.y + 10,
-                    fromX + 5 + i * linkSpacing, contact.y
-                  ]}
-                />
-            }
-            {
-              contact.fromNode &&
-                <polygon
-                  className={'node'+contact.ndx}
-                  points={[
-                    toX - 5 + i * linkSpacing, contact.y,
-                    toX + i * linkSpacing,contact.y + 10,
-                    toX + 5 + i * linkSpacing,contact.y
-                  ]}
-                />
-            }
           </g>
         )}
         </svg>
@@ -455,63 +372,113 @@ mouseClick: function(contact){
                   className={c.nodeClass === 'normal' ? c.queryNode ? 'highlighted' : c.nodeClass : c.nodeClass}
                   x={5}
                   y={18}
-                  onMouseOver={function () {overContact(c)}}
+                  onMouseOver={function () {overContact(c.Key)}}
                   onMouseOut={function () {outOfContact()}}
                   >
                   {c.Key}
                 </text>
-                {c.sendsTo.map((link) =>
-                  link.target.toNode &&
-                  <circle
-                    key={'tolinkcircleL' + link.target.id + i}
-                    className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
-                    cx={fromX + ((link.target.ndx - 1) * linkSpacing)}
-                    cy={10}
-                    r={this.state.linkScale(link.size)}
-                    onMouseOver={function (e) {overLink(e, link.target)}}
-                    onMouseOut={function () {outOfLink()}}
-                  />
-                  )
-                }
-                {c.receivedFrom.map((link) =>
-                  link.target.fromNode &&
-                  <circle
-                    key={'fromlinkcircleL' + link.target.id + i}
-                    className={link.target.nodeClass === 'highlighted' ? 'blinknode'+link.target.ndx : 'node'+link.target.ndx}
-                    cx={toX + ((link.target.ndx-1)*linkSpacing)}
-                    cy={10}
-                    r={this.state.linkScale(link.size)}
-                    onMouseOver={function (e) {overLink(e, link.target)}}
-                    onMouseOut={function () {outOfLink()}}
-                  />
-                  )
-                }
-                {this.state.nodes.length < 1 && c.toCount > 0 &&
-                  <circle
-                    key={'tolinkcircleL' + c.Key + c.ndx + i}
-                    className={'node1'}
-                    cx={toX}
-                    cy={10}
-                    r={this.state.nodeScale(c.toCount)}
-                    onMouseOver={function (e) {overLink(e, c)}}
-                    onMouseOut={function () {outOfLink()}}
-                  />
-                }
-                {this.state.nodes.length < 1 && c.fromCount > 0 &&
-                  <circle
-                    key={'fromlinkcircleL' + c.Key+ c.ndx + i}
-                    className={'node2'}
-                    cx={fromX}
-                    cy={10}
-                    r={this.state.nodeScale(c.fromCount)}
-                    onMouseOver={function (e) {overLink(e, c)}}
-                    onMouseOut={function () {outOfLink()}}
-                  />
-                }
+                <text
+                  key={'nodecount' + c.Key + i}
+                  className={c.nodeClass === 'normal' ? c.queryNode ? 'highlighted' : c.nodeClass : c.nodeClass}
+                  x={countX}
+                  y={18}
+                  style={{textAnchor: 'end'}}
+                  onMouseOver={function () {overContact(c.Key)}}
+                  onMouseOut={function () {outOfContact()}}
+                  >
+                  {c.Count}
+                </text>
 					    </svg>
             </div>)}
 					</Infinite>
 				</div>
+        <div className='contactlist-component-grid'>
+        {contacts.map((c,i) =>
+          <g className= 'contactlist-component-contact-g'
+            key={c.Key+'gridg'}
+            data-tip data-for={c.Key+'tip'}
+            style={{left: (i%gridCols) * gridBoxWidth, top: Math.floor(i/gridCols) * gridBoxHeight}}
+          >
+              <svg
+                key={c.Key+'gridsvg' }
+                className='contactlist-component-contact-svg'
+                style={{width: gridBoxWidth, height: gridBoxHeight}}>
+                {c.toCount > 0 && this.state.nodes.length < 1 &&
+                  <path
+                    key={'tolinkcircleL' + c.Key + c.ndx + i}
+                    className={'node1'}
+                    d={`M ${rad+1} ${1 + rad - this.state.nodeScale(c.toCount)}
+                    A ${this.state.nodeScale(c.toCount)} ${this.state.nodeScale(c.toCount)},
+                    0, 0, 0,
+                    ${rad+1} ${rad+1+this.state.nodeScale(c.toCount)}
+                    L ${rad+1} ${rad+1} Z`}
+                  />
+                }
+                {c.fromCount > 0 && this.state.nodes.length < 1 &&
+                  <path
+                    key={'fromlinkcircleL' + c.Key + c.ndx + i}
+                    className={'node4'}
+                    d={`M ${rad+2} ${1 + rad - this.state.nodeScale(c.fromCount)}
+                    A ${this.state.nodeScale(c.fromCount)} ${this.state.nodeScale(c.fromCount)},
+                    0, 0, 1,
+                    ${rad+2} ${rad+1+this.state.nodeScale(c.fromCount)}
+                    L ${rad+2} ${rad+1} Z`}
+                  />
+                }
+                {c.toLinkCount > 0 &&
+                  <path
+                    key={'tolinkcircleL' + c.Key + c.ndx + i}
+                    className={'node1'}
+                    d={`M ${rad+1} ${1 + rad - this.state.linkScale(c.toLinkCount)}
+                    A ${this.state.nodeScale(c.toLinkCount)} ${this.state.linkScale(c.toLinkCount)},
+                    0, 0, 0,
+                    ${rad+1} ${rad+1+this.state.linkScale(c.toLinkCount)}
+                    L ${rad+1} ${rad+1} Z`}
+                  />
+                }
+                {c.fromLinkCount > 0 &&
+                  <path
+                    key={'fromlinkcircleL' + c.Key + c.ndx + i}
+                    className={'node4'}
+                    d={`M ${rad+2} ${1 + rad - this.state.linkScale(c.fromLinkCount)}
+                    A ${this.state.linkScale(c.fromLinkCount)} ${this.state.linkScale(c.fromLinkCount)},
+                    0, 0, 1,
+                    ${rad+2} ${rad+1+this.state.linkScale(c.fromLinkCount)}
+                    L ${rad+2} ${rad+1} Z`}
+                  />
+                }
+              </svg>
+              <ReactTooltip id={c.Key+'tip'} type='info'>
+              <p>{c.Key}</p>
+              {c.sendsTo.map((link) =>
+                link.target.toNode &&
+                <p key={c.Key + 'to' + link.target.id + i}>
+                  {'To ' + link.target.id+': '+ link.size}
+                </p>
+                )
+              }
+              {c.receivedFrom.map((link) =>
+                link.target.fromNode &&
+                <p key={c.Key + 'from' + link.target.id + i}>
+                  {'From ' + link.target.id+': '+ link.size}
+                </p>
+                )
+              }
+              {this.state.nodes.length < 1 && c.toCount > 0 &&
+                <p key={c.Key + 'toall' + i}>
+                  {'Total sent emails: '+ c.toCount}
+                </p>
+              }
+              {this.state.nodes.length < 1 && c.fromCount > 0 &&
+                <p key={c.Key + 'fromall'+ i}>
+                {'Total Recieved emails: '+ c.fromCount}
+                </p>
+              }
+              </ReactTooltip>
+            </g>
+          )
+        }
+        </div>
         {dialog}
       </div>
     );
