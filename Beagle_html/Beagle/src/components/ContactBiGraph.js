@@ -11,7 +11,7 @@ import _ from 'lodash'
 
 require('styles//ContactGraph.scss');
 var d3 = require('d3');
-let linkSpacing = 8;
+//let linkSpacing = 8;
 let width = 300;
 let height = 40;
 let rad = 15;
@@ -52,10 +52,6 @@ module.exports = React.createClass({
 										}
 									}
 								}
-							}`,
-      subQuery: `query getData($filters:[Rule]){
-									Select(filters:$filters){
-								}
 							}`
     };
 },
@@ -86,7 +82,7 @@ module.exports = React.createClass({
     width = parseInt(d3.select(ReactDOM.findDOMNode(this)).style('width'));
 //    let yCenter = height/2;
     let nodeSpacing = 24;
-    linkSpacing = 2 * rad + 2;
+//    linkSpacing = 2 * rad + 2;
     let nodeX = 5;
 
     nodes.map ((node, idx) => {
@@ -165,93 +161,29 @@ module.exports = React.createClass({
     return theta;
   },
 
-  mouseOverNode: function (e){
-    let name = e.target.parentNode.getAttribute('class');
-    let currentNodes = this.state.nodes;
-    currentNodes.map((node) => {
-      if(node.id === name) {
-        node.nodeClass = 'highlighted';
-      }
-      this.setState({
-        nodes: currentNodes
-      });
-    });
-  },
-
-  mouseOutOfNode: function(){
-    let currentNodes = this.state.nodes;
-    currentNodes.map((node) => {
-        node.nodeClass = 'normal';
-      this.setState({
-        nodes: currentNodes
-      });
-    });
-  },
-  mouseOverlink: function (contact){
-    let currentContact = this.state.contacts.find(function(c){return contact === c.Key});
-//    console.log(contact, currentContact.toLinkCount, currentContact.fromLinkCount);
-    currentContact.nodeClass='higlighted';
-    this.setState({
-      contacts: this.state.contacts
-    })
-  },
-
-  mouseOutOfLink: function(contact){
-    let currentContact = this.state.contacts.find(function(c){return contact === c.Key});
-    currentContact.nodeClass='normal';
-    this.setState({
-      contacts: this.state.contacts
-    })
-  },
-
-  mouseOverContact: function (contact){
-    let self = this;
-    let currentContacts = this.state.contacts;
-    let jQuery = {};
-    jQuery.filters = [{'field': 'FromAddress', 'operation': 'contains', 'value': [contact]}];
-    dataSource.query(
-      self.state.query, jQuery
-    ).then(r => {
-      if (typeof r.data !== 'undefined'){
-        r.data.Select.Summaries.ToAddresses.map((c) => {
-          let link = currentContacts.find(function(cc){
-            return c.Key === cc.Key;
-          });
-          if (typeof link !== 'undefined') {
-            link.nodeClass = 'highlighted';
-          }
-        });
-        this.setState({
-          contacts: currentContacts
-        });
-      }
-    });
-  },
-
-  mouseOutOfContact: function(){
-    let currentContacts = this.state.contacts;
-    currentContacts.map((node) => {
-        node.nodeClass = 'normal';
-    });
-    this.setState({
-      contacts: currentContacts
-    });
-  },
-
   onClose: function() {
    this.setState({
      dialogVisible:false
    })
  },
+
+ // tipOpen: function(contact) {
+ //   contact.nodeClass = 'highlighted';
+ //   this.setState({
+ //     contacts: this.state.contacts
+ //   });
+ // },
 mouseClick: function(contact){
     let self = this;
     if (oneClick) {
       oneClick = false;
+      ReactTooltip.hide();
       self.mouseDoubleClick(contact);
     } else {
       oneClick = true;
       setTimeout(function() {
         if (oneClick) {
+          ReactTooltip.hide();
           oneClick = false;
           let jQuery = {};
           jQuery.filters = [{'field': 'FromAddress', 'operation': 'contains', 'value': [contact]}];
@@ -279,6 +211,7 @@ mouseClick: function(contact){
 
   render: function() {
     let {contacts} = this.state;
+    let self = this;
 //    console.log(contacts);
 		this.state.maxCount = _.get(contacts,'0.Count');
     // if(this.state.searchArr != contacts){
@@ -287,16 +220,13 @@ mouseClick: function(contact){
 		let contactElementHeight = 24;
     let mouseDoubleClick = this.mouseDoubleClick;
     let mouseClick = this.mouseClick;
-    let overLink = this.mouseOverlink;
-    let outOfLink = this.mouseOutOfLink;
-    let overContact = this.mouseOverContact;
-    let outOfContact = this.mouseOutOfContact;
+//    let tipOpen = this.tipOpen;
 
 //    let rad = 7;
     let fromX = width/3;
-    let toX = fromX + 60 + ((this.state.fromCount < 3) ? 0 : this.state.fromCount - 2) * linkSpacing;
+//    let toX = fromX + 60 + ((this.state.fromCount < 3) ? 0 : this.state.fromCount - 2) * linkSpacing;
     let countX = width/4 - 5;
-    let gridY = rad + 1;
+//    let gridY = rad + 1;
     let gridBoxWidth = Math.floor(3+2*rad);
     let gridBoxHeight = Math.floor(2+2*rad);
     let gridCols = Math.floor(this.state.gridWidth / gridBoxWidth);
@@ -329,6 +259,22 @@ mouseClick: function(contact){
                 >
                 {c.Key}
               </text>
+              <rect
+              className='countbackground'
+              x={this.state.dialogWidth - 45 - 100}
+              width={100}
+              y={0}
+              height={gridBoxHeight}
+              />
+              <text
+                key={'nodecount' + c.Key + i}
+                className={'normal'}
+                x={this.state.dialogWidth - 45}
+                y={18}
+                style={{textAnchor: 'end'}}
+                >
+                {c.Count}
+              </text>
             </svg>
           </div>)}
         </Infinite>
@@ -349,8 +295,6 @@ mouseClick: function(contact){
               className={contact.nodeClass === 'normal' ? contact.queryNode ? 'highlighted' : contact.nodeClass : contact.nodeClass}
               x={contact.x}
               y={contact.y + 10}
-              onMouseOver={this.mouseOverNode}
-              onMouseOut={this.mouseOutOfNode}
               >
               {contact.id}
             </text>
@@ -362,9 +306,11 @@ mouseClick: function(contact){
 					{ contacts.map((c,i) =>
             <div
               key={'contactdiv'+c.Key}
+              data-tip data-for={c.Key+'itip'}
               onClick= {function () {mouseClick(c.Key)}}
               >
               <svg
+                ref={c.Key+'i'}
                 key={c.Key}
                 className='contactlist-component-contact-svg'>
                 <text
@@ -372,23 +318,65 @@ mouseClick: function(contact){
                   className={c.nodeClass === 'normal' ? c.queryNode ? 'highlighted' : c.nodeClass : c.nodeClass}
                   x={5}
                   y={18}
-                  onMouseOver={function () {overContact(c.Key)}}
-                  onMouseOut={function () {outOfContact()}}
                   >
                   {c.Key}
                 </text>
+                <rect
+                className='countbackground'
+                x={fromX-100}
+                width={100}
+                y={0}
+                height={gridBoxHeight}
+                />
                 <text
                   key={'nodecount' + c.Key + i}
                   className={c.nodeClass === 'normal' ? c.queryNode ? 'highlighted' : c.nodeClass : c.nodeClass}
                   x={countX}
                   y={18}
                   style={{textAnchor: 'end'}}
-                  onMouseOver={function () {overContact(c.Key)}}
-                  onMouseOut={function () {outOfContact()}}
                   >
                   {(this.state.nodes.length < 1) ? c.Count : c.fromLinkCount + c.toLinkCount}
                 </text>
 					    </svg>
+              <ReactTooltip
+                id={c.Key+'itip'}
+                type='info'
+                scrollHide={true}
+                afterShow={function() {
+                    ReactDOM.findDOMNode(self.refs[c.Key+'g']).style.border='dotted 1px'
+                  }
+                }
+                afterHide={function() {
+                    ReactDOM.findDOMNode(self.refs[c.Key+'g']).style.border='none'
+                  }
+                }
+              >
+              <p>{c.Key}</p>
+              {c.sendsTo.map((link) =>
+                link.target.toNode &&
+                <p key={c.Key + 'to' + link.target.id + i}>
+                  {'To ' + link.target.id+': '+ link.size}
+                </p>
+                )
+              }
+              {c.receivedFrom.map((link) =>
+                link.target.fromNode &&
+                <p key={c.Key + 'from' + link.target.id + i}>
+                  {'From ' + link.target.id+': '+ link.size}
+                </p>
+                )
+              }
+              {this.state.nodes.length < 1 && c.toCount > 0 &&
+                <p key={c.Key + 'toall' + i}>
+                  {'Total sent emails: '+ c.toCount}
+                </p>
+              }
+              {this.state.nodes.length < 1 && c.fromCount > 0 &&
+                <p key={c.Key + 'fromall'+ i}>
+                {'Total Recieved emails: '+ c.fromCount}
+                </p>
+              }
+              </ReactTooltip>
             </div>)}
 					</Infinite>
 				</div>
@@ -397,9 +385,11 @@ mouseClick: function(contact){
           <g className= 'contactlist-component-contact-g'
             key={c.Key+'gridg'}
             data-tip data-for={c.Key+'tip'}
+            onClick= {function () {mouseClick(c.Key)}}
             style={{left: (i%gridCols) * gridBoxWidth, top: Math.floor(i/gridCols) * gridBoxHeight}}
           >
               <svg
+                ref={c.Key+'g'}
                 key={c.Key+'gridsvg' }
                 className='contactlist-component-contact-svg'
                 style={{width: gridBoxWidth, height: gridBoxHeight}}>
@@ -430,7 +420,7 @@ mouseClick: function(contact){
                     key={'tolinkcircleL' + c.Key + c.ndx + i}
                     className={'node1'}
                     d={`M ${rad+1} ${1 + rad - this.state.linkScale(c.toLinkCount)}
-                    A ${this.state.nodeScale(c.toLinkCount)} ${this.state.linkScale(c.toLinkCount)},
+                    A ${this.state.linkScale(c.toLinkCount)} ${this.state.linkScale(c.toLinkCount)},
                     0, 0, 0,
                     ${rad+1} ${rad+1+this.state.linkScale(c.toLinkCount)}
                     L ${rad+1} ${rad+1} Z`}
@@ -448,7 +438,22 @@ mouseClick: function(contact){
                   />
                 }
               </svg>
-              <ReactTooltip id={c.Key+'tip'} type='info'>
+              <ReactTooltip
+                id={c.Key+'tip'}
+                type='info'
+                afterShow={function() {
+                    if (typeof self.refs[c.Key+'i'] !== 'undefined'){
+                      ReactDOM.findDOMNode(self.refs[c.Key+'i']).style.border='dotted 1px'
+                    }
+                  }
+                }
+                afterHide={function() {
+                    if (typeof self.refs[c.Key+'i'] !== 'undefined'){
+                      ReactDOM.findDOMNode(self.refs[c.Key+'i']).style.border='none'
+                    }
+                  }
+                }
+              >
               <p>{c.Key}</p>
               {c.sendsTo.map((link) =>
                 link.target.toNode &&

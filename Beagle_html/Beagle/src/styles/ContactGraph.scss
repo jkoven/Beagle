@@ -170,6 +170,10 @@
     stroke: $NColor12;
     animation: blink12 1s linear infinite;
   }
+  .countbackground{
+    fill: white;
+    stroke: white
+  }
   .contactlist-component-grid {
     position:absolute;
     border-left: solid 1px #ccc;
@@ -409,6 +413,11 @@
     white-space: nowrap;
     vertical-align: bottom;
     text-anchor: left;
+  }
+
+  .countbackground{
+    fill: white;
+    stroke: white
   }
 
   text.highlighted {
