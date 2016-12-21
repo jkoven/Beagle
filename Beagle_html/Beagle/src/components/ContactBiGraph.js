@@ -10,7 +10,7 @@ import _ from 'lodash'
 //import dataSource from '../sources/dataSource';
 
 require('styles//ContactGraph.scss');
-var d3 = require('d3');
+var d3 = require('d3-scale');
 //let linkSpacing = 8;
 let width = 300;
 let height = 40;
@@ -79,7 +79,7 @@ module.exports = React.createClass({
     let nodeStartY = 0;
 
     height = nodes.length * 24 + 10
-    width = parseInt(d3.select(ReactDOM.findDOMNode(this)).style('width'));
+    width = ReactDOM.findDOMNode(this).offsetWidth;
 //    let yCenter = height/2;
     let nodeSpacing = 24;
 //    linkSpacing = 2 * rad + 2;
@@ -138,7 +138,7 @@ module.exports = React.createClass({
     });
     this.setState({
       nodes: nodes,
-      contactListHeight: parseInt(d3.select(ReactDOM.findDOMNode(this)).style('height')) - height,
+      contactListHeight: ReactDOM.findDOMNode(this).offsetHeight - height,
       links: links,
       contacts: newProps.contacts,
       queryNodeHeight: height,

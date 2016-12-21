@@ -81,6 +81,50 @@ module.exports = function(state = initialState, action) {
         return [...state.slice(0,action.filterIdx), filter, ...state.slice(action.filterIdx+1)];
     }
 
+    case 'ADD_MODIFY_DATE_FILTERS' : {
+      switch (action.afterAction) {
+        case '':
+          break;
+        case 'modify':
+          let filterIndex = state.findIndex(function(s){
+            return s.selection === 'StartDate';
+          });
+          let filter = {};
+          filter.selection = 'StartDate';
+          filter.values = [action.afterValue];
+          if (filterIndex !== -1) {
+            filter.filterId = state[filterIndex].filterId;
+            return [...state.slice(0,filterIndex), filter, ...state.slice(filterIndex+1)];
+          } else {
+            filter.filterId = filterUid++;
+            return [...state, filter];
+          }
+        default:
+          return state;
+      }
+      switch (action.beforeAction) {
+        case '':
+          break;
+        case 'modify':
+          let filterIndex = state.findIndex(function(s){
+            return s.selection === 'EndDate';
+          });
+          let filter = {};
+          filter.selection = 'EndDate';
+          filter.values = [action.beforeValue];
+          if (filterIndex !== -1) {
+            filter.filterId = state[filterIndex].filterId;
+            return [...state.slice(0,filterIndex), filter, ...state.slice(filterIndex+1)];
+          } else {
+            filter.filterId = filterUid++;
+            return [...state, filter];
+          }
+        default:
+          return state;
+      }
+      return state;
+    }
+
 
     default: {
       /* Return original state if no actions were consumed. */

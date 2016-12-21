@@ -100,13 +100,13 @@
             "field": "to-addresses",
             "type": "List.String"
         },
-        "Any": {
-            "field": "any",
+        "Links": {
+            "field": ["to-addresses", "from-address"],
             "type": "List.String"
         },
-        "ToLength": {
-            "field": "toLength",
-            "type": "Number"
+        "Text": {
+            "field": ["subject", "contents"],
+            "type": "Text"
         },
         "Verbs": {
             "field": "verb",

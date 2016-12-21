@@ -7,80 +7,57 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
-  border-top: solid 1px #ccc
-}
-.time-graph-svg {
-  width: 100%;
-  height: 100%;
+  border-top: solid 1px #ccc;
 
   text {
     font-size: 12px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width:95%;
     vertical-align: bottom;
   }
-
   text.highlighted {
     fill: black;
+    stroke: black;
   }
-
   text.normal {
     fill: $primaryTextColor;
+    stroke: $primaryTextColor;
+ }
+
+  .sliderdiv{
+    position: absolute;
+    height:25%;
+    top: 25%;
   }
 
-  .linklabel {
-    fill: $primaryTextColor;
-  }
-  text:hover {
-    fill: black;
-  }
-
-  circle.nqnodeany{
-    fill: #a6cee3;
-    stroke: #a6cee3
-  }
-  circle.qnodeany{
-    fill: #1f78b4;
-    stroke: #1f78b4
-  }
-  circle.nqnodeto{
-    fill: #b2df8a;
-    stroke: #b2df8a
-  }
-  circle.qnodeto{
-    fill: #33a02c;
-    stroke: #33a02c
-  }
-  circle.nqnodefrom{
-    fill: #fdbf6f;
-    stroke: #fdbf6f
-  }
-  circle.qnodefrom{
-    fill: #ff7f00;
-    stroke: #ff7f00
+  .slider-caption-svg{
+    height: 25%;
+    top: 0px;
+    .intervalcaption {
+      text-anchor: middle;
+      alignment-baseline: middle;
+    }
+    .startcaption {
+      text-anchor: start;
+      alignment-baseline: middle;
+    }
+    .endcaption {
+      text-anchor: end;
+      alignment-baseline: middle;
+    }
   }
 
-  line.normalany{
-    stroke: #a6cee3;
-  }
+  .time-graph-svg {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    top: 50%;
 
-  line.highlightedany{
-    stroke: #1f78b4;
-  }
-  line.normalto{
-    stroke: #b2df8a;
-  }
-
-  line.highlightedto{
-    stroke: #33a02c;
-  }
-  line.normalfrom{
-    stroke: #fdbf6f;
-  }
-
-  line.highlightedfrom{
-    stroke: #ff7f00;
+    rect.normal {
+     fill: $primaryTextColor;
+     stroke: black;
+     stroke-width: 1px;
+   }
   }
 }

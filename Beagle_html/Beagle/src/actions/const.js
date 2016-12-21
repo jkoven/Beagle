@@ -5,6 +5,7 @@ export const CHANGE_FILTER = 'CHANGE_FILTER'
 export const REMOVE_FILTER = 'REMOVE_FILTER'
 export const REMOVE_FILTER_LINE = 'REMOVE_FILTER_LINE'
 export const ADD_LIST_ITEM = 'ADD_LIST_ITEM'
+export const ADD_MODIFY_DATE_FILTERS = 'ADD_MODIFY_DATE_FILTERS'
 
 export function addFilter() {
   return {type: ADD_FILTER }
@@ -28,4 +29,8 @@ export function removeFilterLine(filterIdx, textIdx) {
 
 export function addListItem(contact, selection){
   return {type: ADD_LIST_ITEM, contact, selection}
+}
+
+export function addModifyDateFilters(afterAction, afterValue, beforeAction, beforeValue){
+  return {type: ADD_MODIFY_DATE_FILTERS, afterAction, afterValue, beforeAction, beforeValue}
 }

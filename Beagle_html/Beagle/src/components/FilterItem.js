@@ -89,7 +89,9 @@ module.exports = React.createClass({
                         {text: 'CONTENT CONTAINS:', value: 'Contents'},
                         {text: 'SUBJECT CONTAINS:',  value: 'Subject'},
                         {text: 'PERSON:', value: 'PERSON'},
-                        {text: 'ORGANIZATION:', value: 'ORGANIZATION'}
+                        {text: 'ORGANIZATION:', value: 'ORGANIZATION'},
+                        {text: 'Sent After (YYYY-MM-DD):', value: 'StartDate'},
+                        {text: 'Sent Before (YYYY-MM-DD):', value: 'EndDate'}
                       ]}
                       active= {this.state.active}
                       onChange={this.updateActive}

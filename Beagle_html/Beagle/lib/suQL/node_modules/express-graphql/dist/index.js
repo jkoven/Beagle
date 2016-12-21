@@ -43,7 +43,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 
 /**
- * Used to configure the graphQLHTTP middleware by providing a schema
+ * Used to configure the graphqlHTTP middleware by providing a schema
  * and other configuration options.
  *
  * Options can be provided as an Object, a Promise for an Object, or a Function
@@ -56,7 +56,7 @@ function graphqlHTTP(options) {
 
   return function (request, response) {
     // Higher scoped variables are referred to at various stages in the
-    // asyncronous state machine below.
+    // asynchronous state machine below.
     var schema = void 0;
     var context = void 0;
     var rootValue = void 0;
@@ -70,10 +70,10 @@ function graphqlHTTP(options) {
     var validationRules = void 0;
 
     // Promises are used as a mechanism for capturing any thrown errors during
-    // the asyncronous process below.
+    // the asynchronous process below.
 
     // Resolve the Options to get OptionsData.
-    new Promise(function (resolve) {
+    return new Promise(function (resolve) {
       resolve(typeof options === 'function' ? options(request, response) : options);
     }).then(function (optionsData) {
       // Assert that optionsData is in fact an Object.
@@ -88,7 +88,7 @@ function graphqlHTTP(options) {
 
       // Collect information from the options data object.
       schema = optionsData.schema;
-      context = optionsData.context;
+      context = optionsData.context || request;
       rootValue = optionsData.rootValue;
       pretty = optionsData.pretty;
       graphiql = optionsData.graphiql;
@@ -187,15 +187,13 @@ function graphqlHTTP(options) {
           query: query, variables: variables,
           operationName: operationName, result: result
         });
-        response.setHeader('Content-Type', 'text/html');
-        response.write(data);
-        response.end();
+        response.setHeader('Content-Type', 'text/html; charset=utf-8');
+        response.end(data);
       } else {
         // Otherwise, present JSON directly.
         var _data = JSON.stringify(result, null, pretty ? 2 : 0);
-        response.setHeader('Content-Type', 'application/json');
-        response.write(_data);
-        response.end();
+        response.setHeader('Content-Type', 'application/json; charset=utf-8');
+        response.end(_data);
       }
     });
   };

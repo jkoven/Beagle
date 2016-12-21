@@ -9,6 +9,19 @@ import FilterPanel from '../components/FilterPanel';
 import dataSource from '../sources/dataSource';
 import { addFilter , addData , changeFilter, removeFilter, removeFilterLine} from '../actions/const';
 
+function isValidDate(dateString) {
+	var regEx = /^\d{4}-\d{1,2}-\d{1,2}$/;
+	return dateString.match(regEx) != null;
+}
+
+function today () {
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth()+1; //January is 0!
+	var yyyy = today.getFullYear();
+	return (yyyy+'-'+mm+'-'+dd);
+}
+
 class FilterContainer extends Component {
   constructor() {
 		super();
@@ -26,7 +39,7 @@ class FilterContainer extends Component {
 	}
 
 
-  translateStateToFilter(state,index) {
+translateStateToFilter(state,index) {
     var jsonQuery = {
       filters: []
     };
@@ -34,14 +47,26 @@ class FilterContainer extends Component {
       if (typeof state[i].values !== 'undefined'){
         var jsonData ={};
 
-        if (state[i].selection === 'ToLength'){
-					jsonData['field'] = state[i].selection;
-					jsonData['operation'] = 'between';
-          jsonData['value'] = ['1', isNaN(parseInt(state[i].values[0])) ? '10' : parseInt(state[i].values[0]).toString()];
-				} else {
-					jsonData['field'] = state[i].selection;
-					jsonData['operation'] = 'contains';
-					jsonData['value'] = state[i].values;
+        switch (state[i].selection) {
+					case 'ToLength':
+						jsonData['field'] = state[i].selection;
+						jsonData['operation'] = 'between';
+						jsonData['value'] = ['1', isNaN(parseInt(state[i].values[0])) ? '10' : parseInt(state[i].values[0]).toString()];
+						break;
+						case 'StartDate':
+							jsonData['field'] = 'Timestamp';
+							jsonData['operation'] = 'between';
+							jsonData['value'] = [isValidDate(state[i].values[0]) ? state[i].values[0] : '0000-1-1'];
+							break;
+            case 'EndDate':
+							jsonData['field'] = 'Timestamp';
+							jsonData['operation'] = 'between';
+              jsonData['value'] = ['0000-1-1', isValidDate(state[i].values[0]) ? state[i].values[0] : today()];
+							break;
+					default:
+						jsonData['field'] = state[i].selection;
+						jsonData['operation'] = 'contains';
+						jsonData['value'] = state[i].values;
 				}
         jsonQuery.filters.push(jsonData);
       }

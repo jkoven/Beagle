@@ -98,7 +98,7 @@ class WordCloud extends React.Component {
       </select>
 
       <g id='personKeywords' className='wordcloud-component' >
-      <table><thead>'Person'</thead>
+      <table><thead><tr><td>'Person'</td></tr></thead>
       <tbody>
       <tr >
       <td className='wordcloud-component-content'>
@@ -122,7 +122,7 @@ class WordCloud extends React.Component {
       </g>
 
         <g id='subjectKeywords' className='wordcloud-component' >
-          <table><thead>'Subject'</thead>
+          <table><thead><tr><td>'Subject'</td></tr></thead>
           <tbody>
           <tr>
           <td className='wordcloud-component-content'>
@@ -146,7 +146,7 @@ class WordCloud extends React.Component {
           </g>
 
           <g id='organizationKeywords' className='wordcloud-component' >
-            <table><thead>'Organization'</thead>
+            <table><thead><tr><td>'Organization'</td></tr></thead>
             <tbody>
             <tr>
             <td className='wordcloud-component-content'>
@@ -170,7 +170,7 @@ class WordCloud extends React.Component {
           </g>
 
           <g id='contentsKeywords' className='wordcloud-component' >
-          <table><thead>'Contents'</thead>
+          <table><thead><tr><td>'Contents'</td></tr></thead>
           <tbody>
           <tr >
           <td className='wordcloud-component-content'>

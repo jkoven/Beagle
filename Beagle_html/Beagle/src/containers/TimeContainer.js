@@ -4,18 +4,32 @@ import { connect } from 'react-redux';
 //import ContactGraph from '../components/ContactGraph';
 import TimeGraph from '../components/TimeGraph';
 import dataSource from '../sources/dataSource';
+import {addModifyDateFilters} from '../actions/const';
+
+function isValidDate(dateString) {
+	var regEx = /^\d{4}-\d{1,2}-\d{1,2}$/;
+	return dateString.match(regEx) != null;
+}
+
+function today () {
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth()+1; //January is 0!
+	var yyyy = today.getFullYear();
+	return (yyyy+'-'+mm+'-'+dd);
+}
 
 class TimeContainer extends Component {
 	constructor() {
 		super();
 		this.state = {
-			contacts: [],
-			fromNodes:[],
-      toNodes: []
+			timeGroups: [],
+      timeCount: 0
 		};
 	}
 
-	componentWillMount() {
+	componentDidMount() {
+		this.loadData({filters: []});
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -59,14 +73,26 @@ class TimeContainer extends Component {
 				}
 
 
-				if (element.selection === 'ToLength'){
-					jsonData['field'] = element.selection;
-					jsonData['operation'] = 'between';
-					jsonData['value'] = ['1', isNaN(parseInt(element.values[0])) ? '10' : parseInt(element.values[0]).toString()];
-				} else {
-					jsonData['field'] = element.selection;
-					jsonData['operation'] = 'contains';
-					jsonData['value'] = element.values;
+				switch (element.selection) {
+					case 'ToLength':
+						jsonData['field'] = element.selection;
+						jsonData['operation'] = 'between';
+						jsonData['value'] = ['1', isNaN(parseInt(element.values[0])) ? '10' : parseInt(element.values[0]).toString()];
+						break;
+						case 'StartDate':
+							jsonData['field'] = 'Timestamp';
+							jsonData['operation'] = 'between';
+							jsonData['value'] = [isValidDate(element.values[0]) ? element.values[0] : '0000-1-1'];
+							break;
+						case 'EndDate':
+							jsonData['field'] = 'Timestamp';
+							jsonData['operation'] = 'between';
+							jsonData['value'] = ['0000-1-1', isValidDate(element.values[0]) ? element.values[0] : today()];
+							break;
+					default:
+						jsonData['field'] = element.selection;
+						jsonData['operation'] = 'contains';
+						jsonData['value'] = element.values;
 				}
 				jsonQuery.filters.push(jsonData);
 			}
@@ -81,169 +107,102 @@ class TimeContainer extends Component {
 
 	loadData(newState) {
 		var jsonQuery = this.translateStateToFilter(newState);
-		if (newState.filters.length > 0) {															//loadData sends the query to the suQl server and retrieves the data
-			let query = `query getData($filters:[Rule]){
+			let query = `query getData($filters:[Rule], $interval:Interval){
 					Select(filters:$filters){
-						Summaries {
-							FromAddress (limit:100) {
-								Key
-								Count
-								Counts {
-	          			From
-	        			}
-								Summaries {
-								ToAddresses {
-										Key
-										Count
-									}
-								}
-							}
-							ToAddresses (limit:100) {
-								Key
-								Count
-								Counts{
-	          			From
-	        			}
-								Summaries {
-								FromAddress {
-										Key
-										Count
-									}
-								}
-							}
-							Any (limit:100) {
-								Key
-								Count
-								Counts{
-	          			From
-	        			}
-								Summaries {
-									Any {
-										Key
-										Count
-									}
-								}
+						Count
+						Summaries{
+							Timestamp(interval:$interval){
+									KeyAsString
+									Count
 							}
 						}
 					}
 				}`
-				/*{
-				  Select(filters:[
-				    {field:Contents, operation: in, value:'california'},
-				    {field:To, operation: in,
-				      value:['sue.nord@enron.com', 'susan.mara@enron.com']}]) {
-				    Documents {
-				      From
-				    }
-				  }
-				}*/
-				/*{'filters':  [{'field':'ToAddress', 'operation': 'in',
-				      'value':['sue.nord@enron.com', 'susan.mara@enron.com']}]}*/
-			let queries = [];
-			queries.push(dataSource.query(
-				query, jsonQuery
+
+			let minMaxQuery = `query getData($filters:[Rule]){
+					Select(filters:$filters){
+						Stats {
+							Timestamp{
+									MinAsString
+									MaxAsString
+							}
+						}
+					}
+				}`
+			let mmQueries = [];
+			let interval = ''
+			mmQueries.push(dataSource.query(
+				minMaxQuery, jsonQuery
 			).then(r => {
-				let contactList = [];
-        let fromNodes = [];
-        let toNodes = [];
-				if (typeof r.data !== 'undefined'){
-					contactList = r.data.Select.Summaries;
+				let minDate = new Date(r.data.Select.Stats.Timestamp.MinAsString);
+				let maxDate = new Date(r.data.Select.Stats.Timestamp.MaxAsString);
+				let numMonths = 0;
+				if (maxDate.getFullYear() > minDate.getFullYear()){
+					numMonths = 12 * (maxDate.getFullYear() - minDate.getFullYear());
 				}
-				jsonQuery.contacts.map((c) => {
-          let toData = contactList.ToAddresses.find(function(e){
-						return (c === e.Key);
-					});
-          let fromData = contactList.FromAddress.find(function(e){
-						return (c === e.Key);
-					});
-          if (typeof toData !== 'undefined'){
-  					if (typeof jsonQuery.toList.find(function(con) {return (con === toData.Key)}) !== 'undefined'){
-  						toNodes.push({id: toData.Key, size: toData.Count, fromList: toData.Summaries.FromAddress, queryNode: true, mouseOver: false, nodeClass: 'normal', nodeType: 'to'});
-  					}
-          }
-          if (typeof fromData !== 'undefined'){
-  					if (typeof jsonQuery.fromList.find(function(con) {return (con === fromData.Key)}) !== 'undefined'){
-  						fromNodes.push({id: fromData.Key, size: fromData.Count, toList: fromData.Summaries.ToAddresses, queryNode: true, mouseOver: false, nodeClass: 'normal', nodeType: 'from'});
-  					}
-          }
+				numMonths += maxDate.getMonth() - minDate.getMonth();
+
+					if (numMonths <= 3){
+						interval = 'Day'
+					} else if (numMonths * 4 < 100){
+						interval = 'Week'
+					} else if (numMonths < 100) {
+						interval = 'Month'
+					} else if (numMonths / 4 < 100) {
+						interval = 'Quarter'
+					} else {
+						interval = 'Year'
+					}
+
+				jsonQuery.interval = interval;
+				let queries = [];
+				queries.push(dataSource.query(
+					query, jsonQuery
+				).then(ret => {
+					return ({
+						timeCount: ret.data.Select.Count,
+						timeGroups: ret.data.Select.Summaries.Timestamp,
+						minDate: r.data.Select.Stats.Timestamp.MinAsString,
+						maxDate: r.data.Select.Stats.Timestamp.MaxAsString,
+						interval: interval
+					})
+				}));
+				Promise.all(queries).then(rr => {
+									rr.map((d) => {
+										this.setState({
+											timeGroups: d.timeGroups,
+											timeCount: d.timeCount,
+											minDate: d.minDate,
+											maxDate: d.maxDate,
+											interval: d.interval
+										})
+									});
+								}).catch((err) => console.log('In BiGraphContainer: ', err.message));
+				return ({
+					status: true
 				});
-// We now have to fill out the to and from nodes with non query nodes.
-        let toNodeList = [];
-        let toNodesInList = {};
-        let fromNodeList = [];
-        let fromNodesInList = {};
-
-        fromNodes.map((fnode) => {
-          fromNodesInList[fnode.id] = true;
-        });
-        toNodes.map((tnode) => {
-          toNodesInList[tnode.id] = true;
-        });
-
-        fromNodes.map((fnode) => {
-          fnode.toList.map((tn) => {
-            if (!toNodesInList.hasOwnProperty(tn.Key)){
-              toNodeList.push(tn);
-              toNodesInList[tn.Key] = true;
-            }
-          });
-        });
-        toNodes.map((tnode) => {
-          tnode.fromList.map((fn) => {
-            if (!fromNodesInList.hasOwnProperty(fn.Key)){
-              fromNodeList.push(fn);
-              fromNodesInList[fn.Key] = true;
-            }
-          });
-        });
-        // Sort from biggest to smallest
-        toNodeList.sort(function(a,b){
-          return(b.Count - a.Count);
-        });
-        if (toNodeList.length > 20 - toNodes.length){
-          toNodeList = toNodeList.slice(0, 20 - toNodes.length)
-        }
-        fromNodeList.sort(function(a, b){
-          return(b.Count - a.Count);
-        });
-        if (fromNodeList.length > 20 - fromNodes.length){
-          fromNodeList = fromNodeList.slice(0, 20 - fromNodes.length)
-        }
-
-        toNodeList.map((toData) => {
-          toNodes.push({id: toData.Key, size: toData.Count, queryNode: false, mouseOver: false, nodeClass: 'normal', nodeType: 'to'});
-        });
-        fromNodeList.map((fromData) => {
-          fromNodes.push({id: fromData.Key, size: fromData.Count, queryNode: false, mouseOver: false, nodeClass: 'normal', nodeType: 'from'});
-        });
-  			return {tn:toNodes, fn:fromNodes, cl:contactList};
 			}));
-      Promise.all(queries).then(rr => {
+			Promise.all(mmQueries).then(rr => {
 				rr.map((d) => {
-          this.setState({
-            contacts: d.cl,
-            fromNodes: d.fn,
-            toNodes: d.tn
-          });
+					if(d.status !== true){
+						console.log('Problem in timegraph promise');
+					}
 				});
-			}).catch((err) => console.log('In TimeContainer: ', err.message));
-			// Do the queiry to get the inter contact counts.
-		} else {
-			this.setState({
-				contacts: [],
-				fromNodes: [],
-        toNodes: []
-			});
-		}
+			}).catch((err) => console.log('In BiGraphContainer: ', err.message));
+
 	}
 
 	render() {
 //		const {actions} = this.props;
 //		return <ContactGraph contacts={this.state.contactNodes} links={this.state.contactLinks}/>;
+		let {actions} = this.props;
 		return <TimeGraph
-			toNodes={this.state.toNodes} l
-			fromNodes={this.state.fromNodes}
-			contacts={this.state.contacts}
+			timeCount={this.state.timeCount}
+			timeGroups={this.state.timeGroups}
+			minDate={this.state.minDate}
+			maxDate={this.state.maxDate}
+			interval={this.state.interval}
+			{...actions}
 			/>;
 
 	}
@@ -259,7 +218,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-	const actions = {};
+	const actions = {addModifyDateFilters};
 	const actionMap = { actions: bindActionCreators(actions, dispatch) };
 	return actionMap;
 }

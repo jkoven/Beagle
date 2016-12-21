@@ -4,6 +4,19 @@ import { connect } from 'react-redux';
 import Emails from '../components/Emails';
 import dataSource from '../sources/dataSource';
 
+function isValidDate(dateString) {
+	var regEx = /^\d{4}-\d{1,2}-\d{1,2}$/;
+	return dateString.match(regEx) != null;
+}
+
+function today () {
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth()+1; //January is 0!
+	var yyyy = today.getFullYear();
+	return (yyyy+'-'+mm+'-'+dd);
+}
+
 class EmailsContainer extends Component {
   constructor() {
     super();
@@ -32,14 +45,26 @@ class EmailsContainer extends Component {
       if (typeof element.values !== 'undefined'){
         var jsonData ={};
 
-        if (element.selection === 'ToLength'){
-					jsonData['field'] = element.selection;
-					jsonData['operation'] = 'between';
-          jsonData['value'] = ['1', isNaN(parseInt(element.values[0])) ? '10' : parseInt(element.values[0]).toString()];
-				} else {
-					jsonData['field'] = element.selection;
-					jsonData['operation'] = 'contains';
-					jsonData['value'] = element.values;
+        switch (element.selection) {
+					case 'ToLength':
+						jsonData['field'] = element.selection;
+						jsonData['operation'] = 'between';
+						jsonData['value'] = ['1', isNaN(parseInt(element.values[0])) ? '10' : parseInt(element.values[0]).toString()];
+						break;
+						case 'StartDate':
+							jsonData['field'] = 'Timestamp';
+							jsonData['operation'] = 'between';
+							jsonData['value'] = [isValidDate(element.values[0]) ? element.values[0] : '0000-1-1'];
+							break;
+						case 'EndDate':
+							jsonData['field'] = 'Timestamp';
+							jsonData['operation'] = 'between';
+							jsonData['value'] = ['0000-1-1', isValidDate(element.values[0]) ? element.values[0] : today()];
+							break;
+					default:
+						jsonData['field'] = element.selection;
+						jsonData['operation'] = 'contains';
+						jsonData['value'] = element.values;
 				}
         jsonQuery.filters.push(jsonData);
       }
@@ -50,7 +75,7 @@ class EmailsContainer extends Component {
   loadData(newState) {            	//loadData sends the query to the suQl server and retrieves the data
     let query = `query getData($filters:[Rule]){
 				Select(filters:$filters){
-					Documents {
+					Documents(limit:1000) {
             Subject
             Timestamp
             From

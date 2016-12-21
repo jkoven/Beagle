@@ -72,14 +72,19 @@
   },
   "dependencies": {
     "core-js": "^2.0.0",
+    "d3": "^4.4.0",
     "graphql": "^0.6.2",
+    "json-loader": "^0.5.4",
     "material-ui": "^0.15.4",
     "normalize.css": "^4.0.0",
+    "rc-dialog": "^6.5.5",
     "react": "^15.0.0",
     "react-dom": "^15.0.0",
+    "react-infinite": "^0.10.0",
     "react-redux": "^4.4.5",
-    "react-tap-event-plugin": "^1.0.0",
+    "react-tap-event-plugin": "^2.0.0",
     "react-textselect": "^0.2.0",
+    "react-tooltip": "^3.2.2",
     "redux": "^3.5.2"
   }
 }

@@ -11,6 +11,8 @@ const {
     GraphQLNonNull
 } = require('graphql');
 
+const OperationType = require("./OperationType")
+
 const FieldType = require('./FieldType')
 let cache;
 let previousMapping;
@@ -18,15 +20,7 @@ const RuleType = function (mapping) {
 	if(mapping == previousMapping && cache) {
 		return cache;
 	}
-    var OperationType = new GraphQLEnumType({
-        name: 'Operation',
-        values: {
-            in: { value: "in" },
-            contains: { value: "contains" },
-            between: { value: "between" },
-            is: { value: "is" }
-        }
-    });
+    
 
 	previousMapping = mapping;
 	cache =  new GraphQLInputObjectType({

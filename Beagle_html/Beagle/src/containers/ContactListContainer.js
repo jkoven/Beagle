@@ -6,6 +6,19 @@ import dataSource from '../sources/dataSource';
 import {addListItem} from '../actions/const';
 
 
+function isValidDate(dateString) {
+	var regEx = /^\d{4}-\d{1,2}-\d{1,2}$/;
+	return dateString.match(regEx) != null;
+}
+
+function today () {
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth()+1; //January is 0!
+	var yyyy = today.getFullYear();
+	return (yyyy+'-'+mm+'-'+dd);
+}
+
 class ContactListContainer extends Component {
 	constructor() {
 		super();
@@ -44,14 +57,26 @@ class ContactListContainer extends Component {
 					});
 				}
 
-				if (element.selection === 'ToLength'){
-					jsonData['field'] = element.selection;
-					jsonData['operation'] = 'between';
-					jsonData['value'] = ['1', isNaN(parseInt(element.values[0])) ? '10' : parseInt(element.values[0]).toString()];
-				} else {
-					jsonData['field'] = element.selection;
-					jsonData['operation'] = 'contains';
-					jsonData['value'] = element.values;
+				switch (element.selection) {
+					case 'ToLength':
+						jsonData['field'] = element.selection;
+						jsonData['operation'] = 'between';
+						jsonData['value'] = ['1', isNaN(parseInt(element.values[0])) ? '10' : parseInt(element.values[0]).toString()];
+						break;
+						case 'StartDate':
+							jsonData['field'] = 'Timestamp';
+							jsonData['operation'] = 'between';
+							jsonData['value'] = [isValidDate(element.values[0]) ? element.values[0] : '0000-1-1'];
+							break;
+						case 'EndDate':
+							jsonData['field'] = 'Timestamp';
+							jsonData['operation'] = 'between';
+							jsonData['value'] = ['0000-1-1', isValidDate(element.values[0]) ? element.values[0] : today()];
+							break;
+					default:
+						jsonData['field'] = element.selection;
+						jsonData['operation'] = 'contains';
+						jsonData['value'] = element.values;
 				}
 				jsonQuery.filters.push(jsonData);
 				jsonQuery['queryContacts'] = clist;
