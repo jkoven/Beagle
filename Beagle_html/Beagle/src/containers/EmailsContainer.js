@@ -95,6 +95,16 @@ class EmailsContainer extends Component {
   }
 
   render() {
+		this.state.emails.sort(function(a,b){
+			if (parseInt(a.Timestamp) < parseInt(b.Timestamp)) {
+		    return -1;
+		  }
+		  if (parseInt(a.Timestamp) > parseInt(b.Timestamp)) {
+		    return 1;
+		  }
+		  // a must be equal to b
+		  return 0;
+		})
     const {actions} = this.props;
     return <Emails actions={actions} emails={this.state.emails} position={this.props.position + 15}/>;
   }
