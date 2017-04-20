@@ -2,7 +2,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Slider from 'rc-slider';
+import {Range} from 'rc-slider';
 
 require('rc-slider/assets/index.css');
 require('styles//TimeGraph.scss');
@@ -171,7 +171,7 @@ module.exports = React.createClass({
           style={{width:this.state.boxWidth - 20 - (this.state.barWidth),
           left: 10 + this.state.barWidth/2 + 'px'}}
           >
-          <Slider
+          <Range
             allowCross={false}
             min={0}
             max={maxMark}

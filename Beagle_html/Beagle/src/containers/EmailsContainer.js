@@ -78,8 +78,8 @@ class EmailsContainer extends Component {
 					Documents(limit:1000) {
             Subject
             Timestamp
-            From
-            To
+            From:FromAddress
+            To:ToAddresses
             Contents
 					}
 				}

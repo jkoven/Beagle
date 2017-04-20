@@ -78,6 +78,7 @@
     "material-ui": "^0.15.4",
     "normalize.css": "^4.0.0",
     "rc-dialog": "^6.5.5",
+    "rc-slider": "^7.0.1",
     "react": "^15.0.0",
     "react-dom": "^15.0.0",
     "react-infinite": "^0.10.0",

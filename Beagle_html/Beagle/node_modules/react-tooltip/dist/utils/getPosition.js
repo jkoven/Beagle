@@ -8,28 +8,25 @@ exports.default = function (e, target, node, place, effect, offset) {
   var tipWidth = node.clientWidth;
   var tipHeight = node.clientHeight;
 
-  var _getCurrentOffset = getCurrentOffset(e, target, effect);
-
-  var mouseX = _getCurrentOffset.mouseX;
-  var mouseY = _getCurrentOffset.mouseY;
+  var _getCurrentOffset = getCurrentOffset(e, target, effect),
+      mouseX = _getCurrentOffset.mouseX,
+      mouseY = _getCurrentOffset.mouseY;
 
   var defaultOffset = getDefaultPosition(effect, target.clientWidth, target.clientHeight, tipWidth, tipHeight);
 
-  var _calculateOffset = calculateOffset(offset);
-
-  var extraOffset_X = _calculateOffset.extraOffset_X;
-  var extraOffset_Y = _calculateOffset.extraOffset_Y;
-
+  var _calculateOffset = calculateOffset(offset),
+      extraOffset_X = _calculateOffset.extraOffset_X,
+      extraOffset_Y = _calculateOffset.extraOffset_Y;
 
   var windowWidth = window.innerWidth;
   var windowHeight = window.innerHeight;
 
-  var _getParent = getParent(node);
-
-  var parentTop = _getParent.parentTop;
-  var parentLeft = _getParent.parentLeft;
+  var _getParent = getParent(node),
+      parentTop = _getParent.parentTop,
+      parentLeft = _getParent.parentLeft;
 
   // Get the edge offset of the tooltip
+
 
   var getTipOffsetLeft = function getTipOffsetLeft(place) {
     var offset_X = defaultOffset[place].l;
@@ -62,10 +59,10 @@ exports.default = function (e, target, node, place, effect, offset) {
     return { result: result, newPlace: newPlace };
   };
   var outsideLeft = function outsideLeft() {
-    var _outsideVertical = outsideVertical();
+    var _outsideVertical = outsideVertical(),
+        result = _outsideVertical.result,
+        newPlace = _outsideVertical.newPlace; // Deal with vertical as first priority
 
-    var result = _outsideVertical.result;
-    var newPlace = _outsideVertical.newPlace; // Deal with vertical as first priority
 
     if (result && outsideHorizontal().result) {
       return { result: false }; // No need to change, if change to vertical will out of space
@@ -77,10 +74,9 @@ exports.default = function (e, target, node, place, effect, offset) {
     return { result: result, newPlace: newPlace };
   };
   var outsideRight = function outsideRight() {
-    var _outsideVertical2 = outsideVertical();
-
-    var result = _outsideVertical2.result;
-    var newPlace = _outsideVertical2.newPlace;
+    var _outsideVertical2 = outsideVertical(),
+        result = _outsideVertical2.result,
+        newPlace = _outsideVertical2.newPlace;
 
     if (result && outsideHorizontal().result) {
       return { result: false }; // No need to change, if change to vertical will out of space
@@ -105,10 +101,9 @@ exports.default = function (e, target, node, place, effect, offset) {
     return { result: result, newPlace: newPlace };
   };
   var outsideTop = function outsideTop() {
-    var _outsideHorizontal = outsideHorizontal();
-
-    var result = _outsideHorizontal.result;
-    var newPlace = _outsideHorizontal.newPlace;
+    var _outsideHorizontal = outsideHorizontal(),
+        result = _outsideHorizontal.result,
+        newPlace = _outsideHorizontal.newPlace;
 
     if (result && outsideVertical().result) {
       return { result: false };
@@ -120,10 +115,9 @@ exports.default = function (e, target, node, place, effect, offset) {
     return { result: result, newPlace: newPlace };
   };
   var outsideBottom = function outsideBottom() {
-    var _outsideHorizontal2 = outsideHorizontal();
-
-    var result = _outsideHorizontal2.result;
-    var newPlace = _outsideHorizontal2.newPlace;
+    var _outsideHorizontal2 = outsideHorizontal(),
+        result = _outsideHorizontal2.result,
+        newPlace = _outsideHorizontal2.newPlace;
 
     if (result && outsideVertical().result) {
       return { result: false };

@@ -40,20 +40,20 @@ class WordCloud extends React.Component {
   }
 
   render() {
-    let personWords = (typeof this.props.words.PERSON !== 'undefined') ? this.props.words.PERSON : [];
-    let organizationWords = (typeof this.props.words.ORGANIZATION !== 'undefined') ? this.props.words.ORGANIZATION : [];
+    // let personWords = (typeof this.props.words.PERSON !== 'undefined') ? this.props.words.PERSON : [];
+    // let organizationWords = (typeof this.props.words.ORGANIZATION !== 'undefined') ? this.props.words.ORGANIZATION : [];
     let contentWords = (typeof this.props.words.Contents !== 'undefined') ? this.props.words.Contents : [];
     let subjectWords = (typeof this.props.words.Subject !== 'undefined') ? this.props.words.Subject : [];
     let self=this;
 
-    this.state.PersonMaxCount = _.get(personWords,'0.Count');
-    this.state.PersonArr = [];
-    this.state.PersonCount = [];
-    {personWords.map((c) => {
-      this.state.PersonArr.push(c.Key);
-      this.state.PersonCount.push(c.Count)
-      })
-    }
+    // this.state.PersonMaxCount = _.get(personWords,'0.Count');
+    // this.state.PersonArr = [];
+    // this.state.PersonCount = [];
+    // {personWords.map((c) => {
+    //   this.state.PersonArr.push(c.Key);
+    //   this.state.PersonCount.push(c.Count)
+    //   })
+    // }
 
 
     this.state.ContentMaxCount = _.get(contentWords,'0.Count');
@@ -74,19 +74,19 @@ class WordCloud extends React.Component {
       })
     }
 
-    this.state.OrganizationMaxCount = _.get(organizationWords,'0.Count');
-    this.state.OrganizationArr = [];
-    this.state.OrganizationCount = [];
-    {organizationWords.map((c) => {
-      this.state.OrganizationArr.push(c.Key)
-      this.state.OrganizationCount.push(c.Count)
-      })
-    }
+    // this.state.OrganizationMaxCount = _.get(organizationWords,'0.Count');
+    // this.state.OrganizationArr = [];
+    // this.state.OrganizationCount = [];
+    // {organizationWords.map((c) => {
+    //   this.state.OrganizationArr.push(c.Key)
+    //   this.state.OrganizationCount.push(c.Count)
+    //   })
+    // }
 
-  this.state.PersonArr = this.state.PersonArr.slice(0,100);        //gets the first 20 words, change this number to alter the number of words to display
+//  this.state.PersonArr = this.state.PersonArr.slice(0,100);        //gets the first 20 words, change this number to alter the number of words to display
   this.state.ContentsArr = this.state.ContentsArr.slice(0,100);
   this.state.SubjectArr = this.state.SubjectArr.slice(0,100);
-  this.state.OrganizationArr = this.state.OrganizationArr.slice(0,100);
+//  this.state.OrganizationArr = this.state.OrganizationArr.slice(0,100);
 
     return (
       <div>
@@ -96,30 +96,6 @@ class WordCloud extends React.Component {
       <option value={'#subjectKeywords'}>{'Subject'}</option>
       <option value={'#organizationKeywords'}>{'Organization'}</option>
       </select>
-
-      <g id='personKeywords' className='wordcloud-component' >
-      <table><thead><tr><td>'Person'</td></tr></thead>
-      <tbody>
-      <tr >
-      <td className='wordcloud-component-content'>
-        {this.state.PersonArr.map((s, idx) =>
-          <svg className='wordsvg' key={'person' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.PersonArr[idx], 'PERSON')}}>
-          <g key={'persongroup' + s + idx}>
-          <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
-        </rect>
-          <rect  width = {'65'*((this.state.PersonCount[idx])/(this.state.PersonMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
-        </rect>
-        <text className='term'  x='0' y='11.25'>{this.state.PersonArr[idx]}</text>
-        <text className='num'  x='0' y='11.25'>{this.state.PersonCount[idx]}</text>
-        </g>
-        </svg>
-            )
-          }
-      </td>
-      </tr>
-      </tbody>
-      </table>
-      </g>
 
         <g id='subjectKeywords' className='wordcloud-component' >
           <table><thead><tr><td>'Subject'</td></tr></thead>
@@ -143,30 +119,6 @@ class WordCloud extends React.Component {
           </tr>
           </tbody>
           </table>
-          </g>
-
-          <g id='organizationKeywords' className='wordcloud-component' >
-            <table><thead><tr><td>'Organization'</td></tr></thead>
-            <tbody>
-            <tr>
-            <td className='wordcloud-component-content'>
-              {this.state.OrganizationArr.map((s, idx) =>
-                <svg className='wordsvg' key={'org' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.OrganizationArr[idx], 'ORGANIZATION')}}>
-                <g key={'orggroup' + s + idx}>
-                <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
-              </rect>
-                <rect width = {'65'*((this.state.OrganizationCount[idx])/(this.state.OrganizationMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
-              </rect>
-                  <text className='term' x='0' y='11.25'>{this.state.OrganizationArr[idx]}</text>
-                  <text className='num' x='0' y='11.25'>{this.state.OrganizationCount[idx]}</text>
-              </g>
-              </svg>
-                  )
-                }
-            </td>
-            </tr>
-            </tbody>
-            </table>
           </g>
 
           <g id='contentsKeywords' className='wordcloud-component' >
