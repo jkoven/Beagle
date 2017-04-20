@@ -99,10 +99,10 @@ module.exports = React.createClass({
             beforeValue = dateStrings[0] + '-12-31'
             break;
           case 'Quarter':
-            beforeValue = dateStrings[1]+ '-' + dateStrings[0] + '-31'
+            beforeValue = dateStrings[1]+ '-' + dateStrings[0] + '-28'
             break;
           case 'Month':
-            beforeValue = dateStrings[1]+ '-' + dateStrings[0] + '-31'
+            beforeValue = dateStrings[1]+ '-' + dateStrings[0] + '-28'
             break;
           case 'Week':
             beforeValue = dateStrings[2]+ '-' + dateStrings[1] + '-' + (parseInt(dateStrings[0]) + 1)
