@@ -121,15 +121,10 @@ class BiGraphContainer extends Component {
 							jsonData['operation'] = 'between';
 							jsonData['value'] = ['0000-1-1', isValidDate(element.values[0]) ? element.values[0] : today()];
 							break;
-						case 'Any':
-							jsonData['field'] = 'Contacts';
+				    default:
+							jsonData['field'] = element.selection;
 							jsonData['operation'] = 'contains';
 							jsonData['value'] = element.values;
-							break;
-					default:
-						jsonData['field'] = element.selection;
-						jsonData['operation'] = 'contains';
-						jsonData['value'] = element.values;
 				}
 				jsonQuery.filters.push(jsonData);
 			}
