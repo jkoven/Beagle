@@ -106,8 +106,7 @@ class ElasticsearchPlugin {
 
     execute(body) {
 		//console.log(JSON.stringify(body, null, 4));
-		body.timeout = 3600;
-        return this.client.search({
+	        return this.client.search({
             index: this.config.index,
             type: this.config.type,
             body: body
