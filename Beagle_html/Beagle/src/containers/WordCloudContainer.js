@@ -83,6 +83,21 @@ class WordCloudContainer extends Component {
 		let query = `query getData($filters:[Rule]){
 			Select(filters:$filters) {
 				Summaries{
+					Contents {
+						Key
+						Count
+					}
+					Subject {
+						Key
+						Count
+					}
+				}
+			}
+		}`
+/*
+		let query = `query getData($filters:[Rule]){
+			Select(filters:$filters) {
+				Summaries{
 					PERSON {
 						Key
 						Count
@@ -102,6 +117,7 @@ class WordCloudContainer extends Component {
 				}
 			}
 		}`
+*/
 
 		dataSource.query(
 			query, this.translateStateToFilter(newState)

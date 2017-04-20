@@ -89,76 +89,88 @@ class WordCloud extends React.Component {
   this.state.OrganizationArr = this.state.OrganizationArr.slice(0,100);
 
     return (
-      <div>
-      <select className='wordCloudSelect' size='1' onChange={function(value) {self.handleChange(value);}} value={this.state.currentKeywords}>
-      <option value={'#contentsKeywords'}>{'Contents'}</option>
-      <option value={'#personKeywords'}>{'Person'}</option>
-      <option value={'#subjectKeywords'}>{'Subject'}</option>
-      <option value={'#organizationKeywords'}>{'Organization'}</option>
-      </select>
 
-      <g id='personKeywords' className='wordcloud-component' >
-      <table><thead><tr><td>'Person'</td></tr></thead>
-      <tbody>
-      <tr >
-      <td className='wordcloud-component-content'>
-        {this.state.PersonArr.map((s, idx) =>
-          <svg className='wordsvg' key={'person' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.PersonArr[idx], 'PERSON')}}>
-          <g key={'persongroup' + s + idx}>
-          <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
-        </rect>
-          <rect  width = {'65'*((this.state.PersonCount[idx])/(this.state.PersonMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
-        </rect>
-        <text className='term'  x='0' y='11.25'>{this.state.PersonArr[idx]}</text>
-        <text className='num'  x='0' y='11.25'>{this.state.PersonCount[idx]}</text>
-        </g>
-        </svg>
-            )
-          }
-      </td>
-      </tr>
-      </tbody>
-      </table>
-      </g>
+            <div>
+            <select className='wordCloudSelect' size='1' onChange={function(value) {self.handleChange(value);}} value={this.state.currentKeywords}>
+            <option value={'#contentsKeywords'}>{'Contents'}</option>
+            <option value={'#subjectKeywords'}>{'Subject'}</option>
+            </select>
 
-        <g id='subjectKeywords' className='wordcloud-component' >
-          <table><thead><tr><td>'Subject'</td></tr></thead>
-          <tbody>
-          <tr>
-          <td className='wordcloud-component-content'>
-            {this.state.SubjectArr.map((s, idx) =>
-              <svg className='wordsvg' key={'subject' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.SubjectArr[idx], 'Subject')}}>
-              <g key={'subjectgroup' + s + idx}>
-              <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
-            </rect>
-              <rect width = {'65'*((this.state.SubjectCount[idx])/(this.state.SubjectMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
-            </rect>
-                <text className='term' x='0' y='11.25'>{this.state.SubjectArr[idx]}</text>
-                <text className='num' x='0' y='11.25'>{this.state.SubjectCount[idx]}</text>
-            </g>
-            </svg>
-                )
-              }
-          </td>
-          </tr>
-          </tbody>
-          </table>
-          </g>
 
-          <g id='organizationKeywords' className='wordcloud-component' >
-            <table><thead><tr><td>'Organization'</td></tr></thead>
+              <g id='subjectKeywords' className='wordcloud-component' >
+                <table><thead><tr><td>'Subject'</td></tr></thead>
+                <tbody>
+                <tr>
+                <td className='wordcloud-component-content'>
+                  {this.state.SubjectArr.map((s, idx) =>
+                    <svg className='wordsvg' key={'subject' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.SubjectArr[idx], 'Subject')}}>
+                    <g key={'subjectgroup' + s + idx}>
+                    <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
+                  </rect>
+                    <rect width = {'65'*((this.state.SubjectCount[idx])/(this.state.SubjectMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
+                  </rect>
+                      <text className='term' x='0' y='11.25'>{this.state.SubjectArr[idx]}</text>
+                      <text className='num' x='0' y='11.25'>{this.state.SubjectCount[idx]}</text>
+                  </g>
+                  </svg>
+                      )
+                    }
+                </td>
+                </tr>
+                </tbody>
+                </table>
+                </g>
+
+                <g id='contentsKeywords' className='wordcloud-component' >
+                <table><thead><tr><td>'Contents'</td></tr></thead>
+                <tbody>
+                <tr >
+                <td className='wordcloud-component-content'>
+                  {this.state.ContentsArr.map((s, idx) =>
+                    <svg  className='wordsvg' key={'contents' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.ContentsArr[idx], 'Contents')}}>
+                    <g key={'contentsgroup' + s + idx}>
+                    <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
+                  </rect>
+                    <rect  width = {'65'*((this.state.ContentCount[idx])/(this.state.ContentMaxCount))}   height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
+                  </rect>
+                      <text className='term' x='0' y='11.25' >{this.state.ContentsArr[idx]}</text>
+                      <text className='num'  x='0' y='11.25' >{this.state.ContentCount[idx]}</text>
+                  </g>
+                  </svg>
+                      )
+                    }
+                </td>
+                </tr>
+                </tbody>
+                </table>
+                </g>
+
+                </div>
+            );
+
+      /*
+            <div>
+            <select className='wordCloudSelect' size='1' onChange={function(value) {self.handleChange(value);}} value={this.state.currentKeywords}>
+            <option value={'#contentsKeywords'}>{'Contents'}</option>
+            <option value={'#personKeywords'}>{'Person'}</option>
+            <option value={'#subjectKeywords'}>{'Subject'}</option>
+            <option value={'#organizationKeywords'}>{'Organization'}</option>
+            </select>
+
+            <g id='personKeywords' className='wordcloud-component' >
+            <table><thead><tr><td>'Person'</td></tr></thead>
             <tbody>
-            <tr>
+            <tr >
             <td className='wordcloud-component-content'>
-              {this.state.OrganizationArr.map((s, idx) =>
-                <svg className='wordsvg' key={'org' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.OrganizationArr[idx], 'ORGANIZATION')}}>
-                <g key={'orggroup' + s + idx}>
+              {this.state.PersonArr.map((s, idx) =>
+                <svg className='wordsvg' key={'person' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.PersonArr[idx], 'PERSON')}}>
+                <g key={'persongroup' + s + idx}>
                 <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
               </rect>
-                <rect width = {'65'*((this.state.OrganizationCount[idx])/(this.state.OrganizationMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
+                <rect  width = {'65'*((this.state.PersonCount[idx])/(this.state.PersonMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
               </rect>
-                  <text className='term' x='0' y='11.25'>{this.state.OrganizationArr[idx]}</text>
-                  <text className='num' x='0' y='11.25'>{this.state.OrganizationCount[idx]}</text>
+              <text className='term'  x='0' y='11.25'>{this.state.PersonArr[idx]}</text>
+              <text className='num'  x='0' y='11.25'>{this.state.PersonCount[idx]}</text>
               </g>
               </svg>
                   )
@@ -167,34 +179,83 @@ class WordCloud extends React.Component {
             </tr>
             </tbody>
             </table>
-          </g>
-
-          <g id='contentsKeywords' className='wordcloud-component' >
-          <table><thead><tr><td>'Contents'</td></tr></thead>
-          <tbody>
-          <tr >
-          <td className='wordcloud-component-content'>
-            {this.state.ContentsArr.map((s, idx) =>
-              <svg  className='wordsvg' key={'contents' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.ContentsArr[idx], 'Contents')}}>
-              <g key={'contentsgroup' + s + idx}>
-              <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
-            </rect>
-              <rect  width = {'65'*((this.state.ContentCount[idx])/(this.state.ContentMaxCount))}   height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
-            </rect>
-                <text className='term' x='0' y='11.25' >{this.state.ContentsArr[idx]}</text>
-                <text className='num'  x='0' y='11.25' >{this.state.ContentCount[idx]}</text>
             </g>
-            </svg>
-                )
-              }
-          </td>
-          </tr>
-          </tbody>
-          </table>
-          </g>
 
-          </div>
-      );
+              <g id='subjectKeywords' className='wordcloud-component' >
+                <table><thead><tr><td>'Subject'</td></tr></thead>
+                <tbody>
+                <tr>
+                <td className='wordcloud-component-content'>
+                  {this.state.SubjectArr.map((s, idx) =>
+                    <svg className='wordsvg' key={'subject' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.SubjectArr[idx], 'Subject')}}>
+                    <g key={'subjectgroup' + s + idx}>
+                    <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
+                  </rect>
+                    <rect width = {'65'*((this.state.SubjectCount[idx])/(this.state.SubjectMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
+                  </rect>
+                      <text className='term' x='0' y='11.25'>{this.state.SubjectArr[idx]}</text>
+                      <text className='num' x='0' y='11.25'>{this.state.SubjectCount[idx]}</text>
+                  </g>
+                  </svg>
+                      )
+                    }
+                </td>
+                </tr>
+                </tbody>
+                </table>
+                </g>
+
+                <g id='organizationKeywords' className='wordcloud-component' >
+                  <table><thead><tr><td>'Organization'</td></tr></thead>
+                  <tbody>
+                  <tr>
+                  <td className='wordcloud-component-content'>
+                    {this.state.OrganizationArr.map((s, idx) =>
+                      <svg className='wordsvg' key={'org' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.OrganizationArr[idx], 'ORGANIZATION')}}>
+                      <g key={'orggroup' + s + idx}>
+                      <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
+                    </rect>
+                      <rect width = {'65'*((this.state.OrganizationCount[idx])/(this.state.OrganizationMaxCount))}  height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
+                    </rect>
+                        <text className='term' x='0' y='11.25'>{this.state.OrganizationArr[idx]}</text>
+                        <text className='num' x='0' y='11.25'>{this.state.OrganizationCount[idx]}</text>
+                    </g>
+                    </svg>
+                        )
+                      }
+                  </td>
+                  </tr>
+                  </tbody>
+                  </table>
+                </g>
+
+                <g id='contentsKeywords' className='wordcloud-component' >
+                <table><thead><tr><td>'Contents'</td></tr></thead>
+                <tbody>
+                <tr >
+                <td className='wordcloud-component-content'>
+                  {this.state.ContentsArr.map((s, idx) =>
+                    <svg  className='wordsvg' key={'contents' + s + idx} onDoubleClick={function () {self.mouseDoubleClick(self.state.ContentsArr[idx], 'Contents')}}>
+                    <g key={'contentsgroup' + s + idx}>
+                    <rect  height = '13' x='0' fill={'white'} className='borderCSS' >
+                  </rect>
+                    <rect  width = {'65'*((this.state.ContentCount[idx])/(this.state.ContentMaxCount))}   height = '15' x='-6' fill={PRIMARY_VERY_LIGHT} className='goodCSS'   >
+                  </rect>
+                      <text className='term' x='0' y='11.25' >{this.state.ContentsArr[idx]}</text>
+                      <text className='num'  x='0' y='11.25' >{this.state.ContentCount[idx]}</text>
+                  </g>
+                  </svg>
+                      )
+                    }
+                </td>
+                </tr>
+                </tbody>
+                </table>
+                </g>
+
+                </div>
+            );
+      */
     }
 }
 

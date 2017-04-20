@@ -2,7 +2,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Slider from 'rc-slider';
+import {Range} from 'rc-slider';
 
 require('rc-slider/assets/index.css');
 require('styles//TimeGraph.scss');
@@ -99,10 +99,10 @@ module.exports = React.createClass({
             beforeValue = dateStrings[0] + '-12-31'
             break;
           case 'Quarter':
-            beforeValue = dateStrings[1]+ '-' + dateStrings[0] + '-31'
+            beforeValue = dateStrings[1]+ '-' + dateStrings[0] + '-28'
             break;
           case 'Month':
-            beforeValue = dateStrings[1]+ '-' + dateStrings[0] + '-31'
+            beforeValue = dateStrings[1]+ '-' + dateStrings[0] + '-28'
             break;
           case 'Week':
             beforeValue = dateStrings[2]+ '-' + dateStrings[1] + '-' + (parseInt(dateStrings[0]) + 1)
@@ -129,6 +129,7 @@ module.exports = React.createClass({
     self=this;
     let maxMark = this.state.maxMark;
     let marks = this.state.marks;
+    console.log(marks);
     let minDate = this.state.minDate;
     let maxDate = this.state.maxDate;
     let sliderChange = this.sliderChange;
@@ -171,7 +172,7 @@ module.exports = React.createClass({
           style={{width:this.state.boxWidth - 20 - (this.state.barWidth),
           left: 10 + this.state.barWidth/2 + 'px'}}
           >
-          <Slider
+          <Range
             allowCross={false}
             min={0}
             max={maxMark}

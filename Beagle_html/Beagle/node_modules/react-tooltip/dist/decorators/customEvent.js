@@ -15,9 +15,9 @@ exports.default = function (target) {
   target.prototype.customBindListener = function (ele) {
     var _this = this;
 
-    var _state = this.state;
-    var event = _state.event;
-    var eventOff = _state.eventOff;
+    var _state = this.state,
+        event = _state.event,
+        eventOff = _state.eventOff;
 
     var dataEvent = ele.getAttribute('data-event') || event;
     var dataEventOff = ele.getAttribute('data-event-off') || eventOff;
@@ -37,9 +37,9 @@ exports.default = function (target) {
 
   /* Unbind listener for custom event */
   target.prototype.customUnbindListener = function (ele) {
-    var _state2 = this.state;
-    var event = _state2.event;
-    var eventOff = _state2.eventOff;
+    var _state2 = this.state,
+        event = _state2.event,
+        eventOff = _state2.eventOff;
 
     var dataEvent = event || ele.getAttribute('data-event');
     var dataEventOff = eventOff || ele.getAttribute('data-event-off');

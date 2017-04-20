@@ -19,7 +19,7 @@ new WebpackDevServer(webpack(config), config.devServer)
 
 
 const ESPlugin = require('./lib/suQL/src/plugins/elasticsearch/')
-const dataInfo = require('./src/sources/enron.json')
+const dataInfo = require('./src/sources/config_json.json')
 
 var express = require('express');
 var app = express();

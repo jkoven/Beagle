@@ -105,7 +105,7 @@ class ElasticsearchPlugin {
 	}
 
     execute(body) {
-		body.timeout = 13600;
+//		body.timeout = 13600;
         return this.client.search({
             index: this.config.index,
             type: this.config.type,
@@ -235,7 +235,7 @@ getSchema() {
 				select: (source, args = {}, context, ast) => {
 					context = context || source;
 					let simpleQuery = parseQuery(ast);
-					
+
 					let summaries = this.parseSummaries(_.get(simpleQuery.keys, "Select"), context)
 
 					let documents = _.get(simpleQuery.keys, "Select.keys.Documents");

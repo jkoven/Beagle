@@ -6,13 +6,13 @@ mlog.json = function(obj) {
 }
 
 let TextTileLanguage = require('../src/')
-let ESPlugin = require('../src/plugins/elasticsearch/') 
-const dataInfo = require('../src/examples/enron.json')
+let ESPlugin = require('../src/plugins/elasticsearch/')
+const dataInfo = require('../src/examples/config_json.json')
 
 const TextTileExecutor = () => {
     let Executor = new TextTileLanguage(dataInfo.mapping, new ESPlugin(dataInfo.config))
     return Executor.ready.then(() => Executor);
-}  
+}
 
 describe('ES-Plugin',  function() {
     this.timeout(5000);

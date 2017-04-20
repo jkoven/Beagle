@@ -121,6 +121,11 @@ class BiGraphContainer extends Component {
 							jsonData['operation'] = 'between';
 							jsonData['value'] = ['0000-1-1', isValidDate(element.values[0]) ? element.values[0] : today()];
 							break;
+						case 'Any':
+							jsonData['field'] = 'Contacts';
+							jsonData['operation'] = 'contains';
+							jsonData['value'] = element.values;
+							break;
 					default:
 						jsonData['field'] = element.selection;
 						jsonData['operation'] = 'contains';
@@ -139,6 +144,7 @@ class BiGraphContainer extends Component {
 
 	loadData(newState) {
 		var jsonQuery = this.translateStateToFilter(newState);
+		console.log(newState);
 //		if (newState.filters.length > 0) {															//loadData sends the query to the suQl server and retrieves the data
 				/*{
 				  Select(filters:[
