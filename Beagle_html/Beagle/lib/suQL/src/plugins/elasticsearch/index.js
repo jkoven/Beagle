@@ -81,7 +81,7 @@ class ElasticsearchPlugin {
 	static getClient(config) {
 		return new elasticsearch.Client({
             host: config.user ? `http://${config.user}:${config.password}@${config.server}` : config.server,
-            //log: 'trace'
+//            log: 'trace'
         });
 	}
 
