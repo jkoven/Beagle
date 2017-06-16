@@ -34,21 +34,21 @@ class BiGraphContainer extends Component {
 			query: `query getData($filters:[Rule]){
 								Select(filters:$filters){
 									Summaries {
-										FromAddress(limit: 1000) {
+										FromAddress(limit: 10000) {
 											Key
 											Count
 											Summaries {
-												ToAddresses (limit: 1000) {
+												ToAddresses (limit: 10000) {
 													Key
 													Count
 												}
 											}
 										}
-										ToAddresses(limit: 1000) {
+										ToAddresses(limit: 10000) {
 												Key
 												Count
 												Summaries {
-												FromAddress (limit: 1000) {
+												FromAddress (limit: 10000) {
 													Key
 													Count
 												}
@@ -139,7 +139,6 @@ class BiGraphContainer extends Component {
 
 	loadData(newState) {
 		var jsonQuery = this.translateStateToFilter(newState);
-		console.log(newState);
 //		if (newState.filters.length > 0) {															//loadData sends the query to the suQl server and retrieves the data
 				/*{
 				  Select(filters:[
@@ -253,7 +252,7 @@ class BiGraphContainer extends Component {
 					})
 				});
 				let contacts = [];
-				if (jsonQuery.toList.length  < 1 && jsonQuery.toList.length < 1) {
+				if (jsonQuery.toList.length  < 1 && jsonQuery.fromList.length < 1) {
 					contacts = contactList.ToAddresses;
 					contactList.FromAddress.map((contact) => {
 						let exists = contacts.find(function(c){

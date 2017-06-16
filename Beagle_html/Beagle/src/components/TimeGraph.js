@@ -129,7 +129,6 @@ module.exports = React.createClass({
     self=this;
     let maxMark = this.state.maxMark;
     let marks = this.state.marks;
-    console.log(marks);
     let minDate = this.state.minDate;
     let maxDate = this.state.maxDate;
     let sliderChange = this.sliderChange;

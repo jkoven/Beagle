@@ -48,7 +48,7 @@ module.exports = React.createClass({
       query: `query getData($filters:[Rule]){
 								Select(filters:$filters){
 									Summaries {
-										ToAddresses {
+										Any (limit:10000) {
 											Key
 											Count
 										}
@@ -199,13 +199,13 @@ mouseClick: function(contact){
           ReactTooltip.hide();
           oneClick = false;
           let jQuery = {};
-          jQuery.filters = [{'field': 'FromAddress', 'operation': 'contains', 'value': [contact]}];
+          jQuery.filters = [{'field': 'Any', 'operation': 'contains', 'value': [contact]}];
           dataSource.query(
             self.state.query, jQuery
           ).then(r => {
             let contactList = [];
             if (typeof r.data !== 'undefined'){
-              contactList = r.data.Select.Summaries.ToAddresses;
+              contactList = r.data.Select.Summaries.Any;
             }
             self.setState({
               dialogVisible: true,
@@ -256,7 +256,7 @@ mouseClick: function(contact){
 				title={<div  className = 'contactlist-component-list' style = {{height: contactElementHeight}}>{this.state.dialogTitle}</div>}
 			>
         <Infinite containerHeight={this.state.contactListHeight} elementHeight={24}>
-        { contacts.map((c,i) =>
+        { this.state.dialogNodes.map((c,i) =>
           typeof this.state.nodes.find(function(n){return n.id === c.Key}) === 'undefined' &&
           <div
             key={'contactdiv'+c.Key}
@@ -337,7 +337,7 @@ mouseClick: function(contact){
                     y={18}
                     style={{textAnchor: 'end'}}
                     >
-                    {(this.state.nodes.length < 1) ? c.Count : c.fromLinkCount + c.toLinkCount}
+                    {(this.state.nodes.length < 1) ? c.Count : c.fromCount + c.toCount}
                   </text>
                   {c.toCount > 0 && this.state.nodes.length < 1 &&
                     <path
