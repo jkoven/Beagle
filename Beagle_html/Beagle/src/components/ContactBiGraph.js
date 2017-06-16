@@ -14,8 +14,9 @@ var d3 = require('d3-scale');
 //let linkSpacing = 8;
 let width = 300;
 let height = 40;
-let rad = 15;
 let oneClick=false;
+let contactElementHeight = 28;
+let rad = (contactElementHeight - 4)/2 - 1;
 
 module.exports = React.createClass({
 
@@ -24,6 +25,7 @@ module.exports = React.createClass({
       nodeScale: d3.scaleLog(),
       linkScale: d3.scaleLog(),
       contacts: [],
+      contactsByCol: [],
       maxCount: 0,
       test: 0,
       fromCount: 0,
@@ -46,7 +48,7 @@ module.exports = React.createClass({
       query: `query getData($filters:[Rule]){
 								Select(filters:$filters){
 									Summaries {
-										ToAddresses {
+										Any (limit:10000) {
 											Key
 											Count
 										}
@@ -68,8 +70,8 @@ module.exports = React.createClass({
   },
 
   componentWillReceiveProps: function (newProps){
-    let nodeScale = d3.scaleLog();
-    let linkScale = d3.scaleLog();
+    let nodeScale = d3.scaleLinear();
+    let linkScale = d3.scaleLinear();
     let nodes = newProps.nodes;
     let fromCount = 0;
 //    console.log(nodes);
@@ -136,11 +138,22 @@ module.exports = React.createClass({
     newProps.contacts.map((contact) => {
         contact.nodeClass = 'normal';
     });
+    let contactsByCol = [];
+    for(let i = 0; i < newProps.contacts.length; i = i + 3){
+      let col = [];
+      for (let j = 0; j < 3; j++){
+        if (i + j < newProps.contacts.length){
+          col[j] = newProps.contacts[i+j];
+        }
+      }
+      contactsByCol.push(col);
+    }
     this.setState({
       nodes: nodes,
-      contactListHeight: ReactDOM.findDOMNode(this).offsetHeight - height,
+      contactListHeight: ReactDOM.findDOMNode(this).offsetHeight - 10,
       links: links,
       contacts: newProps.contacts,
+      contactsByCol: contactsByCol,
       queryNodeHeight: height,
       dialogWidth: 3 * width / 5,
       nodeScale: nodeScale,
@@ -186,13 +199,13 @@ mouseClick: function(contact){
           ReactTooltip.hide();
           oneClick = false;
           let jQuery = {};
-          jQuery.filters = [{'field': 'FromAddress', 'operation': 'contains', 'value': [contact]}];
+          jQuery.filters = [{'field': 'Any', 'operation': 'contains', 'value': [contact]}];
           dataSource.query(
             self.state.query, jQuery
           ).then(r => {
             let contactList = [];
             if (typeof r.data !== 'undefined'){
-              contactList = r.data.Select.Summaries.ToAddresses;
+              contactList = r.data.Select.Summaries.Any;
             }
             self.setState({
               dialogVisible: true,
@@ -211,13 +224,13 @@ mouseClick: function(contact){
 
   render: function() {
     let {contacts} = this.state;
-    let self = this;
+    let {contactsByCol} = this.state;
+//    let self = this;
 //    console.log(contacts);
 		this.state.maxCount = _.get(contacts,'0.Count');
     // if(this.state.searchArr != contacts){
 		// 	this.search(this.state.input);
 		// }
-		let contactElementHeight = 24;
     let mouseDoubleClick = this.mouseDoubleClick;
     let mouseClick = this.mouseClick;
 //    let tipOpen = this.tipOpen;
@@ -225,11 +238,12 @@ mouseClick: function(contact){
 //    let rad = 7;
     let fromX = width/3;
 //    let toX = fromX + 60 + ((this.state.fromCount < 3) ? 0 : this.state.fromCount - 2) * linkSpacing;
-    let countX = width/4 - 5;
+    let countX = width/3 - 5;
+    let radCenter = width/3 - rad - 5
 //    let gridY = rad + 1;
-    let gridBoxWidth = Math.floor(3+2*rad);
+    // let gridBoxWidth = Math.floor(3+2*rad);
     let gridBoxHeight = Math.floor(2+2*rad);
-    let gridCols = Math.floor(this.state.gridWidth / gridBoxWidth);
+    // let gridCols = Math.floor(this.state.gridWidth / gridBoxWidth);
     let dialog = (
 			<Dialog
 				visible={this.state.dialogVisible}
@@ -242,7 +256,7 @@ mouseClick: function(contact){
 				title={<div  className = 'contactlist-component-list' style = {{height: contactElementHeight}}>{this.state.dialogTitle}</div>}
 			>
         <Infinite containerHeight={this.state.contactListHeight} elementHeight={24}>
-        { contacts.map((c,i) =>
+        { this.state.dialogNodes.map((c,i) =>
           typeof this.state.nodes.find(function(n){return n.id === c.Key}) === 'undefined' &&
           <div
             key={'contactdiv'+c.Key}
@@ -283,207 +297,130 @@ mouseClick: function(contact){
 
     return (
       <div className='contactgraph-component'>
-        <svg className='contact-graph-svg'>
-        {this.state.nodes.map((contact, i) =>
-          <g
-            key={'g-graphcircle' + contact.id + i}
-            className={contact.id}
-          >
-            contact.queryNode &&
-            <text
-              key={'nodelabel' + contact.id + i}
-              className={contact.nodeClass === 'normal' ? contact.queryNode ? 'highlighted' : contact.nodeClass : contact.nodeClass}
-              x={contact.x}
-              y={contact.y + 10}
-              >
-              {contact.id}
-            </text>
-          </g>
-        )}
-        </svg>
-        <div className='contactlist-component-list' style={{top: this.state.queryNodeHeight}}>
+        <div className='contactlist-component-list' style={{top: '10px'}}>
 				<Infinite containerHeight={this.state.contactListHeight} elementHeight={contactElementHeight}>
-					{ contacts.map((c,i) =>
+					{ contactsByCol.map((row, i) =>
             <div
-              key={'contactdiv'+c.Key}
-              data-tip data-for={c.Key+'itip'}
-              onClick= {function () {mouseClick(c.Key)}}
-              >
-              <svg
-                ref={c.Key+'i'}
-                key={c.Key}
-                className='contactlist-component-contact-svg'>
-                <text
-                  key={'nodelabel' + c.Key + i}
-                  className={c.nodeClass === 'normal' ? c.queryNode ? 'highlighted' : c.nodeClass : c.nodeClass}
-                  x={5}
-                  y={18}
+                key={'contactdivrow'+i}
+                >
+                {row.map((c,j) =>
+                <span
+                  key={'contactspan' + (i + j)}
+                  onClick= {function () {mouseClick(c.Key)}}
+                >
+                <svg
+                  ref={c.Key+(i+j)}
+                  data-tip data-for={c.Key+'itip'}
+                  key={c.Key}
+                  className='contactlist-component-contact-svg'
+                  style={{width: width/3, left:j * (width/3)}}
                   >
-                  {c.Key}
-                </text>
-                <rect
-                className='countbackground'
-                x={fromX-100}
-                width={100}
-                y={0}
-                height={gridBoxHeight}
-                />
-                <text
-                  key={'nodecount' + c.Key + i}
-                  className={c.nodeClass === 'normal' ? c.queryNode ? 'highlighted' : c.nodeClass : c.nodeClass}
-                  x={countX}
-                  y={18}
-                  style={{textAnchor: 'end'}}
-                  >
-                  {(this.state.nodes.length < 1) ? c.Count : c.fromLinkCount + c.toLinkCount}
-                </text>
-					    </svg>
-              <ReactTooltip
-                id={c.Key+'itip'}
-                type='info'
-                scrollHide={true}
-                afterShow={function() {
-                    ReactDOM.findDOMNode(self.refs[c.Key+'g']).style.border='dotted 1px'
+                  <text
+                    key={'nodelabel' + c.Key + (i+j)}
+                    className={c.nodeClass === 'normal' ? c.queryNode ? 'highlighted' : c.nodeClass : c.nodeClass}
+                    x={5}
+                    y={18}
+                    >
+                    {c.Key}
+                  </text>
+                  <rect
+                  className='countbackground'
+                  x={fromX-75}
+                  width={75}
+                  y={0}
+                  height={gridBoxHeight}
+                  />
+                  <text
+                    key={'nodecount' + c.Key + i}
+                    className={c.nodeClass === 'normal' ? c.queryNode ? 'highlighted' : c.nodeClass : c.nodeClass}
+                    x={countX - (2 * rad) - 4}
+                    y={18}
+                    style={{textAnchor: 'end'}}
+                    >
+                    {(this.state.nodes.length < 1) ? c.Count : c.fromCount + c.toCount}
+                  </text>
+                  {c.toCount > 0 && this.state.nodes.length < 1 &&
+                    <path
+                      key={'tolinkcircleL' + c.Key + c.ndx + i}
+                      className={'node1'}
+                      d={`M ${radCenter} ${1 + rad - this.state.nodeScale(c.toCount)}
+                      A ${this.state.nodeScale(c.toCount)} ${this.state.nodeScale(c.toCount)},
+                      0, 0, 0,
+                      ${radCenter} ${rad+1+this.state.nodeScale(c.toCount)}
+                      L ${radCenter} ${rad+1} Z`}
+                    />
                   }
-                }
-                afterHide={function() {
-                    ReactDOM.findDOMNode(self.refs[c.Key+'g']).style.border='none'
+                  {c.fromCount > 0 && this.state.nodes.length < 1 &&
+                    <path
+                      key={'fromlinkcircleL' + c.Key + c.ndx + i}
+                      className={'node4'}
+                      d={`M ${radCenter+1} ${1 + rad - this.state.nodeScale(c.fromCount)}
+                      A ${this.state.nodeScale(c.fromCount)} ${this.state.nodeScale(c.fromCount)},
+                      0, 0, 1,
+                      ${radCenter+1} ${rad+1+this.state.nodeScale(c.fromCount)}
+                      L ${radCenter+1} ${rad+1} Z`}
+                    />
                   }
+                  {c.toLinkCount > 0 &&
+                    <path
+                      key={'tolinkcircleL' + c.Key + c.ndx + i}
+                      className={'node1'}
+                      d={`M ${radCenter} ${1 + rad - this.state.linkScale(c.toLinkCount)}
+                      A ${this.state.linkScale(c.toLinkCount)} ${this.state.linkScale(c.toLinkCount)},
+                      0, 0, 0,
+                      ${radCenter} ${rad+1+this.state.linkScale(c.toLinkCount)}
+                      L ${radCenter} ${rad+1} Z`}
+                    />
+                  }
+                  {c.fromLinkCount > 0 &&
+                    <path
+                      key={'fromlinkcircleL' + c.Key + c.ndx + i}
+                      className={'node4'}
+                      d={`M ${radCenter+1} ${1 + rad - this.state.linkScale(c.fromLinkCount)}
+                      A ${this.state.linkScale(c.fromLinkCount)} ${this.state.linkScale(c.fromLinkCount)},
+                      0, 0, 1,
+                      ${radCenter+1} ${rad+1+this.state.linkScale(c.fromLinkCount)}
+                      L ${radCenter+1} ${rad+1} Z`}
+                    />
+                  }
+  					    </svg>
+                <ReactTooltip
+                  id={c.Key+'itip'}
+                  type='info'
+                  scrollHide={true}
+                >
+                <p>{c.Key}</p>
+                {c.sendsTo.map((link) =>
+                  link.target.toNode &&
+                  <p key={c.Key + 'to' + link.target.id + i}>
+                    {'To ' + link.target.id+': '+ link.size}
+                  </p>
+                  )
                 }
-              >
-              <p>{c.Key}</p>
-              {c.sendsTo.map((link) =>
-                link.target.toNode &&
-                <p key={c.Key + 'to' + link.target.id + i}>
-                  {'To ' + link.target.id+': '+ link.size}
-                </p>
-                )
+                {c.receivedFrom.map((link) =>
+                  link.target.fromNode &&
+                  <p key={c.Key + 'from' + link.target.id + i}>
+                    {'From ' + link.target.id+': '+ link.size}
+                  </p>
+                  )
+                }
+                {this.state.nodes.length < 1 && c.toCount > 0 &&
+                  <p key={c.Key + 'toall' + i}>
+                    {'Total sent emails: '+ c.toCount}
+                  </p>
+                }
+                {this.state.nodes.length < 1 && c.fromCount > 0 &&
+                  <p key={c.Key + 'fromall'+ i}>
+                  {'Total Recieved emails: '+ c.fromCount}
+                  </p>
+                }
+                </ReactTooltip>
+              </span>)
               }
-              {c.receivedFrom.map((link) =>
-                link.target.fromNode &&
-                <p key={c.Key + 'from' + link.target.id + i}>
-                  {'From ' + link.target.id+': '+ link.size}
-                </p>
-                )
-              }
-              {this.state.nodes.length < 1 && c.toCount > 0 &&
-                <p key={c.Key + 'toall' + i}>
-                  {'Total sent emails: '+ c.toCount}
-                </p>
-              }
-              {this.state.nodes.length < 1 && c.fromCount > 0 &&
-                <p key={c.Key + 'fromall'+ i}>
-                {'Total Recieved emails: '+ c.fromCount}
-                </p>
-              }
-              </ReactTooltip>
-            </div>)}
-					</Infinite>
+            </div>)
+          }
+  				</Infinite>
 				</div>
-        <div className='contactlist-component-grid'>
-        {contacts.map((c,i) =>
-          <g className= 'contactlist-component-contact-g'
-            key={c.Key+'gridg'}
-            data-tip data-for={c.Key+'tip'}
-            onClick= {function () {mouseClick(c.Key)}}
-            style={{left: (i%gridCols) * gridBoxWidth, top: Math.floor(i/gridCols) * gridBoxHeight}}
-          >
-              <svg
-                ref={c.Key+'g'}
-                key={c.Key+'gridsvg' }
-                className='contactlist-component-contact-svg'
-                style={{width: gridBoxWidth, height: gridBoxHeight}}>
-                {c.toCount > 0 && this.state.nodes.length < 1 &&
-                  <path
-                    key={'tolinkcircleL' + c.Key + c.ndx + i}
-                    className={'node1'}
-                    d={`M ${rad+1} ${1 + rad - this.state.nodeScale(c.toCount)}
-                    A ${this.state.nodeScale(c.toCount)} ${this.state.nodeScale(c.toCount)},
-                    0, 0, 0,
-                    ${rad+1} ${rad+1+this.state.nodeScale(c.toCount)}
-                    L ${rad+1} ${rad+1} Z`}
-                  />
-                }
-                {c.fromCount > 0 && this.state.nodes.length < 1 &&
-                  <path
-                    key={'fromlinkcircleL' + c.Key + c.ndx + i}
-                    className={'node4'}
-                    d={`M ${rad+2} ${1 + rad - this.state.nodeScale(c.fromCount)}
-                    A ${this.state.nodeScale(c.fromCount)} ${this.state.nodeScale(c.fromCount)},
-                    0, 0, 1,
-                    ${rad+2} ${rad+1+this.state.nodeScale(c.fromCount)}
-                    L ${rad+2} ${rad+1} Z`}
-                  />
-                }
-                {c.toLinkCount > 0 &&
-                  <path
-                    key={'tolinkcircleL' + c.Key + c.ndx + i}
-                    className={'node1'}
-                    d={`M ${rad+1} ${1 + rad - this.state.linkScale(c.toLinkCount)}
-                    A ${this.state.linkScale(c.toLinkCount)} ${this.state.linkScale(c.toLinkCount)},
-                    0, 0, 0,
-                    ${rad+1} ${rad+1+this.state.linkScale(c.toLinkCount)}
-                    L ${rad+1} ${rad+1} Z`}
-                  />
-                }
-                {c.fromLinkCount > 0 &&
-                  <path
-                    key={'fromlinkcircleL' + c.Key + c.ndx + i}
-                    className={'node4'}
-                    d={`M ${rad+2} ${1 + rad - this.state.linkScale(c.fromLinkCount)}
-                    A ${this.state.linkScale(c.fromLinkCount)} ${this.state.linkScale(c.fromLinkCount)},
-                    0, 0, 1,
-                    ${rad+2} ${rad+1+this.state.linkScale(c.fromLinkCount)}
-                    L ${rad+2} ${rad+1} Z`}
-                  />
-                }
-              </svg>
-              <ReactTooltip
-                id={c.Key+'tip'}
-                type='info'
-                afterShow={function() {
-                    if (typeof self.refs[c.Key+'i'] !== 'undefined'){
-                      ReactDOM.findDOMNode(self.refs[c.Key+'i']).style.border='dotted 1px'
-                    }
-                  }
-                }
-                afterHide={function() {
-                    if (typeof self.refs[c.Key+'i'] !== 'undefined'){
-                      ReactDOM.findDOMNode(self.refs[c.Key+'i']).style.border='none'
-                    }
-                  }
-                }
-              >
-              <p>{c.Key}</p>
-              {c.sendsTo.map((link) =>
-                link.target.toNode &&
-                <p key={c.Key + 'to' + link.target.id + i}>
-                  {'To ' + link.target.id+': '+ link.size}
-                </p>
-                )
-              }
-              {c.receivedFrom.map((link) =>
-                link.target.fromNode &&
-                <p key={c.Key + 'from' + link.target.id + i}>
-                  {'From ' + link.target.id+': '+ link.size}
-                </p>
-                )
-              }
-              {this.state.nodes.length < 1 && c.toCount > 0 &&
-                <p key={c.Key + 'toall' + i}>
-                  {'Total sent emails: '+ c.toCount}
-                </p>
-              }
-              {this.state.nodes.length < 1 && c.fromCount > 0 &&
-                <p key={c.Key + 'fromall'+ i}>
-                {'Total Recieved emails: '+ c.fromCount}
-                </p>
-              }
-              </ReactTooltip>
-            </g>
-          )
-        }
-        </div>
         {dialog}
       </div>
     );

@@ -105,6 +105,10 @@ class ElasticsearchPlugin {
 	}
 
     execute(body) {
+<<<<<<< HEAD
+=======
+//		body.timeout = 13600;
+>>>>>>> june2017save
         return this.client.search({
             index: this.config.index,
             type: this.config.type,

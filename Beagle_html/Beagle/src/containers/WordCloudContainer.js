@@ -83,6 +83,8 @@ class WordCloudContainer extends Component {
 		let query = `query getData($filters:[Rule]){
 			Select(filters:$filters) {
 				Summaries{
+<<<<<<< HEAD
+=======
 					Contents {
 						Key
 						Count
@@ -94,6 +96,27 @@ class WordCloudContainer extends Component {
 				}
 			}
 		}`
+/*
+		let query = `query getData($filters:[Rule]){
+			Select(filters:$filters) {
+				Summaries{
+					PERSON {
+						Key
+						Count
+					}
+>>>>>>> june2017save
+					Contents {
+						Key
+						Count
+					}
+					Subject {
+						Key
+						Count
+					}
+				}
+			}
+		}`
+<<<<<<< HEAD
 		// let query = `query getData($filters:[Rule]){
 		// 	Select(filters:$filters) {
 		// 		Summaries{
@@ -116,6 +139,9 @@ class WordCloudContainer extends Component {
 		// 		}
 		// 	}
 		// }`
+=======
+*/
+>>>>>>> june2017save
 
 		dataSource.query(
 			query, this.translateStateToFilter(newState)

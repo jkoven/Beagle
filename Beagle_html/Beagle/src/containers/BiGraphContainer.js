@@ -34,21 +34,21 @@ class BiGraphContainer extends Component {
 			query: `query getData($filters:[Rule]){
 								Select(filters:$filters){
 									Summaries {
-										FromAddress(limit: 1000) {
+										FromAddress(limit: 10000) {
 											Key
 											Count
 											Summaries {
-												ToAddresses (limit: 1000) {
+												ToAddresses (limit: 10000) {
 													Key
 													Count
 												}
 											}
 										}
-										ToAddresses(limit: 1000) {
+										ToAddresses(limit: 10000) {
 												Key
 												Count
 												Summaries {
-												FromAddress (limit: 1000) {
+												FromAddress (limit: 10000) {
 													Key
 													Count
 												}
@@ -121,7 +121,11 @@ class BiGraphContainer extends Component {
 							jsonData['operation'] = 'between';
 							jsonData['value'] = ['0000-1-1', isValidDate(element.values[0]) ? element.values[0] : today()];
 							break;
+<<<<<<< HEAD
 						default:
+=======
+				    default:
+>>>>>>> june2017save
 							jsonData['field'] = element.selection;
 							jsonData['operation'] = 'contains';
 							jsonData['value'] = element.values;
@@ -252,7 +256,7 @@ class BiGraphContainer extends Component {
 					})
 				});
 				let contacts = [];
-				if (jsonQuery.toList.length  < 1 && jsonQuery.toList.length < 1) {
+				if (jsonQuery.toList.length  < 1 && jsonQuery.fromList.length < 1) {
 					contacts = contactList.ToAddresses;
 					contactList.FromAddress.map((contact) => {
 						let exists = contacts.find(function(c){
