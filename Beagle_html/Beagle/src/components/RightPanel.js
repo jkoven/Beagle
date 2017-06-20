@@ -79,14 +79,11 @@ export class RightPanel extends React.Component {
 		);
     return (
       <div className="rightpanel-component">
-        <Panel title="Mentions" height={mentionHeight}>
+        <Panel title="Communications">
           <FloatingActionButton style={helpButtonStyle} mini={true} onClick={()=>this.openHelp()}>
             <ActionHelp />
             </FloatingActionButton>
-          <WordCloudContainer />
-        </Panel>
-        <Panel title="Communications" height={emailHeight}>
-            <EmailsContainer position={mentionHeight}/>
+            <EmailsContainer/>
         </Panel>
         {dialog}
       </div>

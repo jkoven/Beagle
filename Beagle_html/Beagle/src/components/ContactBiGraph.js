@@ -25,7 +25,7 @@ module.exports = React.createClass({
       nodeScale: d3.scaleLog(),
       linkScale: d3.scaleLog(),
       contacts: [],
-      contactsByCol: [],
+//      contactsByCol: [],
       maxCount: 0,
       test: 0,
       fromCount: 0,
@@ -138,22 +138,22 @@ module.exports = React.createClass({
     newProps.contacts.map((contact) => {
         contact.nodeClass = 'normal';
     });
-    let contactsByCol = [];
-    for(let i = 0; i < newProps.contacts.length; i = i + 3){
-      let col = [];
-      for (let j = 0; j < 3; j++){
-        if (i + j < newProps.contacts.length){
-          col[j] = newProps.contacts[i+j];
-        }
-      }
-      contactsByCol.push(col);
-    }
+    // let contactsByCol = [];
+    // for(let i = 0; i < newProps.contacts.length; i = i + 3){
+    //   let col = [];
+    //   for (let j = 0; j < 3; j++){
+    //     if (i + j < newProps.contacts.length){
+    //       col[j] = newProps.contacts[i+j];
+    //     }
+    //   }
+    //   contactsByCol.push(col);
+    // }
     this.setState({
       nodes: nodes,
       contactListHeight: ReactDOM.findDOMNode(this).offsetHeight - 10,
       links: links,
       contacts: newProps.contacts,
-      contactsByCol: contactsByCol,
+      // contactsByCol: contactsByCol,
       queryNodeHeight: height,
       dialogWidth: 3 * width / 5,
       nodeScale: nodeScale,
@@ -224,7 +224,6 @@ mouseClick: function(contact){
 
   render: function() {
     let {contacts} = this.state;
-    let {contactsByCol} = this.state;
 //    let self = this;
 //    console.log(contacts);
 		this.state.maxCount = _.get(contacts,'0.Count');
@@ -236,10 +235,10 @@ mouseClick: function(contact){
 //    let tipOpen = this.tipOpen;
 
 //    let rad = 7;
-    let fromX = width/3;
+    let fromX = width;
 //    let toX = fromX + 60 + ((this.state.fromCount < 3) ? 0 : this.state.fromCount - 2) * linkSpacing;
-    let countX = width/3 - 5;
-    let radCenter = width/3 - rad - 5
+    let countX = width - 5;
+    let radCenter = width - rad - 5
 //    let gridY = rad + 1;
     // let gridBoxWidth = Math.floor(3+2*rad);
     let gridBoxHeight = Math.floor(2+2*rad);
@@ -299,24 +298,23 @@ mouseClick: function(contact){
       <div className='contactgraph-component'>
         <div className='contactlist-component-list' style={{top: '10px'}}>
 				<Infinite containerHeight={this.state.contactListHeight} elementHeight={contactElementHeight}>
-					{ contactsByCol.map((row, i) =>
+					{ contacts.map((c, i) =>
             <div
                 key={'contactdivrow'+i}
                 >
-                {row.map((c,j) =>
                 <span
-                  key={'contactspan' + (i + j)}
+                  key={'contactspan' + (i)}
                   onClick= {function () {mouseClick(c.Key)}}
                 >
                 <svg
-                  ref={c.Key+(i+j)}
+                  ref={c.Key+(i)}
                   data-tip data-for={c.Key+'itip'}
                   key={c.Key}
                   className='contactlist-component-contact-svg'
-                  style={{width: width/3, left:j * (width/3)}}
+                  style={{width: width}}
                   >
                   <text
-                    key={'nodelabel' + c.Key + (i+j)}
+                    key={'nodelabel' + c.Key + (i)}
                     className={c.nodeClass === 'normal' ? c.queryNode ? 'highlighted' : c.nodeClass : c.nodeClass}
                     x={5}
                     y={18}
@@ -415,8 +413,7 @@ mouseClick: function(contact){
                   </p>
                 }
                 </ReactTooltip>
-              </span>)
-              }
+              </span>
             </div>)
           }
   				</Infinite>

@@ -1,6 +1,7 @@
 'use strict';
 
 import React from 'react';
+import ReactDOM from 'react-dom'
 //import Panel from './Panel'
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
@@ -8,27 +9,42 @@ import FilterItem from '../components/FilterItem'
 
 require('styles//FilterPanel.scss');
 
-class FilterPanel extends React.Component {
+
+module.exports = React.createClass({
+//class FilterPanel extends React.Component {
 
 
-  onEnter(e) {
+  getInitialState: function() {
+    return {
+      width:300
+    }
+  },
+
+  componentWillReceiveProps: function() {
+    this.setState({
+      width : ReactDOM.findDOMNode(this).offsetWidth
+    })
+  },
+
+  onEnter: function(e) {
     let {addData} = this.props
+
 //    console.log('Key Entered');
     if(e.key == 'Enter') {
 //      console.log('Key Entered');
       addData('Data');
     }
-  }
+  },
 
 
-  render() {
+  render: function() {
     let {numEmails, addFilter, addData, changeFilter, removeFilter, removeFilterLine, filters} = this.props;
-    let style ={
+    let style = {
       margin: '0px',
       top: '15px',
       right: 'auto',
       bottom: 'auto',
-      left: '180px',
+      left: this.state.width - 10,
       position: 'fixed'
       // position:'absolute',
       // marginLeft: 220,
@@ -64,13 +80,13 @@ class FilterPanel extends React.Component {
       </div>
     );
   }
-}
+});
 
-FilterPanel.displayName = 'FilterPanel';
-
-// Uncomment properties you need
-// FilterPanel.propTypes = {};
-// FilterPanel.defaultProps = {};
-
-export default FilterPanel;
-//<SearchIcon style={{postion: 'absolute', color:'#ccc'}}/>
+// FilterPanel.displayName = 'FilterPanel';
+//
+// // Uncomment properties you need
+// // FilterPanel.propTypes = {};
+// // FilterPanel.defaultProps = {};
+//
+// export default FilterPanel;
+// //<SearchIcon style={{postion: 'absolute', color:'#ccc'}}/>

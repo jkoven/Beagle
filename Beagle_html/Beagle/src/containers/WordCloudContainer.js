@@ -83,11 +83,11 @@ class WordCloudContainer extends Component {
 		let query = `query getData($filters:[Rule]){
 			Select(filters:$filters) {
 				Summaries{
-					Contents {
+					Contents (limit:1000) {
 						Key
 						Count
 					}
-					Subject {
+					Subject (limit:1000) {
 						Key
 						Count
 					}
