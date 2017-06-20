@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Panel from './Panel';
-import WordCloudContainer from '../containers/WordCloudContainer';
+//import WordCloudContainer from '../containers/WordCloudContainer';
 import EmailsContainer from '../containers/EmailsContainer';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ActionHelp from 'material-ui/svg-icons/action/help';
@@ -50,8 +50,8 @@ export class RightPanel extends React.Component {
       // marginTop: -22
     };
     let dialog;
-    let emailHeight = ((window.innerHeight - 30) / 2)+ 'px';
-    let mentionHeight = emailHeight;
+//    let emailHeight = ((window.innerHeight - 30) / 2)+ 'px';
+//    let mentionHeight = emailHeight;
     let wrapClassName = '';
     if (this.state.center) {
 			wrapClassName = 'center';
