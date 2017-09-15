@@ -80,6 +80,7 @@ class WordCloudContainer extends Component {
 	loadData(newState) {							//loadData sends the query to the suQl server and retrieves the data
 		let {field} = this.props;
 		this.state.field = field;
+		/*
 		let query = `query getData($filters:[Rule]){
 			Select(filters:$filters) {
 				Summaries{
@@ -94,30 +95,31 @@ class WordCloudContainer extends Component {
 				}
 			}
 		}`
-/*
+		*/
+
 		let query = `query getData($filters:[Rule]){
 			Select(filters:$filters) {
 				Summaries{
-					PERSON {
+					PERSON (limit:1000) {
 						Key
 						Count
 					}
-					Contents {
+					ORGANIZATION (limit:1000) {
 						Key
 						Count
 					}
-					Subject {
+					Subject (limit:1000) {
 						Key
 						Count
 					}
-					ORGANIZATION {
+					Contents (limit:1000) {
 						Key
 						Count
 					}
 				}
 			}
 		}`
-*/
+
 
 		dataSource.query(
 			query, this.translateStateToFilter(newState)

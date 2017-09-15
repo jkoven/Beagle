@@ -9,7 +9,7 @@ class LeftPanel extends React.Component {
   render() {
     return (
       <div className='filterpanel-component'>
-        <Panel title='Filters' direction='row'>
+        <Panel title='Filters' direction='row' leftmargin='45px'>
         	<FilterContainer />
         </Panel>
       </div>

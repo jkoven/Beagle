@@ -6,17 +6,22 @@ import Infinite from 'react-infinite';
 import Dialog from 'rc-dialog';
 import dataSource from '../sources/dataSource';
 import ReactTooltip from 'react-tooltip'
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import ContentAdd from 'material-ui/svg-icons/content/add';
+import ContentRemove from 'material-ui/svg-icons/content/remove';
+import SocialGroup from 'material-ui/svg-icons/Social/Group';
 import _ from 'lodash'
 //import dataSource from '../sources/dataSource';
 
 require('styles//ContactGraph.scss');
-var d3 = require('d3-scale');
+var d3 = require('d3');
 //let linkSpacing = 8;
 let width = 300;
 let height = 40;
 let oneClick=false;
 let contactElementHeight = 28;
 let rad = (contactElementHeight - 4)/2 - 1;
+let graphRad = 10;
 
 module.exports = React.createClass({
 
@@ -24,6 +29,9 @@ module.exports = React.createClass({
     return {
       nodeScale: d3.scaleLog(),
       linkScale: d3.scaleLog(),
+      graphLinkScale: d3.scaleLog(),
+      graphNodeScale: d3.scaleLog(),
+      graphType: 'circle',
       contacts: [],
 //      contactsByCol: [],
       maxCount: 0,
@@ -37,7 +45,12 @@ module.exports = React.createClass({
       contactListHeight: 600,
       dialogVisible: false,
       dialogWidth: 300,
+      graphDialogWidth: (window.innerWidth/4) * 3,
+      graphDialogVisible: false,
+      graphDialogCount: 20,
+      graphDialogContacts:[],
       dialogHeight: 500,
+      graphDialogHeight: window.innerHeight - 100,
       dialogNodes: [],
       gridWidth: 300,
       mousePosition:{
@@ -70,84 +83,42 @@ module.exports = React.createClass({
   },
 
   componentWillReceiveProps: function (newProps){
+//    console.log(newProps.contacts);
     let nodeScale = d3.scaleLinear();
     let linkScale = d3.scaleLinear();
+    let graphNodeScale = d3.scaleLinear();
+    let graphLinkScale = d3.scaleLinear();
     let nodes = newProps.nodes;
     let fromCount = 0;
 //    console.log(nodes);
 //    let toNodes = newProps.nodes;
 //    let contacts = newProps.contacts;
     let links = [];
-    let nodeStartY = 0;
+//    let nodeStartY = 0;
 
     height = nodes.length * 24 + 10
     width = ReactDOM.findDOMNode(this).offsetWidth;
 //    let yCenter = height/2;
-    let nodeSpacing = 24;
+//    let nodeSpacing = 24;
 //    linkSpacing = 2 * rad + 2;
-    let nodeX = 5;
+//    let nodeX = 5;
 
-    nodes.map ((node, idx) => {
-      node['ndx'] = idx+1;
-      node['y'] = nodeStartY + (idx * nodeSpacing) + (nodeSpacing/2);
-      node['x'] = nodeX;
-    //   if (node.queryNode) {
-    //     if (node.toNode) {
-    //       fromCount++;
-    //     }
-    //     node.toList.map((tnode) => {
-    //       let thisTo = nodes.find(function(ttnode){
-    //         return(ttnode.id === tnode.Key);
-    //       });
-    //       if (typeof thisTo !== 'undefined') {
-    //         if (thisTo.id !== node.id) {
-    //         //   node.toLinks.push({
-    //         //     target: thisTo,
-    //         //     size: thisTo.size
-    //         //   });
-    //           thisTo.fromLinks.push({
-    //             target: node,
-    //             size: tnode.Count
-    //           });
-    //         }
-    //       }
-    //     });
-    //     node.fromList.map((fnode) => {
-    //       let thisFrom = nodes.find(function(ffnode){
-    //         return(ffnode.id === fnode.Key);
-    //       });
-    //       if (typeof thisFrom !== 'undefined') {
-    //         if (thisFrom.id !== node.id) {
-    //         //   node.fromLinks.push({
-    //         //     target: thisFrom,
-    //         //     size: thisFrom.size
-    //         //   });
-    //           thisFrom.toLinks.push({
-    //             target: node,
-    //             size: fnode.Count
-    //           });
-    //         }
-    //       }
-    //     });
-      // }
-    });
+    // nodes.map ((node, idx) => {
+    //   node['ndx'] = idx+1;
+    //   node['y'] = nodeStartY + (idx * nodeSpacing) + (nodeSpacing/2);
+    //   node['x'] = nodeX;
+    // });
     linkScale.range([1, rad]);
     nodeScale.range([1, rad]);
+    graphNodeScale.range([1, graphRad]);
+    graphLinkScale.range([1, graphRad]);
     linkScale.domain([newProps.minLinkCount, newProps.maxLinkCount]);
+    graphLinkScale.domain([newProps.minLinkCount, newProps.maxLinkCount]);
     nodeScale.domain([(newProps.minNodeCount > 0) ? newProps.minNodeCount : 1, newProps.maxNodeCount]);
+    graphNodeScale.domain([(newProps.minEmailCount > 0) ? newProps.minEmailCount : 1, newProps.maxEmailCount]);
     newProps.contacts.map((contact) => {
         contact.nodeClass = 'normal';
     });
-    // let contactsByCol = [];
-    // for(let i = 0; i < newProps.contacts.length; i = i + 3){
-    //   let col = [];
-    //   for (let j = 0; j < 3; j++){
-    //     if (i + j < newProps.contacts.length){
-    //       col[j] = newProps.contacts[i+j];
-    //     }
-    //   }
-    //   contactsByCol.push(col);
-    // }
     this.setState({
       nodes: nodes,
       contactListHeight: ReactDOM.findDOMNode(this).offsetHeight - 10,
@@ -158,7 +129,10 @@ module.exports = React.createClass({
       dialogWidth: 3 * width / 5,
       nodeScale: nodeScale,
       linkScale: linkScale,
-      fromCount: fromCount
+      graphLinkScale: graphLinkScale,
+      graphNodeScale: graphNodeScale,
+      fromCount: fromCount,
+      graphDialogVisible: false
     });
   },
 
@@ -175,17 +149,15 @@ module.exports = React.createClass({
   },
 
   onClose: function() {
+    this.state.contacts.map((contact)=>{
+      contact.nodeClass='normal';
+    })
    this.setState({
-     dialogVisible:false
+     dialogVisible:false,
+     graphDialogVisible:false
    })
  },
 
- // tipOpen: function(contact) {
- //   contact.nodeClass = 'highlighted';
- //   this.setState({
- //     contacts: this.state.contacts
- //   });
- // },
 mouseClick: function(contact){
     let self = this;
     if (oneClick) {
@@ -222,8 +194,94 @@ mouseClick: function(contact){
 		this.props.addListItem(contact, 'Any');
 	},
 
+  graphClick: function(contact){
+		this.props.addListItem(contact, 'Any');
+	},
+
+  showGraph: function(){
+    let minLinkCount = Number.MAX_VALUE;
+    let maxLinkCount = 0;
+    let links = [];
+    let linkTo = new Set();
+    let linkFrom = new Set();
+    let inGraph = new Set();
+    let self = this;
+    let contacts = this.state.contacts.slice(0,self.state.graphDialogCount);
+    contacts.map((contact) => {
+      inGraph.add(contact.Key);
+    });
+//    console.log(contacts);
+//    console.log(this.state.contacts);
+    contacts.map((contact, idx) => {
+      contact.graphRad = self.state.graphNodeScale(contacts.length);
+//      contact.graphRad = graphRad;
+      contact.Summaries.ToAddresses.map((to) => {
+        if ((!((linkTo.has(contact.Key) && linkFrom.has(to.Key))
+            || (linkFrom.has(contact.Key) && linkTo.has(to.Key)))) && inGraph.has(to.Key))
+            links.push({source:contact, target:contacts.find(function(c){return c.Key === to.Key}), count:to.Count, lineClass: 'normal'});
+            linkFrom.add(contact.Key);
+            linkTo.add(to.Key);
+            maxLinkCount=(maxLinkCount < to.Count) ? to.Count : maxLinkCount;
+            minLinkCount=(to.Count < minLinkCount) ? to.Count : minLinkCount;
+      })
+    })
+//    console.log(links);
+    this.state.graphLinkScale.domain([minLinkCount,maxLinkCount]);
+    let height = this.state.graphDialogHeight - 100;
+    let width = this.state.graphDialogWidth;
+    switch (this.state.graphType) {
+      case 'circle':
+        let radius = Math.min(width/2, height/2) - 100;
+        let radDegree = 0.0176;
+        let centerX = parseFloat(width)/2.0;
+        let centerY = parseFloat(height)/2.0;
+        let chunk = 90.0;
+        let size = contacts.length;
+        let degreeperpoint = 355.0 / (size + 1);
+          contacts.map((contact, i) => {
+            let curdegree = chunk * (i % 4) + degreeperpoint * Math.floor(i / 4);
+            contact.x = centerX + (radius * Math.cos(radDegree * curdegree));
+            contact.y = centerY + (radius * Math.sin(radDegree * curdegree));
+            contact.textX = (curdegree >= 270 || curdegree < 90)
+                        ? contact.x + contact.graphRad + 2
+                        : contact.x - contact.graphRad - 2;
+            contact.textY = contact.y;
+            contact.angle = this.angle(centerX, centerY, contact.x, contact.y);
+            contact.textAnchor = (curdegree >= 270 || curdegree < 90) ? 'start' : 'end';
+          });
+          this.setState({
+            links: links,
+            graphDialogVisible: true,
+            graphDialogContacts: contacts
+          })
+        break;
+      case 'force':
+      default:
+        let nodes = contacts;
+        d3.forceSimulation(nodes)
+        .force('link', d3.forceLink(links).distance(250))
+        .force('charge', d3.forceManyBody())
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .alphaDecay(0.1)
+        .on('end', (() => {
+          links.map ((link) => {
+            link['midpointx'] = (link.source.x + link.target.x) / 2;
+            link['midpointy'] = (link.source.y + link.target.y) / 2;
+            link['angle'] = this.angle(link.source.x, link.source.y, link.target.x, link.target.y);
+          });
+          this.setState({
+            links: links,
+            graphDialogVisible: true,
+            graphDialogContacts: contacts
+          })
+        }));
+    }
+	},
+
   render: function() {
+    let self = this;
     let {contacts} = this.state;
+    let gRad = 5;
 //    let self = this;
 //    console.log(contacts);
 		this.state.maxCount = _.get(contacts,'0.Count');
@@ -232,6 +290,7 @@ mouseClick: function(contact){
 		// }
     let mouseDoubleClick = this.mouseDoubleClick;
     let mouseClick = this.mouseClick;
+    let showGraph = this.showGraph;
 //    let tipOpen = this.tipOpen;
 
 //    let rad = 7;
@@ -243,6 +302,17 @@ mouseClick: function(contact){
     // let gridBoxWidth = Math.floor(3+2*rad);
     let gridBoxHeight = Math.floor(2+2*rad);
     // let gridCols = Math.floor(this.state.gridWidth / gridBoxWidth);
+    let buttonStyle = {
+      margin: '0px',
+      top: '-30px',
+      right: 'auto',
+      bottom: 'auto',
+      left: '0px',
+      position: 'relative'
+      // position:'absolute',
+      // marginLeft: 220,
+      // marginTop: -22
+    };
     let dialog = (
 			<Dialog
 				visible={this.state.dialogVisible}
@@ -259,7 +329,7 @@ mouseClick: function(contact){
           typeof this.state.nodes.find(function(n){return n.id === c.Key}) === 'undefined' &&
           <div
             key={'contactdiv'+c.Key}
-            onDoubleClick= {function () {mouseDoubleClick(c.Key)}}
+            onDoubleClick = {function () {mouseDoubleClick(c.Key)}}
             >
             <svg
               key={c.Key}
@@ -279,23 +349,203 @@ mouseClick: function(contact){
               y={0}
               height={gridBoxHeight}
               />
-              <text
-                key={'nodecount' + c.Key + i}
-                className={'normal'}
-                x={this.state.dialogWidth - 45}
-                y={18}
-                style={{textAnchor: 'end'}}
-                >
-                {c.Count}
-              </text>
+                <text
+                  key={'nodecount' + c.Key + i}
+                  className={'normal'}
+                  x={this.state.dialogWidth - 45}
+                  y={18}
+                  style={{textAnchor: 'end'}}
+                  >
+                  {c.Count}
+                </text>
             </svg>
           </div>)}
         </Infinite>
 			</Dialog>
 		);
+    let graphDialog = (
+			<Dialog
+				visible={this.state.graphDialogVisible}
+				wrapClassName={'none'}
+				animation='zoom'
+				maskAnimation='fade'
+				onClose={()=>(this.onClose())}
+				style={{width: this.state.graphDialogWidth, height: this.state.graphDialogHeight, left: this.state.graphDialogWidth/6, top: '-20px'}}
+				mousePosition={this.state.mousePosition}
+				title={<div  className = 'contactlist-component-list' style = {{height: contactElementHeight}}>{'Contact Graph'}</div>}
+			>
+      <FloatingActionButton style={buttonStyle} mini={true}
+        onClick={
+          ()=>{
+            self.state.graphDialogCount++;
+            showGraph()
+          }
+        }
+      >
+        <ContentAdd />
+      </FloatingActionButton>
+      <FloatingActionButton style={buttonStyle} mini={true}
+      onClick={
+        ()=>{
+          self.state.graphDialogCount--;
+          showGraph()
+        }
+      }
+    >
+        <ContentRemove />
+      </FloatingActionButton>
+      <div className='contactgraph-component'>
+        <svg className='contact-graph-svg' style={{height: this.state.graphDialogHeight - 60}}>
+        {this.state.links.map((link, i) =>
+          <g key={'g-graphline' + link.index + i}>
+            <line
+              key={'graphline' + link.index + i}
+              className={link.lineClass}
+              style={{strokeWidth: parseInt(this.state.graphLinkScale(link.count)) + 'px'}}
+              x1={link.source.x} y1={link.source.y}
+              x2={link.target.x} y2={link.target.y}
+              onMouseOver = {function(){
+                  link.lineClass = 'highlight';
+                  link.source.nodeClass = 'highlight'
+                  link.target.nodeClass = 'hightlight'
+                  self.setState({links:self.state.links})
+                  }
+                }
+              onMouseOut = {function(){
+                  link.lineClass = 'normal';
+                  link.source.nodeClass = 'normal'
+                  link.target.nodeClass = 'normal'
+                  self.setState({links:self.state.links})
+                }
+              }
+            />
+          </g>
+        )}
+        {this.state.graphDialogContacts.map((contact, i) =>
+          <g
+            key={'g-graphcircle' + contact.Key + i}
+            className={contact.Key}
+          >
+            <circle
+              key={'graphcircle' + contact.Key + i}
+              className={'qnodeany'}
+              cx={contact.x}
+              cy={contact.y}
+              r={contact.graphRad}
+              onClick = {function () {mouseDoubleClick(contact.Key)}}
+              onMouseOver = {function(){
+                  contact.nodeClass = 'highlight';
+                  self.state.links.map((link)=>{
+                    if (link.source.Key === contact.Key || link.target.Key === contact.Key){
+                      link.lineClass = 'highlight';
+                      link.target.nodeClass = 'highlight';
+                      link.source.nodeClass = 'highlight';
+                    }
+                  })
+                  self.setState({graphDialogContacts:self.state.graphDialogContacts})
+                }
+              }
+              onMouseOut = {function(){
+                  contact.nodeClass = 'normal';
+                  self.state.links.map((link)=>{
+                    if (link.source.Key === contact.Key || link.target.Key === contact.Key) {
+                      link.lineClass = 'normal';
+                      link.target.nodeClass = 'normal';
+                      link.source.nodeClass = 'normal';
+                    }
+                  })
+                  self.setState({graphDialogContacts:self.state.graphDialogContacts})
+                  }
+                }
+            />
+            {
+              self.state.graphType === 'circle' &&
+              <text
+                key={'nodelabel' + contact.Key + i}
+                className={contact.nodeClass}
+                x={contact.textX}
+                y={contact.textY}
+                style={{textAnchor: contact.textAnchor, alignmentBaseline: 'middle'}}
+                onClick = {function () {mouseDoubleClick(contact.Key)}}
+                transform={'rotate(' + contact.angle + ' ' + contact.x + ' ' + contact.y + ')'}
+                textAnchor='middle'
+                onMouseOver = {function(){
+                    contact.nodeClass = 'highlight';
+                    self.state.links.map((link)=>{
+                      if (link.source.Key === contact.Key || link.target.Key === contact.Key){
+                        link.lineClass = 'highlight';
+                        link.target.nodeClass = 'highlight';
+                        link.source.nodeClass = 'highlight';
+                      }
+                    })
+                    self.setState({graphDialogContacts:self.state.graphDialogContacts})
+                  }
+                }
+                onMouseOut = {function(){
+                    contact.nodeClass = 'normal';
+                    self.state.links.map((link)=>{
+                      if (link.source.Key === contact.Key || link.target.Key === contact.Key) {
+                        link.lineClass = 'normal';
+                        link.target.nodeClass = 'normal';
+                        link.source.nodeClass = 'normal';
+                      }
+                    })
+                    self.setState({graphDialogContacts:self.state.graphDialogContacts})
+                    }
+                  }
+              >
+                {contact.Key}
+              </text>
+            }
+            {
+              self.state.graphType === 'force' &&
+              <text
+                key={'nodelabel' + contact.Key + i}
+                className={contact.nodeClass}
+                x={contact.x}
+                y={contact.y - contact.graphRad - 2}
+                onClick = {function () {mouseDoubleClick(contact.Key)}}
+                textAnchor='middle'
+                onMouseOver = {function(){
+                    contact.nodeClass = 'highlight';
+                    self.state.links.map((link)=>{
+                      if (link.source.Key === contact.Key || link.target.Key === contact.Key){
+                        link.lineClass = 'highlight';
+                        link.target.nodeClass = 'highlight';
+                        link.source.nodeClass = 'highlight';
+                      }
+                    })
+                    self.setState({graphDialogContacts:self.state.graphDialogContacts})
+                  }
+                }
+                onMouseOut = {function(){
+                    contact.nodeClass = 'normal';
+                    self.state.links.map((link)=>{
+                      if (link.source.Key === contact.Key || link.target.Key === contact.Key) {
+                        link.lineClass = 'normal';
+                        link.target.nodeClass = 'normal';
+                        link.source.nodeClass = 'normal';
+                      }
+                    })
+                    self.setState({graphDialogContacts:self.state.graphDialogContacts})
+                    }
+                  }
+              >
+                {contact.Key}
+              </text>
+            }
+          </g>
+        )}
+      </svg>
+      </div>
+			</Dialog>
+		);
 
     return (
       <div className='contactgraph-component'>
+      <FloatingActionButton style={buttonStyle} mini={true} onClick={()=>showGraph()}>
+        <SocialGroup />
+      </FloatingActionButton>
         <div className='contactlist-component-list' style={{top: '10px'}}>
 				<Infinite containerHeight={this.state.contactListHeight} elementHeight={contactElementHeight}>
 					{ contacts.map((c, i) =>
@@ -419,6 +669,7 @@ mouseClick: function(contact){
   				</Infinite>
 				</div>
         {dialog}
+        {graphDialog}
       </div>
     );
   }

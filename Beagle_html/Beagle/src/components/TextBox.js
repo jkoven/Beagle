@@ -1,6 +1,6 @@
 var React = require('react')
 
-var TextBox = React.createClass({
+module.exports = React.createClass({
   getInitialState: function(){
     return {
       buttonFocus: false,
@@ -126,5 +126,3 @@ var TextBox = React.createClass({
     )
   }
 })
-
-module.exports = TextBox

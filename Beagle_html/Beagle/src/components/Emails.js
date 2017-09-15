@@ -10,11 +10,12 @@ import 'rc-dialog/assets/index.css';
 require('styles//Emails.scss');
 
 let monthEnum = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+let width = 300;
 
-class Emails extends React.Component {
-	constructor() {
-		super();
-		this.state = {
+module.exports = React.createClass({
+	getInitialState: function() {
+    return {
+			highlightwords:{},
 			visible: false,
 			width: 800,
 			destroyOnClose: false,
@@ -23,46 +24,79 @@ class Emails extends React.Component {
 			from:'',
 			to:'',
 			emailListHeight: 400,
-			contents:''
-		}
-	}
-	componentDidMount () {
+			contents:'',
+			emails:[],
+			heights:[],
+			expanded:-1
+    };
+  },
+	componentDidMount: function () {
     this.setState({
 			emailListHeight: ReactDOM.findDOMNode(this).offsetHeight
 		});
-  }
+  },
 
-	onClick(subject,from,to,contents) {
-     this.setState({
-       mousePosition: {
-         x: this.pageX,
-         y: this.pageY
-       },
-       visible: true,
-			 subject:subject,
-			 from:from,
-			 to:to,
-			 contents:contents
-     });
-   }
+	componentWillReceiveProps: function (newProps){
+		width = ReactDOM.findDOMNode(this).offsetWidth;
+		let heights = [];
+		for (let i = 0; i < newProps.emails.length; i++){
+			heights.push(75);
+		}
+	this.setState({
+		emails: newProps.emails,
+		heights: heights,
+		highlightwords: newProps.highlightwords,
+		expanded: -1
+	});
+	},
 
 
-	handleOpen(subject, from, to, contents){
-		this.state.subject = subject;
-		this.state.from = from;
-		this.state.to = to;
-		this.state.contents = contents;
-	}
+	onClick: function(idx) {
+		if (this.state.expanded === idx){
+			this.setState({
+				heights: [...this.state.heights.slice(0,this.state.expanded), 75 ,...this.state.heights.slice(this.state.expanded + 1)],
+				expanded: -1
+			})
+		} else if (this.state.expanded >= 0) {
+		  this.state.heights = [...this.state.heights.slice(0,this.state.expanded), 75 ,...this.state.heights.slice(this.state.expanded + 1)];
+			this.setState({
+				heights: [...this.state.heights.slice(0,idx), 225 ,...this.state.heights.slice(idx + 1)],
+				expanded: idx
+			})
+		} else {
+			this.setState({
+				heights: [...this.state.heights.slice(0,idx), 225 ,...this.state.heights.slice(idx + 1)],
+				expanded: idx
+			})
+		}
+//		return;
+		// contents = contents.replace(/</g, '&lt;');
+		// contents = contents.replace(/>/g, '&gt;');
+		// contents = contents.replace(/\n/g, '<br />')
+    //  this.setState({
+    //    mousePosition: {
+    //      x: this.pageX,
+    //      y: this.pageY
+    //    },
+    //    visible: true,
+		// 	 subject:subject,
+		// 	 from:from,
+		// 	 to:to,
+		// 	 contents:contents
+    //  });
+   },
 
-	onClose() {
+	onClose: function() {
 	 this.setState({
 		 visible:false
 	 })
- }
+ },
 
 	render() {
 		let dialog;
-		let {emails} = this.props;
+		let contents = '';
+		let {emails,heights} = this.state;
+//		console.log(emails);
 		let fullDates = [];
 		let wrapClassName = '';
 		if (this.state.center) {
@@ -71,22 +105,6 @@ class Emails extends React.Component {
 		const style = {
 			width: this.state.width
 		};
-		dialog = (
-			<Dialog
-				visible={this.state.visible}
-				wrapClassName={wrapClassName}
-				animation='zoom'
-				maskAnimation='fade'
-				onClose={()=>(this.onClose())}
-				style={style}
-				mousePosition={this.state.mousePosition}
-				title={<div  className = 'popup'>{this.state.subject}</div>}
-			>
-			<div className = 'popup'><span className = 'props'>From</span>:{this.state.from}</div>
-			<div className = 'popup'><span className = 'props'>To</span>:{this.state.to}</div>
-			<div  className = 'popup'><span className = 'tmp'><span className = 'props2'>Content</span>:</span>{this.state.contents}</div>
-			</Dialog>
-		);
 		for (var i = 0; i < emails.length; i++) {
 			let str = i + '.Timestamp'
 			let time = new Date(parseInt(_.get(emails, str)));
@@ -97,34 +115,76 @@ class Emails extends React.Component {
 			fullDates.push(date);
 
 		}
-
 		return (
 
 			<div className='Emails-component' >
 			<div className='Emails-component-list' >
-			<Infinite containerHeight={this.state.emailListHeight} elementHeight={31}>
+			<Infinite containerHeight={this.state.emailListHeight} elementHeight={this.state.heights}>
 				{emails.map((c,idx) =>
-					<RaisedButton
-						key={'email' + c.Subject+ idx}
-						className='Emails-component-info'
-						onClick={()=>(this.onClick(c.Subject,c.From,c.To,c.Contents))}>
-						<div
-							className = 'text2'>
-							{fullDates[idx] + c.Subject}
+					<div
+							key={'emaildivrow'+idx}
+							className={'emaillistdiv'}
+							style={{height: heights[idx] - 1}}
+							>
+								<svg
+									key={'emailsvg' + c.Subject + idx}
+									className='emaillist-emails-svg'
+									style={{width: width}}
+									>
+									{ this.state.expanded !== idx &&
+										<path
+											className={'emailexpandarrow'}
+											d="M 5 5 L 10 10 L 5 15"
+										/>
+									}
+									{ this.state.expanded === idx &&
+										<path
+											className={'emailexpandarrow'}
+											d="M 5 5 L 10 10 L 15 5"
+										/>
+									}
+										<rect
+											key={'emailsvgrect' + idx}
+											className={'emailexpandrect'}
+											onClick={()=>(this.onClick(idx))}
+										/>
+										<text
+											key={'nodelabel' + c.Key + (i)}
+											className={'normal'}
+											x={20}
+											y={16}
+											>
+											{fullDates[idx] + c.Subject.replace(/<em>/g, '').replace(/<\/em>/g, '')}
+										</text>
+								</svg>
+								{
+									heights[idx] <= 75 &&
+									<div
+										className={'emaillistsnippet'}
+									>
+									<div dangerouslySetInnerHTML={{__html: c.Contents.substring(0,200)}} />
+									</div>
+
+								}
+								{
+									heights[idx] > 75 &&
+									<div
+										className={'emaillistexpandedemail'}
+									>
+									<div className = 'popup'><span className = 'props'>{'From'}</span>:<span dangerouslySetInnerHTML={{__html: c.From}} /></div>
+									<div className = 'popup'><span className = 'props'>To</span>:<span dangerouslySetInnerHTML={{__html: c.To}} /></div>
+									<div className = 'popup'><span className = 'props'>Date</span>:{new Date(parseInt(c.Timestamp)).toString()}</div>
+									<div className = 'popup'><span className = 'props'>Subject</span>:<span dangerouslySetInnerHTML={{__html: c.Subject}} /></div>
+									<div  className = 'popup'><span className = 'props2'>Content</span>:
+									<div dangerouslySetInnerHTML={{__html: c.Contents.replace(/\n/g, '<br />')}} /></div>
+									</div>
+								}
 						</div>
-					</RaisedButton>
-				)}
+					)}
 			</Infinite>
 			</div>
-			{dialog}
       </div>
 
 		);
 	}
-}
-
-Emails.displayName = 'Emails';
-
-
-
-export default Emails;
+})

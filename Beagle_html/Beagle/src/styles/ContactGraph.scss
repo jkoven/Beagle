@@ -5,6 +5,7 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
+  overflow-y: visible;
   @keyframes blink0 {
     0% { fill: none; stroke: none; }
     100% { fill: none; stroke: none; }
@@ -296,8 +297,10 @@
     }
   }
   .contact-graph-svg {
-    width: 25%;
+    width: 100%;
     height: 100%;
+    overflow: visible;
+    cursor:pointer;
 
     text {
       font-size: 12px;
@@ -306,6 +309,18 @@
       white-space: nowrap;
       width:95%;
       vertical-align: bottom;
+      cursor: pointer;
+    }
+
+    line.normal{
+      stroke:$primaryTextColor;
+      fill:$primaryTextColor;
+      stroke-width: 1px;
+    }
+    line.highlight{
+      stroke:Black;
+      fill:Black;
+      stroke-width: 1px;
     }
 
     text.highlighted {
@@ -318,6 +333,10 @@
 
     text.normal {
       fill: $primaryTextColor;
+    }
+
+    text.highlight {
+      fill: black;
     }
 
     .linklabel {
@@ -361,6 +380,7 @@
     }
     line.normalto{
       stroke: $PQColor3;
+      stroke-width: 2px;
     }
 
     line.highlightedto{
@@ -377,6 +397,7 @@
     .contactlist-component-contact-svg {
       width:100%;
       height: 20px;
+      cursor:pointer;
       text {
         font-size: 12px;
         overflow: hidden;
@@ -403,6 +424,7 @@
 .dialog-component-contact-svg {
   width:100%;
   height: 20px;
+  cursor:pointer;
   text {
     font-size: 12px;
     overflow: hidden;

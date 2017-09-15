@@ -44,7 +44,7 @@ module.exports = React.createClass({
       top: '15px',
       right: 'auto',
       bottom: 'auto',
-      left: this.state.width - 10,
+      left: '10px',
       position: 'fixed'
       // position:'absolute',
       // marginLeft: 220,

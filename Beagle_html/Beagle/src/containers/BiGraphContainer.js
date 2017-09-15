@@ -29,8 +29,10 @@ class BiGraphContainer extends Component {
 			jsonQuery: [],
 			minLinkCount: Number.MAX_VALUE,
 	    maxLinkCount: 0,
-	    minNodeCount: Number.MAX_VALUE,
+			minNodeCount: Number.MAX_VALUE,
 	    maxNodeCount: 0,
+			minEmailCount: Number.MAX_VALUE,
+	    maxEmailCount: 0,
 			query: `query getData($filters:[Rule]){
 								Select(filters:$filters){
 									Summaries {
@@ -155,8 +157,10 @@ class BiGraphContainer extends Component {
 			let queries = [];
 			let minLinkCount = Number.MAX_VALUE;
 	    let maxLinkCount = 0;
-	    let minNodeCount = Number.MAX_VALUE;
+			let minNodeCount = Number.MAX_VALUE;
 	    let maxNodeCount = 0;
+			let minEmailCount = Number.MAX_VALUE;
+	    let maxEmailCount = 0;
 			queries.push(dataSource.query(
 				this.state.query, jsonQuery
 			).then(r => {
@@ -289,7 +293,10 @@ class BiGraphContainer extends Component {
 						});
 					}
 				}
+//				console.log(contactList);
 				contacts.map((contact) => {
+					maxEmailCount = Math.max(contact.Count, maxEmailCount);
+					minEmailCount = Math.min(contact.Count, minEmailCount);
 					if (contact.toCount > 0){
 						maxNodeCount = Math.max(contact.toCount, maxNodeCount);
 						minNodeCount = Math.min(contact.toCount, minNodeCount);
@@ -308,7 +315,15 @@ class BiGraphContainer extends Component {
 						return ((b.fromLinkCount + b.toLinkCount) - (a.fromLinkCount + a.toLinkCount));
 					})
 				}
-				return {qn:queryNodes, cl:contacts, minLC: minLinkCount, maxLC: maxLinkCount, minNC: minNodeCount, maxNC: maxNodeCount} ;
+				return {qn:queryNodes,
+								cl:contacts,
+								minLC: minLinkCount,
+								maxLC: maxLinkCount,
+								minNC: minNodeCount,
+								maxNC: maxNodeCount,
+								minEC: minEmailCount,
+								maxEC: maxEmailCount
+							};
 				})
 			);
 
@@ -320,7 +335,9 @@ class BiGraphContainer extends Component {
 						minLinkCount: d.minLC,
 						maxLinkCount: d.maxLC,
 						minNodeCount: d.minNC,
-						maxNodeCount: d.maxNC
+						maxNodeCount: d.maxNC,
+						minEmailCount: d.minEC,
+						maxEmailCount: d.maxEC
           });
 				});
 			}).catch((err) => console.log('In BiGraphContainer: ', err.message));
@@ -344,6 +361,8 @@ class BiGraphContainer extends Component {
 			maxLinkCount= {this.state.maxLinkCount}
 			minNodeCount= {this.state.minNodeCount}
 			maxNodeCount= {this.state.maxNodeCount}
+			minEmailCount= {this.state.minEmailCount}
+			maxEmailCount= {this.state.maxEmailCount}
 			{...actions}
 			/>;
 

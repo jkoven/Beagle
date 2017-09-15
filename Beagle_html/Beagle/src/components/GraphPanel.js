@@ -9,7 +9,7 @@ class GraphPanel extends React.Component {
   render() {
     return (
       <div className='graphpanel-component'>
-        <Panel title='Contact Graph'>
+        <Panel title='Contact Graph' leftmargin='45px'>
         	<BiGraphContainer />
         </Panel>
       </div>

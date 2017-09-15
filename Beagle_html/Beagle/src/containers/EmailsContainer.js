@@ -21,7 +21,8 @@ class EmailsContainer extends Component {
   constructor() {
     super();
     this.state = {
-      emails: []
+      emails: [],
+			highlightwords: {}
     };
   }
 
@@ -34,16 +35,20 @@ class EmailsContainer extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
+		this.state.highlightwords = {};
 		this.loadData(nextProps.state);
 	}
 
   translateStateToFilter(state) {
     var jsonQuery = {
-      filters: []
+      filters: [],
+			highlightwords: {}
     }
+
     state.filters.forEach(function(element) {
       if (typeof element.values !== 'undefined'){
         var jsonData ={};
+
 
         switch (element.selection) {
 					case 'ToLength':
@@ -65,6 +70,30 @@ class EmailsContainer extends Component {
 						jsonData['field'] = element.selection;
 						jsonData['operation'] = 'contains';
 						jsonData['value'] = element.values;
+						switch (element.selection){
+							case 'Any':
+							case 'ToAddresses':
+							case 'FromAddress':
+							if (typeof jsonQuery.highlightwords['Addresses'] === 'undefined'){
+								jsonQuery.highlightwords['Addresses'] = element.values;
+							} else {
+								jsonQuery.highlightwords['Addresses'] = [...jsonQuery.highlightwords['Addresses'].slice(0), ...element.values.slice(0)];
+							}
+							break;
+							case 'Subject':
+								if (typeof jsonQuery.highlightwords['Subject'] === 'undefined'){
+									jsonQuery.highlightwords['Subject'] = element.values;
+								} else {
+									jsonQuery.highlightwords['Subject'] = [...jsonQuery.highlightwords['Contents'].slice(0), ...element.values.slice(0)];
+								}
+							break;
+							default:
+								if (typeof jsonQuery.highlightwords['Contents'] === 'undefined'){
+									jsonQuery.highlightwords['Contents'] = element.values;
+								} else {
+									jsonQuery.highlightwords['Contents'] = [...jsonQuery.highlightwords['Contents'].slice(0), ...element.values.slice(0)];
+								}
+						}
 				}
         jsonQuery.filters.push(jsonData);
       }
@@ -76,6 +105,7 @@ class EmailsContainer extends Component {
     let query = `query getData($filters:[Rule]){
 				Select(filters:$filters){
 					Documents(limit:1000) {
+						Path
             Subject
             Timestamp
             From:FromAddress
@@ -84,29 +114,69 @@ class EmailsContainer extends Component {
 					}
 				}
 		}`
-
+		let jsonQuery = this.translateStateToFilter(newState);
     dataSource.query(
-        query, this.translateStateToFilter(newState)
+        query, jsonQuery
     ).then(r => {
       if (typeof r.data !== 'undefined'){
-        this.setState({emails: r.data.Select.Documents})
+        this.setState({
+					emails: r.data.Select.Documents.sort(function(a,b){
+						return(b.Timestamp - a.Timestamp)
+					}),
+					highlightwords: jsonQuery.highlightwords
+				})
       }
     }).catch((err) => console.log('In ContactListContainer: ', err.message))
   }
 
   render() {
-		this.state.emails.sort(function(a,b){
-			if (parseInt(a.Timestamp) < parseInt(b.Timestamp)) {
-		    return -1;
-		  }
-		  if (parseInt(a.Timestamp) > parseInt(b.Timestamp)) {
-		    return 1;
-		  }
-		  // a must be equal to b
-		  return 0;
+		let self = this;
+		this.state.emails.forEach(function(email){
+			if (typeof email.Contents !== 'undefined'){
+				email.Contents = email.Contents.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+				if (typeof self.state.highlightwords['Contents'] !== 'undefined'){
+					self.state.highlightwords['Contents'].forEach(function(term){
+						let regString = new RegExp(term, 'ig');
+						email.Contents = email.Contents.replace(regString, '<em>' + term + '</em>');
+					})
+				}
+			}
+			if (typeof email.Subject !== 'undefined'){
+				email.Subject = email.Subject.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+				if (typeof self.state.highlightwords['Subject'] !== 'undefined'){
+					self.state.highlightwords['Subject'].forEach(function(term){
+						let regString = new RegExp(term, 'ig');
+						email.Subject = email.Subject.replace(regString, '<em>' + term + '</em>');
+					})
+				}
+			}
+			if (typeof email.To !== 'undefined'){
+				let newTo = []
+				email.To.forEach(function(to){
+					to = to.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+					if (typeof self.state.highlightwords['Addresses'] !== 'undefined'){
+						self.state.highlightwords['Addresses'].forEach(function(term){
+							let regString = new RegExp(term, 'ig');
+							to = to.replace(regString, '<em>' + term + '</em>');
+						})
+					}
+					newTo.push(to);
+
+				})
+				email.To = newTo;
+			}
+			if (typeof email.From !== 'undefined'){
+				email.From = email.From.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+				if (typeof self.state.highlightwords['Addresses'] !== 'undefined'){
+					self.state.highlightwords['Addresses'].forEach(function(term){
+						let regString = new RegExp(term, 'ig');
+						email.From = email.From.replace(regString, '<em>' + term + '</em>');
+					})
+				}
+			}
 		})
     const {actions} = this.props;
-    return <Emails actions={actions} emails={this.state.emails} position={this.props.position + 15}/>;
+    return <Emails actions={actions} emails={this.state.emails} position={this.props.position + 15} highlightwords = {this.state.highlightwords}/>;
   }
 }
 
